@@ -9,6 +9,7 @@ pub struct Operation<'s> {
 #[derive(Debug, Clone)]
 pub enum OperationKind<'s> {
     EvalCriterion(EvalCriterion<'s>),
+    EvalCriterionGroup(EvalCriterionGroup<'s>),
     Nop(Nop),
     Goto(Goto<'s>),
     Write(Write<'s>),
@@ -21,6 +22,9 @@ pub struct EvalCriterion<'s> {
     pub criterion_id: CriterionId,
     pub condition: Expression<'s>,
 }
+
+#[derive(Debug, Clone)]
+pub struct EvalCriterionGroup<'s>(pub Vec<EvalCriterion<'s>>);
 
 #[derive(Debug, Clone)]
 pub struct Nop;

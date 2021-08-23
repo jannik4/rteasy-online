@@ -78,7 +78,7 @@ impl Simulator {
             // Execute step
             let step_executed = if criteria_match(&step.criteria, &cursor.criteria_set) {
                 let res = step.operation.execute(&mut self.state, &mut self.change_set)?;
-                if let Some(criterion) = res {
+                for criterion in res {
                     cursor.criteria_set.insert(criterion);
                 }
                 true

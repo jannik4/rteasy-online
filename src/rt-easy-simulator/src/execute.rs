@@ -2,12 +2,12 @@ use crate::{evaluate::Evaluate, ChangeSet, Error, State};
 use rtcore::{
     program::{
         Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, CriterionId, EvalCriterion,
-        Goto, Lvalue, Nop, Operation, OperationKind, Read, Write,
+        EvalCriterionGroup, Goto, Lvalue, Nop, Operation, OperationKind, Read, Write,
     },
     value::Value,
 };
 
-type Result = std::result::Result<Option<CriterionId>, Error>;
+type Result = std::result::Result<Vec<CriterionId>, Error>;
 
 pub trait Execute {
     fn execute(&self, state: &mut State, change_set: &mut ChangeSet) -> Result;
@@ -18,6 +18,9 @@ impl Execute for Operation {
         match &self.kind {
             OperationKind::EvalCriterion(eval_criterion) => {
                 eval_criterion.execute(state, change_set)
+            }
+            OperationKind::EvalCriterionGroup(eval_criterion_group) => {
+                eval_criterion_group.execute(state, change_set)
             }
             OperationKind::Nop(nop) => nop.execute(state, change_set),
             OperationKind::Goto(goto) => goto.execute(state, change_set),
@@ -33,37 +36,49 @@ impl Execute for EvalCriterion {
         let cond = self.condition.evaluate(state, 1)?;
 
         if cond == Value::one(1) {
-            Ok(Some(self.criterion_id))
+            Ok(vec![self.criterion_id])
         } else {
-            Ok(None)
+            Ok(Vec::new())
         }
+    }
+}
+
+impl Execute for EvalCriterionGroup {
+    fn execute(&self, state: &mut State, change_set: &mut ChangeSet) -> Result {
+        let mut criterion_ids = Vec::new();
+
+        for eval_criterion in &self.0 {
+            criterion_ids.extend(eval_criterion.execute(state, change_set)?);
+        }
+
+        Ok(criterion_ids)
     }
 }
 
 impl Execute for Nop {
     fn execute(&self, _: &mut State, _: &mut ChangeSet) -> Result {
-        Ok(None)
+        Ok(Vec::new())
     }
 }
 
 impl Execute for Goto {
     fn execute(&self, _: &mut State, change_set: &mut ChangeSet) -> Result {
         change_set.goto(self.label.clone())?;
-        Ok(None)
+        Ok(Vec::new())
     }
 }
 
 impl Execute for Write {
     fn execute(&self, _: &mut State, change_set: &mut ChangeSet) -> Result {
         change_set.write_memory(self.ident.clone())?;
-        Ok(None)
+        Ok(Vec::new())
     }
 }
 
 impl Execute for Read {
     fn execute(&self, state: &mut State, change_set: &mut ChangeSet) -> Result {
         state.read_memory(&self.ident, change_set)?;
-        Ok(None)
+        Ok(Vec::new())
     }
 }
 
@@ -119,6 +134,6 @@ impl Execute for Assignment {
             }
         }
 
-        Ok(None)
+        Ok(Vec::new())
     }
 }

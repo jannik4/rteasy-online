@@ -59,6 +59,7 @@ impl Display for Operation<'_> {
         use OperationKind::*;
         match &self.kind {
             EvalCriterion(op) => write!(f, "{}", op),
+            EvalCriterionGroup(op) => write!(f, "{}", op),
             Nop(op) => write!(f, "{}", op),
             Goto(op) => write!(f, "{}", op),
             Write(op) => write!(f, "{}", op),
@@ -71,6 +72,21 @@ impl Display for Operation<'_> {
 impl Display for EvalCriterion<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "k{} := {}", self.criterion_id.0, self.condition)
+    }
+}
+
+impl Display for EvalCriterionGroup<'_> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let mut elements = self.0.iter();
+
+        if let Some(e) = elements.next() {
+            write!(f, "{}", e)?;
+        }
+        for e in elements {
+            write!(f, ", {}", e)?;
+        }
+
+        Ok(())
     }
 }
 

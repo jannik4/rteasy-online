@@ -8,6 +8,9 @@ impl Generate<mir::Operation<'_>> for Operation {
             mir::OperationKind::EvalCriterion(eval_criterion) => {
                 OperationKind::EvalCriterion(Generate::generate(eval_criterion)?)
             }
+            mir::OperationKind::EvalCriterionGroup(eval_criterion_group) => {
+                OperationKind::EvalCriterionGroup(Generate::generate(eval_criterion_group)?)
+            }
             mir::OperationKind::Nop(mir::Nop) => OperationKind::Nop(Nop),
             mir::OperationKind::Goto(goto) => OperationKind::Goto(Generate::generate(goto)?),
             mir::OperationKind::Write(write) => OperationKind::Write(Generate::generate(write)?),
@@ -27,6 +30,12 @@ impl Generate<mir::EvalCriterion<'_>> for EvalCriterion {
             criterion_id: Generate::generate(eval_criterion.criterion_id)?,
             condition: Generate::generate(eval_criterion.condition)?,
         })
+    }
+}
+
+impl Generate<mir::EvalCriterionGroup<'_>> for EvalCriterionGroup {
+    fn generate(eval_criterion_group: mir::EvalCriterionGroup<'_>) -> Result<Self> {
+        Ok(EvalCriterionGroup(Generate::generate(eval_criterion_group.0)?))
     }
 }
 

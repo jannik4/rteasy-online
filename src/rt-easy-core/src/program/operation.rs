@@ -9,6 +9,7 @@ pub struct Operation {
 #[derive(Debug)]
 pub enum OperationKind {
     EvalCriterion(EvalCriterion),
+    EvalCriterionGroup(EvalCriterionGroup),
     Nop(Nop),
     Goto(Goto),
     Write(Write),
@@ -21,6 +22,9 @@ pub struct EvalCriterion {
     pub criterion_id: CriterionId,
     pub condition: Expression,
 }
+
+#[derive(Debug)]
+pub struct EvalCriterionGroup(pub Vec<EvalCriterion>);
 
 #[derive(Debug)]
 pub struct Nop;

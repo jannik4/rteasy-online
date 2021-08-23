@@ -52,6 +52,19 @@ where
                             sim_(steps, &mut criteria_set, state, error_sink)?;
                         }
                     }
+                    OperationKind::EvalCriterionGroup(eval_criterion_group) => {
+                        for eval_criterion in &eval_criterion_group.0 {
+                            state.condition(&eval_criterion.condition, span.clone())?;
+                        }
+
+                        // Sim remaining steps with exactly one criterion set
+                        for eval_criterion in &eval_criterion_group.0 {
+                            let mut criteria_set = criteria_set.clone();
+                            criteria_set.insert(eval_criterion.criterion_id);
+                            let state = state.clone();
+                            sim_(steps, &mut criteria_set, state, error_sink)?;
+                        }
+                    }
                     OperationKind::Nop(nop) => state.nop(nop, span)?,
                     OperationKind::Goto(goto) => state.goto(goto, span)?,
                     OperationKind::Write(write) => state.write(write, span)?,
