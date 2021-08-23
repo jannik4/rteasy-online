@@ -116,7 +116,7 @@ pub fn concat_info(concat: &Concat<'_>, symbols: &Symbols<'_>) -> ConcatInfo {
             ConcatPart::RegisterArray(_) => info.contains_clocked = true,
             ConcatPart::Number(number) => {
                 info.contains_non_lvalue = true;
-                if number.kind == NumberKind::Other {
+                if number.kind != NumberKind::BitString {
                     info.contains_number_non_bit_string = true;
                 }
             }
