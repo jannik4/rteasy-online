@@ -185,6 +185,7 @@ impl<T> Error<T> {
                             ErrorKind::Expected(expected1, found1),
                             ErrorKind::Expected(expected2, _found2),
                         ) => ErrorKind::Expected(
+                            // TODO: Filter duplicates
                             vec![expected1.into_iter(), expected2.into_iter()]
                                 .into_iter()
                                 .flatten()
