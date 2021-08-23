@@ -1,0 +1,10 @@
+[package]
+name = "toktok"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+pretty-error = { path = "../pretty-error" } # TODO: feature flag
+either = "1.6.1" # TODO: feature flag (default)

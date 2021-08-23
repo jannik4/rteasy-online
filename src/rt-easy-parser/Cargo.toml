@@ -1,0 +1,15 @@
+[package]
+name = "rt-easy-parser"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+
+toktok = { path = "../lib/toktok" }
+logos = "0.12.0"
+
+[build-dependencies]
+toktok-generator = { path = "../lib/toktok-generator" }

@@ -1,0 +1,22 @@
+[package]
+name = "rt-easy-wasm"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["console_error_panic_hook"]
+
+[dependencies]
+rt-easy = { path = "../rt-easy" }
+
+wasm-bindgen = "0.2.73"
+console_error_panic_hook = { version = "0.1.6", optional = true }
+wee_alloc = "0.4.5"
+
+# TODO: [profile.release]
+# TODO: opt-level = "s"

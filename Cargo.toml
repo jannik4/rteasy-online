@@ -1,0 +1,22 @@
+[workspace]
+members = [
+    "src/lib/split-vec",
+    "src/lib/value",
+    "src/lib/pretty-error",
+    "src/lib/toktok",
+    "src/lib/toktok-generator",
+    "src/lib/toktok-generator-tests",
+
+    "src/rt-easy-core",
+    "src/rt-easy-parser",
+    "src/rt-easy-compiler",
+    "src/rt-easy-compiler-backend-simulator",
+    "src/rt-easy-vhdl",
+    "src/rt-easy-simulator",
+    "src/rt-easy",
+
+    "src/rt-easy-wasm",
+]
+
+[profile.dev]
+opt-level = 1

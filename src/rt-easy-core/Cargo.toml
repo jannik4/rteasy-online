@@ -1,0 +1,12 @@
+[package]
+name = "rt-easy-core"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+split-vec = { path = "../lib/split-vec" }
+value = { path = "../lib/value" }
+
+either = "1.6.1"
