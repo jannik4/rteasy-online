@@ -23,12 +23,12 @@ pub fn sim<'s, S>(
 where
     S: SimState<'s> + Clone,
 {
-    sim_(&statement.steps, &mut HashSet::new(), state, error_sink)
+    sim_(&statement.steps, &HashSet::new(), state, error_sink)
 }
 
 fn sim_<'s, S>(
     steps: &[Step<'s>],
-    criteria_set: &mut HashSet<CriterionId>,
+    criteria_set: &HashSet<CriterionId>,
     mut state: S,
     error_sink: &mut impl FnMut(CompilerError),
 ) -> Result
@@ -49,7 +49,7 @@ where
                             let mut criteria_set = criteria_set.clone();
                             criteria_set.insert(eval_criterion.criterion_id);
                             let state = state.clone();
-                            sim_(steps, &mut criteria_set, state, error_sink)?;
+                            sim_(steps, &criteria_set, state, error_sink)?;
                         }
                     }
                     OperationKind::EvalCriterionGroup(eval_criterion_group) => {
@@ -62,7 +62,7 @@ where
                             let mut criteria_set = criteria_set.clone();
                             criteria_set.insert(eval_criterion.criterion_id);
                             let state = state.clone();
-                            sim_(steps, &mut criteria_set, state, error_sink)?;
+                            sim_(steps, &criteria_set, state, error_sink)?;
                         }
                     }
                     OperationKind::Nop(nop) => state.nop(nop, span)?,
