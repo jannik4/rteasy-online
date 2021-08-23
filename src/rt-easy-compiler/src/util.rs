@@ -42,6 +42,24 @@ pub fn ctx_size_binary_op(lhs: usize, rhs: usize, op: BinaryOperator) -> CtxSize
     }
 }
 
+pub fn is_fixed_size_binary_op(op: BinaryOperator) -> bool {
+    match op {
+        BinaryOperator::Eq
+        | BinaryOperator::Ne
+        | BinaryOperator::Le
+        | BinaryOperator::Lt
+        | BinaryOperator::Ge
+        | BinaryOperator::Gt => true,
+        BinaryOperator::Add
+        | BinaryOperator::Sub
+        | BinaryOperator::And
+        | BinaryOperator::Nand
+        | BinaryOperator::Or
+        | BinaryOperator::Nor
+        | BinaryOperator::Xor => false,
+    }
+}
+
 pub fn size_unary_op(lhs: usize, op: UnaryOperator) -> usize {
     match op {
         UnaryOperator::SignNeg => lhs,
@@ -54,6 +72,14 @@ pub fn ctx_size_unary_op(lhs: usize, op: UnaryOperator) -> CtxSize {
     match op {
         UnaryOperator::SignNeg | UnaryOperator::Not => CtxSize::Inherit,
         UnaryOperator::Sxt => CtxSize::Size(lhs),
+    }
+}
+
+pub fn is_fixed_size_unary_op(op: UnaryOperator) -> bool {
+    match op {
+        UnaryOperator::SignNeg => false,
+        UnaryOperator::Not => false,
+        UnaryOperator::Sxt => false,
     }
 }
 

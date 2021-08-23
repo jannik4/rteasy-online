@@ -8,6 +8,7 @@ use rtcore::ast::*;
 pub struct Res {
     /// Size in bits
     pub size: Option<usize>,
+    pub fixed_size: bool,
 }
 
 pub trait CheckExpr<'s> {
@@ -40,12 +41,12 @@ impl<'s> CheckExpr<'s> for BinaryTerm<'s> {
         let lhs = self.lhs.check_expr(symbols, error_sink);
         let rhs = self.rhs.check_expr(symbols, error_sink);
 
-        match (lhs.size, rhs.size) {
-            (Some(lhs), Some(rhs)) => {
-                Res { size: Some(util::size_binary_op(lhs, rhs, self.operator)) }
-            }
-            _ => Res { size: None },
-        }
+        let size = match (lhs.size, rhs.size) {
+            (Some(lhs), Some(rhs)) => Some(util::size_binary_op(lhs, rhs, self.operator)),
+            _ => None,
+        };
+
+        Res { size, fixed_size: util::is_fixed_size_binary_op(self.operator) }
     }
 }
 
@@ -62,10 +63,12 @@ impl<'s> CheckExpr<'s> for UnaryTerm<'s> {
 
         let res = self.expression.check_expr(symbols, error_sink);
 
-        match res.size {
-            Some(lhs) => Res { size: Some(util::size_unary_op(lhs, self.operator)) },
-            None => Res { size: None },
-        }
+        let size = match res.size {
+            Some(lhs) => Some(util::size_unary_op(lhs, self.operator)),
+            None => None,
+        };
+
+        Res { size, fixed_size: util::is_fixed_size_unary_op(self.operator) }
     }
 }
 
@@ -85,7 +88,7 @@ impl<'s> CheckExpr<'s> for Concat<'s> {
             };
         }
 
-        Res { size }
+        Res { size, fixed_size: true }
     }
 }
 
@@ -101,40 +104,42 @@ impl<'s> CheckExpr<'s> for ConcatPart<'s> {
 
 impl<'s> CheckExpr<'s> for RegBus<'s> {
     fn check_expr(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
-        match symbols.symbol(self.ident) {
+        let size = match symbols.symbol(self.ident) {
             Some(Symbol::Register(range)) => match util::range_into(range, self.range) {
-                Ok(size) => Res { size: Some(size) },
+                Ok(size) => Some(size),
                 Err(e) => {
                     error_sink(e);
-                    Res { size: None }
+                    None
                 }
             },
             Some(Symbol::Bus(range)) => match util::range_into(range, self.range) {
-                Ok(size) => Res { size: Some(size) },
+                Ok(size) => Some(size),
                 Err(e) => {
                     error_sink(e);
-                    Res { size: None }
+                    None
                 }
             },
             Some(Symbol::RegisterArray { .. }) => {
                 error_sink(CompilerError::RegArrayMissingIndex(self.ident.0.to_string()));
-                Res { size: None }
+                None
             }
             Some(symbol) => {
                 error_sink(CompilerError::WrongSymbolType {
                     expected: &[SymbolType::Register, SymbolType::Bus],
                     found: symbol.type_(),
                 });
-                Res { size: None }
+                None
             }
             _ => {
                 error_sink(CompilerError::SymbolNotFound(
                     &[SymbolType::Register, SymbolType::Bus],
                     self.ident.0.to_string(),
                 ));
-                Res { size: None }
+                None
             }
-        }
+        };
+
+        Res { size, fixed_size: true }
     }
 }
 
@@ -142,7 +147,7 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
     fn check_expr(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         let index_expr = self.index.check_expr(symbols, error_sink);
 
-        match symbols.symbol(self.ident) {
+        let size = match symbols.symbol(self.ident) {
             Some(Symbol::RegisterArray { range, len }) => {
                 let index_size = util::log_2(len);
                 if let Some(index_expr_size) = index_expr.size {
@@ -154,28 +159,36 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
                     }
                 }
 
-                Res { size: Some(range.map(|range| range.size()).unwrap_or(1)) }
+                Some(range.map(|range| range.size()).unwrap_or(1))
             }
             Some(symbol) => {
                 error_sink(CompilerError::WrongSymbolType {
                     expected: &[SymbolType::RegisterArray],
                     found: symbol.type_(),
                 });
-                Res { size: None }
+                None
             }
             _ => {
                 error_sink(CompilerError::SymbolNotFound(
                     &[SymbolType::RegisterArray],
                     self.ident.0.to_string(),
                 ));
-                Res { size: None }
+                None
             }
-        }
+        };
+
+        Res { size, fixed_size: true }
     }
 }
 
 impl<'s> CheckExpr<'s> for Number {
     fn check_expr(&self, _: &Symbols<'_>, _: &mut impl FnMut(CompilerError)) -> Res {
-        Res { size: Some(self.value.size()) }
+        Res {
+            size: Some(self.value.size()),
+            fixed_size: match self.kind {
+                NumberKind::BitString => true,
+                NumberKind::Other => false,
+            },
+        }
     }
 }
