@@ -1,3 +1,4 @@
+mod const_eval;
 mod double_assign;
 mod ordering;
 mod sim;
