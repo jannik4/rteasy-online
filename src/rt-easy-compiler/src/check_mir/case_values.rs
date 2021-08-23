@@ -1,7 +1,7 @@
 use super::const_eval::Evaluate;
 use crate::mir::*;
-use crate::{CompilerError, InternalError, SymbolType};
-use std::collections::{HashMap, HashSet};
+use crate::{CompilerError, InternalError};
+use std::collections::HashSet;
 
 pub type Result = std::result::Result<(), InternalError>;
 
