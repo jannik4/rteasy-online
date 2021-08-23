@@ -9,6 +9,7 @@ pub struct Res {
     /// Size in bits
     pub size: Option<usize>,
     pub fixed_size: bool,
+    pub constant: bool,
 }
 
 pub trait CheckExpr<'s> {
@@ -41,12 +42,14 @@ impl<'s> CheckExpr<'s> for BinaryTerm<'s> {
         let lhs = self.lhs.check_expr(symbols, error_sink);
         let rhs = self.rhs.check_expr(symbols, error_sink);
 
-        let size = match (lhs.size, rhs.size) {
-            (Some(lhs), Some(rhs)) => Some(util::size_binary_op(lhs, rhs, self.operator)),
-            _ => None,
-        };
-
-        Res { size, fixed_size: util::is_fixed_size_binary_op(self.operator) }
+        Res {
+            size: match (lhs.size, rhs.size) {
+                (Some(lhs), Some(rhs)) => Some(util::size_binary_op(lhs, rhs, self.operator)),
+                _ => None,
+            },
+            fixed_size: util::is_fixed_size_binary_op(self.operator),
+            constant: lhs.constant && rhs.constant,
+        }
     }
 }
 
@@ -63,12 +66,14 @@ impl<'s> CheckExpr<'s> for UnaryTerm<'s> {
 
         let res = self.expression.check_expr(symbols, error_sink);
 
-        let size = match res.size {
-            Some(lhs) => Some(util::size_unary_op(lhs, self.operator)),
-            None => None,
-        };
-
-        Res { size, fixed_size: util::is_fixed_size_unary_op(self.operator) }
+        Res {
+            size: match res.size {
+                Some(lhs) => Some(util::size_unary_op(lhs, self.operator)),
+                None => None,
+            },
+            fixed_size: util::is_fixed_size_unary_op(self.operator),
+            constant: res.constant,
+        }
     }
 }
 
@@ -80,15 +85,18 @@ impl<'s> CheckExpr<'s> for Concat<'s> {
         }
 
         let mut size = Some(0);
+        let mut constant = true;
 
         for part in &self.parts {
-            size = match (size, part.check_expr(symbols, error_sink).size) {
+            let part_res = part.check_expr(symbols, error_sink);
+            size = match (size, part_res.size) {
                 (Some(curr), Some(part)) => Some(curr + part),
                 _ => None,
             };
+            constant &= part_res.constant;
         }
 
-        Res { size, fixed_size: true }
+        Res { size, fixed_size: true, constant }
     }
 }
 
@@ -139,7 +147,7 @@ impl<'s> CheckExpr<'s> for RegBus<'s> {
             }
         };
 
-        Res { size, fixed_size: true }
+        Res { size, fixed_size: true, constant: false }
     }
 }
 
@@ -177,7 +185,7 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
             }
         };
 
-        Res { size, fixed_size: true }
+        Res { size, fixed_size: true, constant: false }
     }
 }
 
@@ -189,6 +197,7 @@ impl<'s> CheckExpr<'s> for Number {
                 NumberKind::BitString => true,
                 NumberKind::Other => false,
             },
+            constant: true,
         }
     }
 }
