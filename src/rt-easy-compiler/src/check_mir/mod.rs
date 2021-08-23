@@ -2,6 +2,7 @@ mod case_values;
 mod const_eval;
 mod double_assign;
 mod ordering;
+mod register_array_read;
 mod sim;
 
 use crate::mir::*;
@@ -16,7 +17,8 @@ pub fn check(symbols: &Symbols<'_>, mir: &mut Mir<'_>) -> Result<(), Error> {
     // Check double assign
     double_assign::check(symbols, &*mir, &mut error_sink)?;
 
-    // TODO: Check RegArray more than 2 reads
+    // Check register array more than 2 reads
+    register_array_read::check(symbols, &*mir, &mut error_sink)?;
 
     // Check case values
     case_values::check(&*mir, &mut error_sink)?;

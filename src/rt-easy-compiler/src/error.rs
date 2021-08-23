@@ -45,6 +45,7 @@ pub enum CompilerError {
     SxtTerm,
     WrongSymbolType { expected: &'static [SymbolType], found: SymbolType },
     DoubleAssign(SymbolType, String),
+    RegisterArrayTooManyReads(String),
     FeedbackLoop,
 }
 
