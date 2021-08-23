@@ -1,6 +1,6 @@
 use super::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Declaration<'s> {
     Register(DeclareRegister<'s>),
     Bus(DeclareBus<'s>),
@@ -8,23 +8,23 @@ pub enum Declaration<'s> {
     RegisterArray(DeclareRegisterArray<'s>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DeclareRegister<'s> {
     pub registers: Vec<Register<'s>>,
     pub span: Range<usize>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DeclareBus<'s> {
     pub buses: Vec<Bus<'s>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DeclareMemory<'s> {
     pub memories: Vec<Memory<'s>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Memory<'s> {
     pub ident: Ident<'s>,
     pub range: MemoryRange<'s>,
@@ -36,12 +36,12 @@ pub struct MemoryRange<'s> {
     pub data_register: Ident<'s>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DeclareRegisterArray<'s> {
     pub register_arrays: Vec<DeclareRegisterArrayItem<'s>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DeclareRegisterArrayItem<'s> {
     pub ident: Ident<'s>,
     pub range: Option<BitRange>,

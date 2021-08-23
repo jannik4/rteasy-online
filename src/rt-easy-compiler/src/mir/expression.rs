@@ -1,13 +1,13 @@
 use super::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Expression<'s> {
     Atom(Atom<'s>),
     BinaryTerm(Box<BinaryTerm<'s>>),
     UnaryTerm(Box<UnaryTerm<'s>>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Atom<'s> {
     Concat(ConcatExpr<'s>),
     Register(Register<'s>),
@@ -16,7 +16,7 @@ pub enum Atom<'s> {
     Number(Number),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct BinaryTerm<'s> {
     pub lhs: Expression<'s>,
     pub rhs: Expression<'s>,
@@ -24,7 +24,7 @@ pub struct BinaryTerm<'s> {
     pub ctx_size: CtxSize,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct UnaryTerm<'s> {
     pub expression: Expression<'s>,
     pub operator: UnaryOperator,
@@ -37,13 +37,13 @@ pub struct Register<'s> {
     pub range: Option<BitRange>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Bus<'s> {
     pub ident: Ident<'s>,
     pub range: Option<BitRange>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct RegisterArray<'s> {
     pub ident: Ident<'s>,
     pub index: Box<Expression<'s>>,

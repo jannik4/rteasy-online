@@ -11,20 +11,20 @@ pub use std::ops::Range;
 
 use std::collections::HashSet;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Mir<'s> {
     pub declarations: Vec<Declaration<'s>>,
     pub statements: Vec<Statement<'s>>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Statement<'s> {
     pub label: Option<Label<'s>>,
     pub steps: Vec<Step<'s>>,
     pub span: Range<usize>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Step<'s> {
     pub id: StepId,
     pub criteria: Vec<Criterion>,
@@ -35,7 +35,7 @@ pub struct Step<'s> {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct StepId(pub usize);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Annotation {
     pub is_unclocked_assign: bool,
     pub is_post_pipe: bool,
