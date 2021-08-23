@@ -38,6 +38,12 @@ if_ -> If<'s>:
     "then" operations
     opt(preceded("else", operations))
     "fi" { If { condition: $2, operations_if: $4, operations_else: $5 } };
+switch -> Switch<'s>:
+    "switch" expression "{" many0(either(case_clause, default_clause)) "}" {
+        Switch { expression: $2, clauses: $4 }
+    };
+case_clause -> CaseClause<'s>: "case" expression ":" operations { CaseClause { value: $2, operations: $4 } };
+default_clause -> DefaultClause<'s>: "default" ":" operations { DefaultClause { operations: $3 } };
 lvalue -> Lvalue<'s>:
       concat { Lvalue::Concat($1) }
     | register_array { Lvalue::RegisterArray($1) }
@@ -48,7 +54,8 @@ operation -> Operation<'s>: operation_kind { Operation { kind: $1, span: $span }
 operation_kind -> OperationKind<'s>:
       nop { OperationKind::Nop($1) } | goto { OperationKind::Goto($1) }
     | write { OperationKind::Write($1) } | read { OperationKind::Read($1) }
-    | if_ { OperationKind::If($1) } | assignment { OperationKind::Assignment($1) };
+    | if_ { OperationKind::If($1) } | switch { OperationKind::Switch($1) }
+    | assignment { OperationKind::Assignment($1) };
 operations -> Vec<Operation<'s>>: sep1(operation, ",") { $1 };
 
 // Expression, TODO: ...
@@ -152,6 +159,8 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 ")" = Token::ParenClose
 "[" = Token::BracketOpen
 "]" = Token::BracketClose
+"{" = Token::BraceOpen
+"}" = Token::BraceClose
 "<-" = Token::Assign
 "quote" = Token::Quote
 
@@ -168,6 +177,9 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 "then" = Token::KeywordThen
 "else" = Token::KeywordElse
 "fi" = Token::KeywordFi
+"switch" = Token::KeywordSwitch
+"case" = Token::KeywordCase
+"default" = Token::KeywordDefault
 
 "=" = Token::OperatorEquality
 "<>" = Token::OperatorInequality

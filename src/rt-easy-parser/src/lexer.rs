@@ -20,6 +20,10 @@ pub enum Token {
     BracketOpen,
     #[token("]")]
     BracketClose,
+    #[token("{")]
+    BraceOpen,
+    #[token("}")]
+    BraceClose,
     #[token("<-")]
     Assign,
 
@@ -58,6 +62,12 @@ pub enum Token {
     KeywordElse,
     #[token("fi")]
     KeywordFi,
+    #[token("switch")]
+    KeywordSwitch,
+    #[token("case")]
+    KeywordCase,
+    #[token("default")]
+    KeywordDefault,
 
     // Binary Operators
     #[token("=")]

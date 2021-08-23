@@ -1,6 +1,6 @@
 use super::{expression::BuildExpr, Result};
 use crate::symbols::Symbols;
-use crate::{mir::*, util};
+use crate::{mir::*, util, InternalError};
 use rtcore::ast::{self, Either};
 
 pub fn build<'s>(
@@ -103,6 +103,66 @@ fn build_operation<'s>(
                 }
             }
         }
+        ast::OperationKind::Switch(switch) => {
+            // Split clauses
+            let (cases, default) = split_clauses(switch.clauses)?;
+
+            // Build an eval criterion for every case clause
+            let mut eval_criteria = Vec::new();
+
+            let switch_expression = switch.expression;
+            let cases = cases
+                .into_iter()
+                .map(|case| {
+                    let criterion_id = build.gen_criterion_id();
+                    eval_criteria.push(EvalCriterion {
+                        criterion_id,
+                        condition: Expression::build(
+                            ast::BinaryTerm {
+                                lhs: switch_expression.clone(),
+                                rhs: case.value,
+                                operator: BinaryOperator::Eq,
+                            }
+                            .into(),
+                            symbols,
+                        )?
+                        .inner,
+                    });
+
+                    Ok((criterion_id, case.operations))
+                })
+                .collect::<Result<Vec<_>>>()?;
+
+            // Build eval criterion group
+            build.push(Step {
+                id: build.next_step_id(),
+                criteria: context.criteria.clone(),
+                operation: Operation {
+                    kind: OperationKind::EvalCriterionGroup(EvalCriterionGroup(eval_criteria)),
+                    span: operation.span, // TODO: Use spans of clauses
+                },
+                annotation: Annotation::new(false, context.is_post_pipe),
+            });
+
+            // Build default operations
+            {
+                let mut context = context.clone();
+                for (c_id, _) in &cases {
+                    context = context.with(Criterion::False(*c_id));
+                }
+                for operation in default.operations {
+                    build_operation(operation, symbols, &context, build)?;
+                }
+            }
+
+            // Build case operations
+            for (c_id, operations) in cases {
+                let context = &context.with(Criterion::True(c_id));
+                for operation in operations {
+                    build_operation(operation, symbols, context, build)?;
+                }
+            }
+        }
         ast::OperationKind::Assignment(assignment) => {
             let (lhs, lhs_size) = build_lvalue(assignment.lhs, symbols)?;
             let rhs = Expression::build(assignment.rhs, symbols)?;
@@ -129,6 +189,22 @@ fn build_operation<'s>(
     }
 
     Ok(())
+}
+
+fn split_clauses<'s>(
+    clauses: Vec<Either<ast::CaseClause<'s>, ast::DefaultClause<'s>>>,
+) -> Result<(Vec<ast::CaseClause<'s>>, ast::DefaultClause<'s>)> {
+    let mut cases = Vec::with_capacity(clauses.len() - 1);
+    let mut default = None;
+
+    for clause in clauses {
+        match clause {
+            Either::Left(case) => cases.push(case),
+            Either::Right(default_) => default = Some(default_),
+        }
+    }
+
+    Ok((cases, default.ok_or_else(|| InternalError("missing default clause".to_owned()))?))
 }
 
 fn build_lvalue<'s>(lvalue: ast::Lvalue<'s>, symbols: &Symbols<'_>) -> Result<(Lvalue<'s>, usize)> {
