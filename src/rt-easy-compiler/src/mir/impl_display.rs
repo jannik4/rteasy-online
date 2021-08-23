@@ -59,7 +59,7 @@ impl Display for Operation<'_> {
         use OperationKind::*;
         match &self.kind {
             EvalCriterion(op) => write!(f, "{}", op),
-            EvalCriterionGroup(op) => write!(f, "{}", op),
+            EvalCriterionSwitchGroup(op) => write!(f, "{}", op),
             Nop(op) => write!(f, "{}", op),
             Goto(op) => write!(f, "{}", op),
             Write(op) => write!(f, "{}", op),
@@ -75,7 +75,7 @@ impl Display for EvalCriterion<'_> {
     }
 }
 
-impl Display for EvalCriterionGroup<'_> {
+impl Display for EvalCriterionSwitchGroup<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let mut elements = self.0.iter();
 

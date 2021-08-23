@@ -111,6 +111,8 @@ fn build_operation<'s>(
             let mut eval_criteria = Vec::new();
 
             let switch_expression = switch.expression;
+            let switch_expression_size =
+                Expression::build(switch_expression.clone(), symbols)?.size; // TODO: Only get size, do not build
             let cases = cases
                 .into_iter()
                 .map(|case| {
@@ -138,7 +140,10 @@ fn build_operation<'s>(
                 id: build.next_step_id(),
                 criteria: context.criteria.clone(),
                 operation: Operation {
-                    kind: OperationKind::EvalCriterionGroup(EvalCriterionGroup(eval_criteria)),
+                    kind: OperationKind::EvalCriterionSwitchGroup(EvalCriterionSwitchGroup(
+                        eval_criteria,
+                        switch_expression_size,
+                    )),
                     span: operation.span, // TODO: Use spans of clauses
                 },
                 annotation: Annotation::new(false, context.is_post_pipe),

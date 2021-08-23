@@ -36,6 +36,7 @@ pub enum CompilerError {
     ConditionToWide(usize),
     BitRangeToWide(usize),
     CaseValueTooWide,
+    DuplicateCaseValue,
     AssignmentLhsContainsClockedAndUnclocked,
     AssignmentLhsContainsANonLvalue,
     RangeMismatch,

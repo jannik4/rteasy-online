@@ -9,7 +9,7 @@ pub fn calc_direct_dependencies(step: &Step<'_>, others: &[Step<'_>]) -> HashSet
             OperationKind::EvalCriterion(eval_criterion) => {
                 step.criteria.iter().any(|criterion| criterion.id() == eval_criterion.criterion_id)
             }
-            OperationKind::EvalCriterionGroup(eval_criterion_group) => {
+            OperationKind::EvalCriterionSwitchGroup(eval_criterion_group) => {
                 eval_criterion_group.0.iter().any(|eval_criterion| {
                     step.criteria
                         .iter()
@@ -47,7 +47,7 @@ impl IsDependentOn for Step<'_> {
             OperationKind::EvalCriterion(eval_criterion) => {
                 eval_criterion.condition.is_dependent_on(bus)
             }
-            OperationKind::EvalCriterionGroup(eval_criterion_group) => eval_criterion_group
+            OperationKind::EvalCriterionSwitchGroup(eval_criterion_group) => eval_criterion_group
                 .0
                 .iter()
                 .any(|eval_criterion| eval_criterion.condition.is_dependent_on(bus)),

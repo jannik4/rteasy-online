@@ -1,3 +1,4 @@
+mod case_values;
 mod const_eval;
 mod double_assign;
 mod ordering;
@@ -16,6 +17,9 @@ pub fn check(symbols: &Symbols<'_>, mir: &mut Mir<'_>) -> Result<(), Error> {
     double_assign::check(symbols, &*mir, &mut error_sink)?;
 
     // TODO: Check RegArray more than 2 reads
+
+    // Check case values
+    case_values::check(&*mir, &mut error_sink)?;
 
     // Reorder unclocked
     ordering::check_and_order(mir, &mut error_sink)?;

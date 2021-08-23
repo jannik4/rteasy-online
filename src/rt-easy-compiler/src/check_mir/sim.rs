@@ -52,7 +52,7 @@ where
                             sim_(steps, &criteria_set, state, error_sink)?;
                         }
                     }
-                    OperationKind::EvalCriterionGroup(eval_criterion_group) => {
+                    OperationKind::EvalCriterionSwitchGroup(eval_criterion_group) => {
                         for eval_criterion in &eval_criterion_group.0 {
                             state.condition(&eval_criterion.condition, span.clone())?;
                         }
