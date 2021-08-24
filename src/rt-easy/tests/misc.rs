@@ -129,7 +129,7 @@ fn compile(source: &str) -> Simulator {
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(&backend, ast) {
+    match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
         Ok(program) => Simulator::init(program),
         Err(e) => panic!("{:#?}", e),
     }

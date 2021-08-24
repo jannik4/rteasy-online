@@ -34,7 +34,7 @@ pub fn run(code: String) -> String {
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    let program = match rt_easy::compiler::compile(&backend, ast) {
+    let program = match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
         Ok(program) => program,
         Err(e) => return format!("{:#?}", e),
     };
@@ -58,7 +58,7 @@ pub fn build(code: String) -> Result<Simulator, JsValue> {
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    let program = match rt_easy::compiler::compile(&backend, ast) {
+    let program = match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
         Ok(program) => program,
         Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
     };
@@ -73,7 +73,7 @@ pub fn check(code: String) -> Result<(), JsValue> {
         Err(e) => return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(&e, &code))),
     };
 
-    match rt_easy::compiler::check(ast) {
+    match rt_easy::compiler::check(ast, &Default::default()) {
         Ok(()) => (),
         Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
     };

@@ -18,11 +18,21 @@ pub trait Backend {
     fn generate(&self, mir: mir::Mir<'_>) -> Result<Self::Output, Self::Error>;
 }
 
-pub fn compile<B>(backend: &B, ast: rtcore::ast::Ast<'_>) -> Result<B::Output, Error>
+#[derive(Debug, Default)]
+pub struct Options {
+    pub print_mir_unordered: bool,
+    pub print_mir: bool,
+}
+
+pub fn compile<B>(
+    backend: &B,
+    ast: rtcore::ast::Ast<'_>,
+    options: &Options,
+) -> Result<B::Output, Error>
 where
     B: Backend,
 {
-    let (_symbols, mir) = check_(ast)?;
+    let (_symbols, mir) = check_(ast, options)?;
 
     match backend.generate(mir) {
         Ok(output) => Ok(output),
@@ -30,18 +40,21 @@ where
     }
 }
 
-pub fn check(ast: rtcore::ast::Ast<'_>) -> Result<(), Error> {
-    check_(ast)?;
+pub fn check(ast: rtcore::ast::Ast<'_>, options: &Options) -> Result<(), Error> {
+    check_(ast, options)?;
     Ok(())
 }
 
-fn check_(ast: rtcore::ast::Ast<'_>) -> Result<(symbols::Symbols<'_>, mir::Mir<'_>), Error> {
+fn check_<'s>(
+    ast: rtcore::ast::Ast<'s>,
+    options: &Options,
+) -> Result<(symbols::Symbols<'s>, mir::Mir<'s>), Error> {
     // Check ast
     let symbols = check_ast::check(&ast)?;
 
     // Build and check mir
     let mut mir = build_mir::build_mir(ast, &symbols)?;
-    check_mir::check(&symbols, &mut mir)?;
+    check_mir::check(&symbols, &mut mir, options)?;
 
     Ok((symbols, mir))
 }
