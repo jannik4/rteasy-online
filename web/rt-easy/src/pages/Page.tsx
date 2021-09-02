@@ -5,11 +5,11 @@ import { EditorView, LogView, StateView } from "../views";
 
 interface Props {
   id: string;
-  defaultModel: any;
+  defaultLayout: any;
 }
 
-const Page: React.FC<Props> = ({ id, defaultModel }) => {
-  const model = useRef(loadModel(id, defaultModel));
+const Page: React.FC<Props> = ({ id, defaultLayout }) => {
+  const model = useRef(loadModel(id, defaultLayout));
 
   const factory = (node: TabNode) => {
     const component = node.getComponent();
@@ -36,7 +36,7 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
 
 export default Page;
 
-function loadModel(id: string, defaultModel: any): Model {
+function loadModel(id: string, defaultLayout: any): Model {
   const saved = localStorage.getItem("layout-model-" + id);
   if (saved !== null) {
     try {
@@ -44,6 +44,16 @@ function loadModel(id: string, defaultModel: any): Model {
       return Model.fromJson(json);
     } catch (e) {}
   }
+
+  const defaultModel = {
+    global: {
+      tabEnableClose: false,
+      tabEnableRename: false,
+      tabSetEnableMaximize: false,
+    },
+    borders: [],
+    layout: defaultLayout,
+  };
 
   return Model.fromJson(defaultModel);
 }
