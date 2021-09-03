@@ -91,8 +91,16 @@ impl Simulator {
         self.0.is_finished()
     }
 
-    pub fn step(&mut self) -> Option<Span> {
+    pub fn micro_step(&mut self) -> Option<Span> {
         let span = self.0.micro_step().unwrap();
+        match span {
+            Some(span) => Some(Span { start: span.start, end: span.end }),
+            None => None,
+        }
+    }
+
+    pub fn step(&mut self) -> Option<Span> {
+        let span = self.0.step().unwrap();
         match span {
             Some(span) => Some(Span { start: span.start, end: span.end }),
             None => None,
