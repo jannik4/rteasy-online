@@ -111,12 +111,57 @@ impl Simulator {
         }
     }
 
-    pub fn read_reg_a(&self) -> String {
-        self.0
+    pub fn registers(&self) -> Vec<JsValue> {
+        let mut registers =
+            self.0.state().registers().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        registers.sort();
+
+        registers.into_iter().map(Into::into).collect()
+    }
+
+    pub fn register_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
+        let value = match self
+            .0
             .state()
-            .read_register(&rt_easy::rtcore::program::Ident("A".to_string()), None)
-            .unwrap()
-            .as_dec()
+            .read_register(&rt_easy::rtcore::program::Ident(name.to_string()), None)
+        {
+            Ok(value) => value,
+            Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+        };
+
+        let value = match base {
+            "BIN" => value.as_bin(),
+            "DEC" => value.as_dec(),
+            "HEX" => value.as_hex(),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+
+        Ok(value)
+    }
+
+    pub fn buses(&self) -> Vec<JsValue> {
+        let mut buses = self.0.state().buses().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        buses.sort();
+
+        buses.into_iter().map(Into::into).collect()
+    }
+
+    pub fn bus_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
+        let value =
+            match self.0.state().read_bus(&rt_easy::rtcore::program::Ident(name.to_string()), None)
+            {
+                Ok(value) => value,
+                Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+            };
+
+        let value = match base {
+            "BIN" => value.as_bin(),
+            "DEC" => value.as_dec(),
+            "HEX" => value.as_hex(),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+
+        Ok(value)
     }
 
     pub fn state(&self) -> String {

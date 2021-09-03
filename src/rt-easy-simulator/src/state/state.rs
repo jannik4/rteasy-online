@@ -34,6 +34,14 @@ impl State {
         }
     }
 
+    pub fn registers(&self) -> impl Iterator<Item = &Ident> {
+        self.registers.names()
+    }
+
+    pub fn buses(&self) -> impl Iterator<Item = &Ident> {
+        self.buses.names()
+    }
+
     pub fn cycle_count(&self) -> usize {
         self.cycle_count
     }

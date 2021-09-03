@@ -28,6 +28,10 @@ impl BusesState {
         Self { buses }
     }
 
+    pub fn names(&self) -> impl Iterator<Item = &Ident> {
+        self.buses.keys()
+    }
+
     pub fn clear(&mut self, buses_persist: &HashSet<Ident>) {
         for (ident, bus) in &mut self.buses {
             if !buses_persist.contains(ident) {

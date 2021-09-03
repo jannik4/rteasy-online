@@ -27,6 +27,10 @@ impl RegistersState {
         Self { registers }
     }
 
+    pub fn names(&self) -> impl Iterator<Item = &Ident> {
+        self.registers.keys()
+    }
+
     pub fn read_full(&self, name: &Ident) -> Result<Value, Error> {
         match self.registers.get(name) {
             Some(state) => Ok(state.read_full()),
