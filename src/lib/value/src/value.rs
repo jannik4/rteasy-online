@@ -281,30 +281,4 @@ mod tests {
         assert!(Value::parse_hex("", true).is_err());
         assert!(Value::parse_hex("ff 12", true).is_err());
     }
-
-    #[test]
-    fn test_as_dec() {
-        assert_eq!(Value { bits: vec![Bit::Zero, Bit::Zero,] }.as_dec(), "0".to_string());
-        assert_eq!(Value { bits: vec![Bit::One, Bit::Zero,] }.as_dec(), "1".to_string());
-        assert_eq!(Value { bits: vec![Bit::Zero, Bit::One,] }.as_dec(), "2".to_string());
-
-        assert_eq!(
-            Value {
-                bits: vec![
-                    Bit::One,
-                    Bit::One,
-                    Bit::One,
-                    Bit::Zero,
-                    Bit::One,
-                    Bit::Zero,
-                    Bit::Zero,
-                    Bit::Zero,
-                    Bit::One,
-                    Bit::One,
-                ]
-            }
-            .as_dec(),
-            "791".to_string()
-        );
-    }
 }
