@@ -5,6 +5,7 @@ use rtcore::{
     value::Value,
 };
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::fmt;
 
 #[derive(Debug)]
@@ -27,9 +28,11 @@ impl BusesState {
         Self { buses }
     }
 
-    pub fn clear(&mut self) {
-        for bus in self.buses.values_mut() {
-            bus.write(None, Value::zero(bus.range().size())).unwrap();
+    pub fn clear(&mut self, buses_persist: &HashSet<Ident>) {
+        for (ident, bus) in &mut self.buses {
+            if !buses_persist.contains(ident) {
+                bus.write(None, Value::zero(bus.range().size())).unwrap();
+            }
         }
     }
 

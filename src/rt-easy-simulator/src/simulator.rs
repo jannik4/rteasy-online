@@ -1,6 +1,6 @@
 use crate::{execute::Execute, ChangeSet, Error, State};
 use rtcore::{
-    program::{Bus, Criterion, CriterionId, Program},
+    program::{Bus, Criterion, CriterionId, Ident, Program},
     value::Value,
 };
 use std::collections::HashSet;
@@ -9,6 +9,8 @@ use std::mem;
 pub struct Simulator {
     state: State,
     change_set: ChangeSet,
+    buses_persist: HashSet<Ident>,
+
     program: Program,
     cursor: Option<Cursor>,
 }
@@ -18,6 +20,8 @@ impl Simulator {
         Self {
             state: State::init(&program),
             change_set: ChangeSet::new(),
+            buses_persist: HashSet::new(),
+
             program,
             cursor: Some(Cursor::new(0)),
         }
@@ -38,7 +42,14 @@ impl Simulator {
     }
 
     pub fn write_into_bus(&mut self, bus: &Bus, value: Value) -> Result<(), Error> {
-        self.state.write_into_bus(bus, value)
+        self.state.write_into_bus(bus, value)?;
+
+        // Persist bus value if between statements
+        if self.cursor.as_ref().map(Cursor::is_at_statement_start).unwrap_or(false) {
+            self.buses_persist.insert(bus.ident.clone());
+        }
+
+        Ok(())
     }
 
     pub fn step(&mut self) -> Result<Option<std::ops::Range<usize>>, Error> {
@@ -74,6 +85,11 @@ impl Simulator {
                     break Ok(None);
                 }
             };
+
+            // Clear buses if cursor is at a new statement
+            if cursor.is_at_statement_start() {
+                self.state.clear_buses(&mem::take(&mut self.buses_persist));
+            }
 
             // Execute step
             let step_executed = if criteria_match(&step.criteria, &cursor.criteria_set) {
@@ -149,6 +165,10 @@ struct Cursor {
 impl Cursor {
     fn new(statement_idx: usize) -> Self {
         Self { statement_idx, step_idx: 0, criteria_set: HashSet::new() }
+    }
+
+    fn is_at_statement_start(&self) -> bool {
+        self.step_idx == 0
     }
 }
 

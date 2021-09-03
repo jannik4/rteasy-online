@@ -7,6 +7,7 @@ use rtcore::{
     program::{BitRange, Bus, Ident, Label, Program},
     value::Value,
 };
+use std::collections::HashSet;
 use std::fmt;
 
 #[derive(Debug)]
@@ -37,6 +38,10 @@ impl State {
         self.cycle_count
     }
 
+    pub fn finish_cycle(&mut self) {
+        self.cycle_count += 1;
+    }
+
     pub fn apply_change_set(&mut self, change_set: ChangeSet) -> Result<Option<Label>, Error> {
         change_set.apply(&mut self.registers, &mut self.memories, &mut self.register_arrays)
     }
@@ -57,9 +62,8 @@ impl State {
         self.register_arrays.read(name, idx)
     }
 
-    pub fn finish_cycle(&mut self) {
-        self.cycle_count += 1;
-        self.buses.clear();
+    pub fn clear_buses(&mut self, buses_persist: &HashSet<Ident>) {
+        self.buses.clear(buses_persist);
     }
 
     pub fn read_bus(&self, name: &Ident, range: Option<BitRange>) -> Result<Value, Error> {
