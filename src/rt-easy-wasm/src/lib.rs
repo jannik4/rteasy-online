@@ -91,6 +91,10 @@ impl Simulator {
         self.0.is_finished()
     }
 
+    pub fn cycle_count(&self) -> usize {
+        self.0.state().cycle_count()
+    }
+
     pub fn micro_step(&mut self) -> Option<Span> {
         let span = self.0.micro_step().unwrap();
         match span {

@@ -110,8 +110,8 @@ impl Simulator {
                 };
                 *cursor = Cursor::new(next_statement_idx);
 
-                // Clear buses
-                self.state.clear_buses();
+                // Finish cycle
+                self.state.finish_cycle();
             }
             // Else check if steps pre pipe completed
             else if cursor.step_idx == statement.steps.split_at() {

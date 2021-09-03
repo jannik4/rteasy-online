@@ -11,6 +11,7 @@ use std::fmt;
 
 #[derive(Debug)]
 pub struct State {
+    cycle_count: usize,
     registers: RegistersState,
     buses: BusesState,
     memories: MemoriesState,
@@ -23,7 +24,17 @@ impl State {
         let buses = BusesState::init(program);
         let memories = MemoriesState::init(program, &registers);
         let register_arrays = RegisterArraysState::init(program);
-        Self { registers, buses, memories, register_arrays /*curr_span: None*/ }
+        Self {
+            cycle_count: 0,
+            registers,
+            buses,
+            memories,
+            register_arrays, /*curr_span: None*/
+        }
+    }
+
+    pub fn cycle_count(&self) -> usize {
+        self.cycle_count
     }
 
     pub fn apply_change_set(&mut self, change_set: ChangeSet) -> Result<Option<Label>, Error> {
@@ -46,7 +57,8 @@ impl State {
         self.register_arrays.read(name, idx)
     }
 
-    pub fn clear_buses(&mut self) {
+    pub fn finish_cycle(&mut self) {
+        self.cycle_count += 1;
         self.buses.clear();
     }
 
