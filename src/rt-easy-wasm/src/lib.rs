@@ -164,6 +164,28 @@ impl Simulator {
         Ok(value)
     }
 
+    pub fn write_into_bus(&mut self, name: &str, value: &str, base: &str) -> Result<(), JsValue> {
+        let value = match base {
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value, false),
+            "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value, false),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+        let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
+
+        self.0
+            .write_into_bus(
+                &rt_easy::rtcore::program::Bus {
+                    ident: rt_easy::rtcore::program::Ident(name.to_string()),
+                    range: None,
+                },
+                value,
+            )
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+
+        Ok(())
+    }
+
     pub fn state(&self) -> String {
         format!("{}", self.0.state())
     }

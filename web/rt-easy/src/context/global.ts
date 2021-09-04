@@ -34,6 +34,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
   registerValue: (name: string, base: string) => string;
   buses: () => string[];
   busValue: (name: string, base: string) => string;
+  writeIntoBus: (name: string, value: string, base: string) => void;
 }
 
 export const GlobalContext = React.createContext<GlobalModel>({
