@@ -17,12 +17,18 @@ export interface GlobalModelRun {
   sourceCode: string;
   goToEditMode: () => void;
   isFinished: () => boolean;
-  state: () => string;
+  microStep: () => void;
   step: () => void;
   currSpan: () => Span | null;
 
   runStop: () => void;
   isRunning: () => boolean;
+
+  cycleCount: () => number;
+  registers: () => string[];
+  registerValue: (name: string, base: string) => string;
+  buses: () => string[];
+  busValue: (name: string, base: string) => string;
 }
 
 export const GlobalContext = React.createContext<GlobalModel>({

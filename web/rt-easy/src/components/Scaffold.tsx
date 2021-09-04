@@ -68,9 +68,14 @@ const Scaffold: React.FC<Props> = () => {
           });
         },
         isFinished: () => state.simulator.is_finished(),
-        state: () => state.simulator.state(),
+        microStep: () => {
+          const currSpan = state.simulator.micro_step() ?? null;
+          state.currSpan?.free();
+          setState({ ...state, currSpan });
+        },
         step: () => {
           const currSpan = state.simulator.step() ?? null;
+          state.currSpan?.free();
           setState({ ...state, currSpan });
         },
         currSpan: () => state.currSpan,
@@ -88,6 +93,7 @@ const Scaffold: React.FC<Props> = () => {
 
               const currSpan = state.simulator.step() ?? null;
               setState((prev) => {
+                (prev as any).currSpan?.free();
                 return { ...prev, currSpan };
               });
             }, 300);
@@ -98,6 +104,14 @@ const Scaffold: React.FC<Props> = () => {
           }
         },
         isRunning: () => state.timerId !== null,
+
+        cycleCount: () => state.simulator.cycle_count(),
+        registers: () => state.simulator.registers(),
+        registerValue: (name: string, base: string) =>
+          state.simulator.register_value(name, base),
+        buses: () => state.simulator.buses(),
+        busValue: (name: string, base: string) =>
+          state.simulator.bus_value(name, base),
       };
       page = <RunPage />;
       break;
