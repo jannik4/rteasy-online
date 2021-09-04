@@ -91,7 +91,17 @@ const Scaffold: React.FC<Props> = () => {
                 return;
               }
 
-              const currSpan = state.simulator.step() ?? null;
+              // Run for x ms
+              let currSpan: Span | null = null;
+              let start = performance.now();
+              const MS = 5;
+              while (true) {
+                currSpan?.free();
+                currSpan = state.simulator.step() ?? null;
+
+                if (performance.now() - start > MS) break;
+              }
+
               setState((prev) => {
                 (prev as any).currSpan?.free();
                 return { ...prev, currSpan };
