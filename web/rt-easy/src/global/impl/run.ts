@@ -24,6 +24,12 @@ export function model(
         log: "",
       });
     },
+    reset: () => {
+      if (state.timerId !== null) clearInterval(state.timerId);
+      state.simulator.reset();
+      state.currSpan?.free();
+      setState({ ...state, currSpan: null, timerId: null });
+    },
     isFinished: () => state.simulator.is_finished(),
     microStep: () => {
       const currSpan = state.simulator.micro_step() ?? null;

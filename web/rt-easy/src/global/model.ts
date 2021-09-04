@@ -19,6 +19,7 @@ export interface GlobalModelEdit extends GlobalModelCommon {
 export interface GlobalModelRun extends GlobalModelCommon {
   tag: "Run";
   goToEditMode: () => void;
+  reset: () => void;
   isFinished: () => boolean;
   microStep: () => void;
   step: () => void;

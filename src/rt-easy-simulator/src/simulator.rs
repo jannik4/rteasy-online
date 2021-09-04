@@ -27,6 +27,14 @@ impl Simulator {
         }
     }
 
+    pub fn reset(&mut self) {
+        self.state = State::init(&self.program);
+        self.change_set = ChangeSet::new();
+        self.buses_persist = HashSet::new();
+
+        self.cursor = Some(Cursor::new(0));
+    }
+
     // pub fn apply_change_set(&mut self, change_set: ChangeSet) -> Result<(), Error> {
     //     // TODO: Handle change_set with goto label (Remove assert is_none)
     //     assert!(self.state.apply_change_set(change_set)?.is_none());

@@ -48,6 +48,10 @@ pub struct Simulator(rt_easy::simulator::Simulator);
 
 #[wasm_bindgen]
 impl Simulator {
+    pub fn reset(&mut self) {
+        self.0.reset();
+    }
+
     /// Returns `true` if the simulator is finished.
     pub fn is_finished(&self) -> bool {
         self.0.is_finished()

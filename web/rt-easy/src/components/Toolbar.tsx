@@ -117,7 +117,7 @@ const Toolbar: React.FC<Props> = () => {
         <Button
           icon="reset"
           onClick={() => {
-            // TODO: if (globalModel.tag === "Run") globalModel.reset();
+            if (globalModel.tag === "Run") globalModel.reset();
           }}
           style={{ marginRight: "16px" }}
           intent="success"
