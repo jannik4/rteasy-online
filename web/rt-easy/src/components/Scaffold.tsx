@@ -96,7 +96,7 @@ const Scaffold: React.FC<Props> = () => {
                 (prev as any).currSpan?.free();
                 return { ...prev, currSpan };
               });
-            }, 300);
+            }, 10);
             setState({ ...state, timerId });
           } else {
             clearInterval(state.timerId);
