@@ -4,17 +4,22 @@ import { Span } from "../wasm";
 
 export type GlobalModel = GlobalModelEdit | GlobalModelRun;
 
-export interface GlobalModelEdit {
-  tag: "Edit";
+export type Base = "BIN" | "DEC" | "HEX";
+export interface GlobalModelCommon {
   sourceCode: string;
+  base: Base;
+  setBase: (base: Base) => void;
+}
+
+export interface GlobalModelEdit extends GlobalModelCommon {
+  tag: "Edit";
   log: string;
   setSourceCode: (sourceCode: string) => void;
   build: () => void;
 }
 
-export interface GlobalModelRun {
+export interface GlobalModelRun extends GlobalModelCommon {
   tag: "Run";
-  sourceCode: string;
   goToEditMode: () => void;
   isFinished: () => boolean;
   microStep: () => void;
@@ -34,6 +39,8 @@ export interface GlobalModelRun {
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
   sourceCode: "",
+  base: "DEC",
+  setBase: () => {},
   log: "",
   setSourceCode: () => {},
   build: () => {},

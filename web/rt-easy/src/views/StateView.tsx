@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import { HTMLTable, HTMLSelect, Text, H5 } from "@blueprintjs/core";
 
 import { GlobalContext } from "../context";
@@ -6,7 +6,6 @@ import { GlobalContext } from "../context";
 interface Props {}
 
 const StateView: React.FC<Props> = () => {
-  const [base, setBase] = useState("DEC");
   const globalModel = useContext(GlobalContext);
 
   if (globalModel.tag === "Edit") {
@@ -25,8 +24,16 @@ const StateView: React.FC<Props> = () => {
         }}
       >
         <HTMLSelect
-          value={base}
-          onChange={(e) => setBase(e.target.value)}
+          value={globalModel.base}
+          onChange={(e) => {
+            if (
+              e.target.value !== "BIN" &&
+              e.target.value !== "DEC" &&
+              e.target.value !== "HEX"
+            )
+              throw new Error("invalid value");
+            globalModel.setBase(e.target.value);
+          }}
           minimal
         >
           <option value="BIN">BIN</option>
@@ -52,7 +59,7 @@ const StateView: React.FC<Props> = () => {
             globalModel.registers().map((register) => (
               <tr key={register}>
                 <td>{register}</td>
-                <td>{globalModel.registerValue(register, base)}</td>
+                <td>{globalModel.registerValue(register, globalModel.base)}</td>
               </tr>
             ))
           }
@@ -75,7 +82,7 @@ const StateView: React.FC<Props> = () => {
             globalModel.buses().map((bus) => (
               <tr key={bus}>
                 <td>{bus}</td>
-                <td>{globalModel.busValue(bus, base)}</td>
+                <td>{globalModel.busValue(bus, globalModel.base)}</td>
               </tr>
             ))
           }

@@ -1,6 +1,6 @@
 import React, { useState, useContext /*, useReducer*/ } from "react";
 
-import { RtEasyContext, GlobalContext, GlobalModel } from "../context";
+import { RtEasyContext, GlobalContext, GlobalModel, Base } from "../context";
 import { Toolbar } from "./";
 import { EditPage, RunPage } from "../pages";
 import { Simulator, Span } from "../wasm";
@@ -12,6 +12,7 @@ const Scaffold: React.FC<Props> = () => {
   const [state, setState] = useState<State>({
     tag: "Edit",
     sourceCode: localStorage.getItem("source-code") || "",
+    base: "DEC",
     log: "--- ok ---",
   });
   // const [, forceUpdate] = useReducer((x) => x + 1, 0);
@@ -24,6 +25,8 @@ const Scaffold: React.FC<Props> = () => {
       globalModel = {
         tag: "Edit",
         sourceCode: state.sourceCode,
+        base: state.base,
+        setBase: (base) => setState({ ...state, base }),
         log: state.log,
         setSourceCode: (sourceCode) => {
           let log: string;
@@ -43,6 +46,7 @@ const Scaffold: React.FC<Props> = () => {
             setState({
               tag: "Run",
               sourceCode: state.sourceCode,
+              base: state.base,
               simulator,
               currSpan: null,
               timerId: null,
@@ -58,12 +62,15 @@ const Scaffold: React.FC<Props> = () => {
       globalModel = {
         tag: "Run",
         sourceCode: state.sourceCode,
+        base: state.base,
+        setBase: (base) => setState({ ...state, base }),
         goToEditMode: () => {
           if (state.timerId !== null) clearInterval(state.timerId);
           state.simulator.free();
           setState({
             tag: "Edit",
             sourceCode: state.sourceCode,
+            base: state.base,
             log: "",
           });
         },
@@ -143,15 +150,19 @@ export default Scaffold;
 
 type State = StateEdit | StateRun;
 
-interface StateEdit {
-  tag: "Edit";
+interface StateCommon {
   sourceCode: string;
+  base: Base;
+}
+
+interface StateEdit extends StateCommon {
+  tag: "Edit";
+
   log: string;
 }
 
-interface StateRun {
+interface StateRun extends StateCommon {
   tag: "Run";
-  sourceCode: string;
   currSpan: Span | null;
   simulator: Simulator;
   timerId: NodeJS.Timeout | null;
