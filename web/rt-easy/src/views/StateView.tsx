@@ -1,16 +1,39 @@
-import React, { useContext } from "react";
-import { HTMLTable, HTMLSelect, Text, H5 } from "@blueprintjs/core";
+import React, { useState, useContext } from "react";
+import { HTMLTable, HTMLSelect, Text, H5, InputGroup } from "@blueprintjs/core";
 
 import { GlobalContext } from "../context";
 
 interface Props {}
 
+interface InputValue {
+  key: string;
+  value: string;
+  onChanged: (value: string) => void;
+}
+
 const StateView: React.FC<Props> = () => {
+  const [focused, setFocused] = useState<InputValue | null>(null);
   const globalModel = useContext(GlobalContext);
 
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
   }
+
+  const inputValue = (inputValue: InputValue) => (
+    <InputGroup
+      small
+      value={focused?.key === inputValue.key ? focused.value : inputValue.value}
+      onChange={(e) => setFocused({ ...inputValue, value: e.target.value })}
+      onFocus={() => setFocused(inputValue)}
+      onBlur={() => {
+        focused?.onChanged(focused.value);
+        setFocused(null);
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") e.currentTarget.blur();
+      }}
+    />
+  );
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
@@ -59,7 +82,17 @@ const StateView: React.FC<Props> = () => {
             globalModel.registers().map((register) => (
               <tr key={register}>
                 <td>{register}</td>
-                <td>{globalModel.registerValue(register, globalModel.base)}</td>
+                <td>
+                  {inputValue({
+                    key: register,
+                    value: globalModel.registerValue(
+                      register,
+                      globalModel.base
+                    ),
+                    onChanged: (value) =>
+                      console.log(`TODO: set ${register} = ${value}`),
+                  })}
+                </td>
               </tr>
             ))
           }
@@ -82,7 +115,14 @@ const StateView: React.FC<Props> = () => {
             globalModel.buses().map((bus) => (
               <tr key={bus}>
                 <td>{bus}</td>
-                <td>{globalModel.busValue(bus, globalModel.base)}</td>
+                <td>
+                  {inputValue({
+                    key: bus,
+                    value: globalModel.busValue(bus, globalModel.base),
+                    onChanged: (value) =>
+                      globalModel.writeIntoBus(bus, value, globalModel.base),
+                  })}
+                </td>
               </tr>
             ))
           }
