@@ -120,7 +120,7 @@ const Scaffold: React.FC<Props> = () => {
   return (
     <GlobalContext.Provider value={globalModel}>
       <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <div style={{ flex: "0 0 32px", overflow: "hidden" }}>
+        <div style={{ flex: "0 0 64px", overflow: "hidden" }}>
           <Toolbar />
         </div>
         <div style={{ flex: "1", position: "relative" }}>{page}</div>

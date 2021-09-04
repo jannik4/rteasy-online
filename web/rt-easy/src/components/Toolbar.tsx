@@ -1,4 +1,14 @@
 import React, { useContext } from "react";
+import {
+  Button,
+  Classes,
+  Popover,
+  Position,
+  MenuDivider,
+  MenuItem,
+  Menu,
+  Text,
+} from "@blueprintjs/core";
 
 import { GlobalContext } from "../context";
 
@@ -18,40 +28,125 @@ const Toolbar: React.FC<Props> = () => {
     }
   };
 
+  const fileMenu = (
+    <Menu>
+      <MenuItem icon="document-open" text="Open File..." />
+      <MenuItem icon="download" text="Save File..." />
+    </Menu>
+  );
+
+  const editMenu = (
+    <Menu>
+      <MenuItem icon="undo" text="Undo" label="Ctrl+Z" />
+      <MenuItem icon="redo" text="Redo" label="Ctrl+Y" />
+
+      <MenuDivider />
+      <MenuItem icon="cut" text="Cut" label="Ctrl+X" />
+      <MenuItem icon="duplicate" text="Copy" label="Ctrl+C" />
+      <MenuItem icon="clipboard" text="Paste" label="Ctrl+V" />
+
+      <MenuDivider />
+      <MenuItem icon="search" text="Find" label="Ctrl+F" />
+      <MenuItem icon="multi-select" text="Replace" label="Ctrl+H" />
+    </Menu>
+  );
+
   return (
     <div
       style={{
         boxSizing: "border-box",
         height: "100%",
         display: "flex",
-        alignItems: "center",
-        padding: "2px 8px",
-        borderBottom: "1px solid gray",
+        flexDirection: "column",
       }}
     >
-      <span>
-        <b>rt-easy</b>
-      </span>
-      <div style={{ width: "20px" }}></div>
-      <button onClick={toggleMode}>Mode</button>
-      {globalModel.tag === "Run" ? (
-        <>
-          <div style={{ width: "20px" }}></div>
-          <button onClick={() => globalModel.step()}>Step</button>
-          <div style={{ width: "20px" }}></div>
-          <button
-            onClick={() => {
-              for (let i = 0; i < 10; i++) globalModel.step();
-            }}
-          >
-            Step 10
-          </button>
-          <div style={{ width: "20px" }}></div>
-          <button onClick={() => globalModel.runStop()}>
-            {globalModel.isRunning() ? "Stop" : "Run"}
-          </button>
-        </>
-      ) : null}
+      <div
+        style={{
+          display: "flex",
+          borderBottom: "1px solid #ccc",
+        }}
+      >
+        <Popover content={fileMenu} position={Position.BOTTOM_RIGHT} minimal>
+          <Button className={Classes.MINIMAL} text="File" />
+        </Popover>
+        <Popover content={editMenu} position={Position.BOTTOM_RIGHT} minimal>
+          <Button className={Classes.MINIMAL} text="Edit" />
+        </Popover>
+        <Button className={Classes.MINIMAL} text="Run" />
+        <Button className={Classes.MINIMAL} text="Help" />
+        <div style={{ margin: "auto" }}>
+          <Text>RTeasy-Online</Text>
+        </div>
+      </div>
+
+      <div
+        style={{
+          flex: "1",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Button
+          icon={globalModel.tag === "Edit" ? "build" : "code"}
+          onClick={toggleMode}
+          style={{ marginLeft: "8px", marginRight: "16px" }}
+          intent="primary"
+          minimal
+          small
+        />
+        <Button
+          icon={
+            globalModel.tag === "Run" && globalModel.isRunning()
+              ? "stop"
+              : "play"
+          }
+          onClick={() => {
+            if (globalModel.tag === "Run") globalModel.runStop();
+          }}
+          style={{ marginRight: "16px" }}
+          intent={
+            globalModel.tag === "Run" && globalModel.isRunning()
+              ? "danger"
+              : "success"
+          }
+          minimal
+          small
+          disabled={globalModel.tag === "Edit"}
+        />
+        <Button
+          icon="reset"
+          onClick={() => {
+            // TODO: if (globalModel.tag === "Run") globalModel.reset();
+          }}
+          style={{ marginRight: "16px" }}
+          intent="success"
+          minimal
+          small
+          disabled={globalModel.tag === "Edit"}
+        />
+        <Button
+          icon="step-forward"
+          onClick={() => {
+            if (globalModel.tag === "Run") globalModel.step();
+          }}
+          style={{ marginRight: "16px" }}
+          intent="none"
+          minimal
+          small
+          disabled={globalModel.tag === "Edit"}
+        />
+        <Button
+          icon="caret-right"
+          onClick={() => {
+            if (globalModel.tag === "Run") globalModel.microStep();
+          }}
+          intent="none"
+          minimal
+          small
+          disabled={globalModel.tag === "Edit"}
+        />
+      </div>
     </div>
   );
 };
