@@ -3,7 +3,7 @@ import MonacoEditor, { Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import { languages } from "monaco-editor";
 
-import { GlobalContext } from "../context";
+import { GlobalContext } from "../global/context";
 import { Span } from "../wasm";
 
 interface Props {}

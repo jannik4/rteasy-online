@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import MonacoEditor from "@monaco-editor/react";
 
 // import { RtEasyContext } from "../context";
-import { GlobalContext } from "../context";
+import { GlobalContext } from "../global/context";
 
 interface Props {}
 

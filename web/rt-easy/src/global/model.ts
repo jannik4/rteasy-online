@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Span } from "../wasm";
 
 export type GlobalModel = GlobalModelEdit | GlobalModelRun;
@@ -36,13 +34,3 @@ export interface GlobalModelRun extends GlobalModelCommon {
   busValue: (name: string, base: string) => string;
   writeIntoBus: (name: string, value: string, base: string) => void;
 }
-
-export const GlobalContext = React.createContext<GlobalModel>({
-  tag: "Edit",
-  sourceCode: "",
-  base: "DEC",
-  setBase: () => {},
-  log: "",
-  setSourceCode: () => {},
-  build: () => {},
-});

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import { RtEasyContext } from "./context";
+import { RtEasyContext } from "./wasm/context";
 import { RtEasy } from "./wasm";
 import { Loading, Scaffold } from "./components";
 

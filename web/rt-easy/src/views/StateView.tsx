@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { HTMLTable, HTMLSelect, Text, H5, InputGroup } from "@blueprintjs/core";
 
-import { GlobalContext } from "../context";
+import { GlobalContext } from "../global/context";
 
 interface Props {}
 

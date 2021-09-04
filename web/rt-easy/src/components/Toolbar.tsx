@@ -10,7 +10,7 @@ import {
   Text,
 } from "@blueprintjs/core";
 
-import { GlobalContext } from "../context";
+import { GlobalContext } from "../global/context";
 
 interface Props {}
 
