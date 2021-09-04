@@ -13,41 +13,18 @@ pub fn setPanicHook() {
 }
 
 #[wasm_bindgen]
-#[allow(non_snake_case)]
-pub fn sayHello(name: String) -> Result<String, JsValue> {
-    Ok(format!("Hello {}", name))
-}
-
-#[wasm_bindgen]
-pub fn parse(code: String) -> String {
-    match rt_easy::parser::parse(&code) {
-        Ok(ast) => format!("{:#?}", ast),
-        Err(e) => format!("{}", e),
-    }
-}
-
-#[wasm_bindgen]
-pub fn run(code: String) -> String {
+pub fn check(code: String) -> Result<(), JsValue> {
     let ast = match rt_easy::parser::parse(&code) {
         Ok(ast) => ast,
-        Err(e) => return rt_easy::parser::pretty_print_error(&e, &code),
+        Err(e) => return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(&e, &code))),
     };
 
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    let program = match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
-        Ok(program) => program,
-        Err(e) => return format!("{:#?}", e),
+    match rt_easy::compiler::check(ast, &Default::default()) {
+        Ok(()) => (),
+        Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
     };
 
-    let mut simulator = rt_easy::simulator::Simulator::init(program);
-    for _ in 0..1000 {
-        if simulator.is_finished() {
-            break;
-        }
-        simulator.step().unwrap();
-    }
-
-    format!("{}", simulator.state())
+    Ok(())
 }
 
 #[wasm_bindgen]
@@ -64,21 +41,6 @@ pub fn build(code: String) -> Result<Simulator, JsValue> {
     };
 
     Ok(Simulator(rt_easy::simulator::Simulator::init(program)))
-}
-
-#[wasm_bindgen]
-pub fn check(code: String) -> Result<(), JsValue> {
-    let ast = match rt_easy::parser::parse(&code) {
-        Ok(ast) => ast,
-        Err(e) => return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(&e, &code))),
-    };
-
-    match rt_easy::compiler::check(ast, &Default::default()) {
-        Ok(()) => (),
-        Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
-    };
-
-    Ok(())
 }
 
 #[wasm_bindgen]
@@ -184,10 +146,6 @@ impl Simulator {
             .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
 
         Ok(())
-    }
-
-    pub fn state(&self) -> String {
-        format!("{}", self.0.state())
     }
 }
 
