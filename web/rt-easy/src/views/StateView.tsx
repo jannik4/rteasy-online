@@ -13,7 +13,7 @@ const StateView: React.FC<Props> = () => {
   }
 
   return (
-    <div style={{ height: "100%" /*, overflow: "hidden"*/ }}>
+    <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
       <div style={{ height: 16 }} />
 
       <div
