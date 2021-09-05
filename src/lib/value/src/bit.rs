@@ -1,5 +1,5 @@
 use std::cmp::{self, Ord, PartialOrd};
-use std::ops::Not;
+use std::ops::{BitAnd, BitOr, BitXor, Not};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum Bit {
@@ -29,16 +29,65 @@ impl Ord for Bit {
     }
 }
 
-impl Not for Bit {
-    type Output = Self;
+macro_rules! impl_unary_ops {
+    ($self_:ty) => {
+        impl Not for $self_ {
+            type Output = Bit;
 
-    fn not(self) -> Self::Output {
-        match self {
-            Self::Zero => Self::One,
-            Self::One => Self::Zero,
+            fn not(self) -> Self::Output {
+                match self {
+                    Bit::Zero => Bit::One,
+                    Bit::One => Bit::Zero,
+                }
+            }
         }
-    }
+    };
 }
+
+impl_unary_ops!(Bit);
+impl_unary_ops!(&Bit);
+
+macro_rules! impl_binary_ops {
+    ($lhs:ty, $rhs:ty) => {
+        impl BitAnd<$rhs> for $lhs {
+            type Output = Bit;
+
+            fn bitand(self, rhs: $rhs) -> Self::Output {
+                match (self, rhs) {
+                    (Bit::One, Bit::One) => Bit::One,
+                    _ => Bit::Zero,
+                }
+            }
+        }
+
+        impl BitOr<$rhs> for $lhs {
+            type Output = Bit;
+
+            fn bitor(self, rhs: $rhs) -> Self::Output {
+                match (self, rhs) {
+                    (Bit::One, _) | (_, Bit::One) => Bit::One,
+                    _ => Bit::Zero,
+                }
+            }
+        }
+
+        impl BitXor<$rhs> for $lhs {
+            type Output = Bit;
+
+            fn bitxor(self, rhs: $rhs) -> Self::Output {
+                match (self, rhs) {
+                    (Bit::One, Bit::Zero) | (Bit::Zero, Bit::One) => Bit::One,
+                    _ => Bit::Zero,
+                }
+            }
+        }
+    };
+}
+
+impl_binary_ops!(Bit, Bit);
+impl_binary_ops!(Bit, &Bit);
+impl_binary_ops!(&Bit, Bit);
+impl_binary_ops!(&Bit, &Bit);
 
 impl From<bool> for Bit {
     fn from(val: bool) -> Self {

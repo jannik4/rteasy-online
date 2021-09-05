@@ -1,6 +1,6 @@
 use super::{Bit, Value, ValueSlice};
 use std::cmp::{self, Ord, PartialEq, PartialOrd};
-use std::ops::{Add, Index, IndexMut, Neg, Not, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Index, IndexMut, Neg, Not, Sub};
 
 // ------------------------------------------------------------------
 // Cmp
@@ -132,6 +132,45 @@ fn sub(lhs: &ValueSlice, rhs: &ValueSlice) -> Value {
     Value { bits: result }
 }
 
+fn bit_and(lhs: &ValueSlice, rhs: &ValueSlice) -> Value {
+    let len = cmp::max(lhs.bits.len(), rhs.bits.len());
+    let mut result = Vec::with_capacity(len);
+
+    for i in 0..len {
+        let lhs = lhs.bits.get(i).copied().unwrap_or_default();
+        let rhs = rhs.bits.get(i).copied().unwrap_or_default();
+        result.push(lhs & rhs);
+    }
+
+    Value { bits: result }
+}
+
+fn bit_or(lhs: &ValueSlice, rhs: &ValueSlice) -> Value {
+    let len = cmp::max(lhs.bits.len(), rhs.bits.len());
+    let mut result = Vec::with_capacity(len);
+
+    for i in 0..len {
+        let lhs = lhs.bits.get(i).copied().unwrap_or_default();
+        let rhs = rhs.bits.get(i).copied().unwrap_or_default();
+        result.push(lhs | rhs);
+    }
+
+    Value { bits: result }
+}
+
+fn bit_xor(lhs: &ValueSlice, rhs: &ValueSlice) -> Value {
+    let len = cmp::max(lhs.bits.len(), rhs.bits.len());
+    let mut result = Vec::with_capacity(len);
+
+    for i in 0..len {
+        let lhs = lhs.bits.get(i).copied().unwrap_or_default();
+        let rhs = rhs.bits.get(i).copied().unwrap_or_default();
+        result.push(lhs ^ rhs);
+    }
+
+    Value { bits: result }
+}
+
 macro_rules! impl_binary_ops {
     ($lhs:ty, $rhs:ty) => {
         impl Add<$rhs> for $lhs {
@@ -147,6 +186,30 @@ macro_rules! impl_binary_ops {
 
             fn sub(self, rhs: $rhs) -> Self::Output {
                 sub(&self, &rhs)
+            }
+        }
+
+        impl BitAnd<$rhs> for $lhs {
+            type Output = Value;
+
+            fn bitand(self, rhs: $rhs) -> Self::Output {
+                bit_and(&self, &rhs)
+            }
+        }
+
+        impl BitOr<$rhs> for $lhs {
+            type Output = Value;
+
+            fn bitor(self, rhs: $rhs) -> Self::Output {
+                bit_or(&self, &rhs)
+            }
+        }
+
+        impl BitXor<$rhs> for $lhs {
+            type Output = Value;
+
+            fn bitxor(self, rhs: $rhs) -> Self::Output {
+                bit_xor(&self, &rhs)
             }
         }
     };
