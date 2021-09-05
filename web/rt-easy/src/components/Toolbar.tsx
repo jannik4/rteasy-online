@@ -90,6 +90,7 @@ const Toolbar: React.FC<Props> = () => {
         <Button
           icon={globalModel.tag === "Edit" ? "build" : "code"}
           onClick={toggleMode}
+          className="noFocus"
           style={{ marginLeft: "8px", marginRight: "16px" }}
           intent="primary"
           minimal
@@ -104,6 +105,7 @@ const Toolbar: React.FC<Props> = () => {
           onClick={() => {
             if (globalModel.tag === "Run") globalModel.runStop();
           }}
+          className="noFocus"
           style={{ marginRight: "16px" }}
           intent={
             globalModel.tag === "Run" && globalModel.isRunning()
@@ -119,6 +121,7 @@ const Toolbar: React.FC<Props> = () => {
           onClick={() => {
             if (globalModel.tag === "Run") globalModel.reset();
           }}
+          className="noFocus"
           style={{ marginRight: "16px" }}
           intent="success"
           minimal
@@ -130,6 +133,7 @@ const Toolbar: React.FC<Props> = () => {
           onClick={() => {
             if (globalModel.tag === "Run") globalModel.step();
           }}
+          className="noFocus"
           style={{ marginRight: "16px" }}
           intent="none"
           minimal
@@ -141,6 +145,7 @@ const Toolbar: React.FC<Props> = () => {
           onClick={() => {
             if (globalModel.tag === "Run") globalModel.microStep();
           }}
+          className="noFocus"
           intent="none"
           minimal
           small

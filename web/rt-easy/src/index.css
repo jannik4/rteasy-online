@@ -15,3 +15,7 @@ body,
 .monacoCurrSpanInlineDecoration {
   background-color: orange;
 }
+
+.noFocus:focus {
+  outline: none !important;
+}
