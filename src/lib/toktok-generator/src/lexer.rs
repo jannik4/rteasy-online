@@ -49,8 +49,8 @@ pub enum Token {
     RustBlock,
 
     #[error]
-    #[regex(r"[ \t\n\f]+", logos::skip)]
-    #[regex(r"//[^\n]*", logos::skip)]
+    #[regex(r"[ \t\r\n\f]+", logos::skip)]
+    #[regex(r"//[^\r\n]*", logos::skip)]
     Error,
 }
 
