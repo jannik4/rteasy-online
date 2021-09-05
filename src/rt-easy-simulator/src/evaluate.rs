@@ -59,6 +59,11 @@ impl Evaluate for BinaryTerm {
             }
             BinaryOperator::Add => lhs + rhs,
             BinaryOperator::Sub => lhs - rhs,
+            BinaryOperator::And => lhs & rhs,
+            BinaryOperator::Nand => !(lhs & rhs),
+            BinaryOperator::Or => lhs | rhs,
+            BinaryOperator::Nor => !(lhs | rhs),
+            BinaryOperator::Xor => lhs ^ rhs,
             _ => todo!(),
         })
     }

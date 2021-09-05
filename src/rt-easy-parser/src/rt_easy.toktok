@@ -60,8 +60,32 @@ operations -> Vec<Operation<'s>>: sep1(operation, ",") { $1 };
 
 // Expression, TODO: ...
 expression -> Expression<'s>:
-      expression_not "xor" expression {
+      expression_or "xor" expression {
         BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Xor }.into()
+      }
+    | expression_or { $1 };
+
+expression_or -> Expression<'s>:
+      expression_nor "or" expression_or {
+        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Or }.into()
+      }
+    | expression_nor { $1 };
+
+expression_nor -> Expression<'s>:
+      expression_and "nor" expression_nor {
+        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Nor }.into()
+      }
+    | expression_and { $1 };
+
+expression_and -> Expression<'s>:
+      expression_nand "and" expression_and {
+        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::And }.into()
+      }
+    | expression_nand { $1 };
+
+expression_nand -> Expression<'s>:
+      expression_not "nand" expression_nand {
+        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Nand }.into()
       }
     | expression_not { $1 };
 
@@ -185,6 +209,10 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 "<>" = Token::OperatorInequality
 "+" = Token::OperatorAddition
 "-" = Token::OperatorSubtraction
+"and" = Token::OperatorAnd
+"nand" = Token::OperatorNand
+"or" = Token::OperatorOr
+"nor" = Token::OperatorNor
 "xor" = Token::OperatorXor
 "neg" = Token::OperatorNeg
 "not" = Token::OperatorNot
