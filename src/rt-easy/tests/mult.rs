@@ -49,7 +49,7 @@ fn mult() {
     }
 
     assert_eq!(
-        simulator.state().read_register(&Ident("RES".to_string()), None).unwrap(),
+        simulator.state().registers().read_full(&Ident("RES".to_string())).unwrap(),
         Value::parse_dec("21").unwrap()
     );
 }

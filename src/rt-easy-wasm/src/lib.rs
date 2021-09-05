@@ -58,7 +58,7 @@ impl Simulator {
     }
 
     pub fn cycle_count(&self) -> usize {
-        self.0.state().cycle_count()
+        self.0.cycle_count()
     }
 
     pub fn micro_step(&mut self) -> Option<Span> {
@@ -79,7 +79,7 @@ impl Simulator {
 
     pub fn registers(&self) -> Vec<JsValue> {
         let mut registers =
-            self.0.state().registers().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+            self.0.state().registers().names().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         registers.sort();
 
         registers.into_iter().map(Into::into).collect()
@@ -89,7 +89,8 @@ impl Simulator {
         let value = match self
             .0
             .state()
-            .read_register(&rt_easy::rtcore::program::Ident(name.to_string()), None)
+            .registers()
+            .read_full(&rt_easy::rtcore::program::Ident(name.to_string()))
         {
             Ok(value) => value,
             Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
@@ -106,19 +107,23 @@ impl Simulator {
     }
 
     pub fn buses(&self) -> Vec<JsValue> {
-        let mut buses = self.0.state().buses().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        let mut buses =
+            self.0.state().buses().names().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         buses.sort();
 
         buses.into_iter().map(Into::into).collect()
     }
 
     pub fn bus_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
-        let value =
-            match self.0.state().read_bus(&rt_easy::rtcore::program::Ident(name.to_string()), None)
-            {
-                Ok(value) => value,
-                Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
-            };
+        let value = match self
+            .0
+            .state()
+            .buses()
+            .read_full(&rt_easy::rtcore::program::Ident(name.to_string()))
+        {
+            Ok(value) => value,
+            Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+        };
 
         let value = match base {
             "BIN" => value.as_bin(),

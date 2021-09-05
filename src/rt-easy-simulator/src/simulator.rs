@@ -1,12 +1,13 @@
 use crate::{execute::Execute, ChangeSet, Error, State};
 use rtcore::{
-    program::{Bus, Criterion, CriterionId, Ident, Program},
+    program::{Bus, Criterion, CriterionId, Ident, Program, Register},
     value::Value,
 };
 use std::collections::HashSet;
 use std::mem;
 
 pub struct Simulator {
+    cycle_count: usize,
     state: State,
     change_set: ChangeSet,
     buses_persist: HashSet<Ident>,
@@ -18,6 +19,7 @@ pub struct Simulator {
 impl Simulator {
     pub fn init(program: Program) -> Self {
         Self {
+            cycle_count: 0,
             state: State::init(&program),
             change_set: ChangeSet::new(),
             buses_persist: HashSet::new(),
@@ -28,6 +30,7 @@ impl Simulator {
     }
 
     pub fn reset(&mut self) {
+        self.cycle_count = 0;
         self.state = State::init(&self.program);
         self.change_set = ChangeSet::new();
         self.buses_persist = HashSet::new();
@@ -35,11 +38,9 @@ impl Simulator {
         self.cursor = Some(Cursor::new(0));
     }
 
-    // pub fn apply_change_set(&mut self, change_set: ChangeSet) -> Result<(), Error> {
-    //     // TODO: Handle change_set with goto label (Remove assert is_none)
-    //     assert!(self.state.apply_change_set(change_set)?.is_none());
-    //     Ok(())
-    // }
+    pub fn cycle_count(&self) -> usize {
+        self.cycle_count
+    }
 
     pub fn state(&self) -> &State {
         &self.state
@@ -135,7 +136,7 @@ impl Simulator {
                 *cursor = Cursor::new(next_statement_idx);
 
                 // Finish cycle
-                self.state.finish_cycle();
+                self.cycle_count += 1;
             }
             // Else check if steps pre pipe completed
             else if cursor.step_idx == statement.steps.split_at() {

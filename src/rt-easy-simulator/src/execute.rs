@@ -77,7 +77,7 @@ impl Execute for Write {
 
 impl Execute for Read {
     fn execute(&self, state: &mut State, change_set: &mut ChangeSet) -> Result {
-        state.read_memory(&self.ident, change_set)?;
+        state.memories().read(&self.ident, state.registers(), change_set)?;
         Ok(Vec::new())
     }
 }
