@@ -90,7 +90,11 @@ const StateView: React.FC<Props> = () => {
                       globalModel.base
                     ),
                     onChanged: (value) =>
-                      console.log(`TODO: set ${register} = ${value}`),
+                      globalModel.writeIntoRegister(
+                        register,
+                        value,
+                        globalModel.base
+                      ),
                   })}
                 </td>
               </tr>

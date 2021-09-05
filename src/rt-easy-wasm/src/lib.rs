@@ -106,6 +106,33 @@ impl Simulator {
         Ok(value)
     }
 
+    pub fn write_into_register(
+        &mut self,
+        name: &str,
+        value: &str,
+        base: &str,
+    ) -> Result<(), JsValue> {
+        let value = match base {
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value, false),
+            "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value, false),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+        let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
+
+        self.0
+            .write_into_register(
+                rt_easy::rtcore::program::Register {
+                    ident: rt_easy::rtcore::program::Ident(name.to_string()),
+                    range: None,
+                },
+                value,
+            )
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+
+        Ok(())
+    }
+
     pub fn buses(&self) -> Vec<JsValue> {
         let mut buses =
             self.0.state().buses().names().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();

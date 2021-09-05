@@ -50,6 +50,13 @@ impl Simulator {
         self.cursor.is_none()
     }
 
+    pub fn write_into_register(&mut self, register: Register, value: Value) -> Result<(), Error> {
+        let mut change_set = ChangeSet::new();
+        change_set.write_into_register(register, value)?;
+        self.state.apply_change_set(change_set)?;
+        Ok(())
+    }
+
     pub fn write_into_bus(&mut self, bus: &Bus, value: Value) -> Result<(), Error> {
         self.state.write_into_bus(bus, value)?;
 

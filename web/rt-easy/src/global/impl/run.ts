@@ -83,6 +83,13 @@ export function model(
     registers: () => state.simulator.registers(),
     registerValue: (name: string, base: string) =>
       state.simulator.register_value(name, base),
+    writeIntoRegister: (name: string, value: string, base: string) => {
+      try {
+        state.simulator.write_into_register(name, value, base);
+      } catch (e) {
+        console.log(e); // TODO: ???
+      }
+    },
     buses: () => state.simulator.buses(),
     busValue: (name: string, base: string) =>
       state.simulator.bus_value(name, base),
