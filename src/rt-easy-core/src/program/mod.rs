@@ -4,8 +4,6 @@ mod expression;
 mod impl_display;
 mod operation;
 
-use std::ops::Range;
-
 pub use self::{concat::*, declaration::*, expression::*, operation::*};
 pub use crate::common::*;
 pub use split_vec::SplitVec;
@@ -32,15 +30,21 @@ impl Program {
 
 #[derive(Debug)]
 pub struct Statement {
-    pub label: Option<Label>,
-    pub steps: SplitVec<Step>,
-    pub span: Range<usize>,
+    pub label: Option<Spanned<Label>>,
+    pub steps: Spanned<SplitVec<Step>>,
+    pub span: Span,
 }
 
 #[derive(Debug)]
 pub struct Step {
     pub criteria: Vec<Criterion>,
     pub operation: Operation,
+}
+
+impl Step {
+    pub fn span(&self) -> Span {
+        self.operation.span
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

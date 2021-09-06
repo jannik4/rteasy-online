@@ -19,17 +19,19 @@ fn check_and_order_(
     statement: &mut Statement<'_>,
     error_sink: &mut impl FnMut(CompilerError),
 ) -> Result<(), InternalError> {
+    let steps = statement.steps.node.as_mut_slice();
+
     // Calc direct dependencies
-    for i in 0..statement.steps.len() {
-        statement.steps[i].annotation.dependencies =
-            deps_direct::calc_direct_dependencies(&statement.steps[i], &statement.steps);
+    for i in 0..steps.len() {
+        steps[i].annotation.dependencies =
+            deps_direct::calc_direct_dependencies(&steps[i], &*steps);
     }
 
     // Calc absolute dependencies
     let mut has_feedback_loop = false;
-    for i in 0..statement.steps.len() {
-        let res = deps_absolute::calc_absolute_dependencies(&statement.steps[i], &statement.steps);
-        statement.steps[i].annotation.dependencies = match res {
+    for i in 0..steps.len() {
+        let res = deps_absolute::calc_absolute_dependencies(&steps[i], &*steps);
+        steps[i].annotation.dependencies = match res {
             Ok(deps) => deps,
             Err(_feedback_loop) => {
                 // Set has_feedback_loop
@@ -44,7 +46,7 @@ fn check_and_order_(
 
     // Sort steps if no feeback loop was found
     if !has_feedback_loop {
-        statement.steps.sort_by(|a, b| {
+        steps.sort_by(|a, b| {
             use std::cmp::Ordering;
 
             // If a is dependent on b => put b first

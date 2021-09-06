@@ -7,16 +7,19 @@ pub type Result = std::result::Result<(), InternalError>;
 
 pub fn check(mir: &Mir<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Result {
     for statement in &mir.statements {
-        for step in &statement.steps {
-            if let OperationKind::EvalCriterionSwitchGroup(group) = &step.operation.kind {
+        for step in &statement.steps.node {
+            if let Operation::EvalCriterionSwitchGroup(group) = &step.operation {
                 let mut values = HashSet::new();
 
-                for eval_criterion in &group.0 {
+                for eval_criterion in &group.eval_criteria {
                     let case_value = match &eval_criterion.condition {
-                        Expression::BinaryTerm(term) if term.operator == BinaryOperator::Eq => term
-                            .rhs
-                            .evaluate(group.1)
-                            .ok_or_else(|| InternalError("could not evaluate const expr".into()))?,
+                        Expression::BinaryTerm(term)
+                            if term.operator.node == BinaryOperator::Eq =>
+                        {
+                            term.rhs.evaluate(group.switch_expression_size).ok_or_else(|| {
+                                InternalError("could not evaluate const expr".into())
+                            })?
+                        }
                         _ => return Err(InternalError("expected eq term".into())),
                     };
 

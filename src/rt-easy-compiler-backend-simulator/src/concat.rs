@@ -44,7 +44,7 @@ impl Generate<mir::ConcatPartExpr<'_>> for ConcatPartExpr {
             mir::ConcatPartExpr::RegisterArray(reg_array) => {
                 Ok(ConcatPartExpr::RegisterArray(Generate::generate(reg_array)?))
             }
-            mir::ConcatPartExpr::Number(number) => Ok(ConcatPartExpr::Number(number)),
+            mir::ConcatPartExpr::Number(number) => Ok(ConcatPartExpr::Number(number.node)),
         }
     }
 }

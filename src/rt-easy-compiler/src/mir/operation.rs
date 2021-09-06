@@ -1,13 +1,7 @@
 use super::*;
 
 #[derive(Debug, Clone)]
-pub struct Operation<'s> {
-    pub kind: OperationKind<'s>,
-    pub span: Range<usize>,
-}
-
-#[derive(Debug, Clone)]
-pub enum OperationKind<'s> {
+pub enum Operation<'s> {
     EvalCriterion(EvalCriterion<'s>),
     EvalCriterionSwitchGroup(EvalCriterionSwitchGroup<'s>),
     Nop(Nop),
@@ -17,31 +11,60 @@ pub enum OperationKind<'s> {
     Assignment(Assignment<'s>),
 }
 
+impl Operation<'_> {
+    pub fn span(&self) -> Span {
+        match self {
+            Self::EvalCriterion(n) => n.span(),
+            Self::EvalCriterionSwitchGroup(n) => n.span,
+            Self::Nop(n) => n.span,
+            Self::Goto(n) => n.span,
+            Self::Write(n) => n.span,
+            Self::Read(n) => n.span,
+            Self::Assignment(n) => n.span,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub struct EvalCriterion<'s> {
     pub criterion_id: CriterionId,
     pub condition: Expression<'s>,
 }
 
-#[derive(Debug, Clone)]
-pub struct EvalCriterionSwitchGroup<'s>(pub Vec<EvalCriterion<'s>>, pub usize);
+impl EvalCriterion<'_> {
+    pub fn span(&self) -> Span {
+        self.condition.span()
+    }
+}
 
 #[derive(Debug, Clone)]
-pub struct Nop;
+pub struct EvalCriterionSwitchGroup<'s> {
+    pub eval_criteria: Vec<EvalCriterion<'s>>,
+    pub switch_expression_size: usize,
+    pub span: Span,
+}
+
+#[derive(Debug, Clone)]
+pub struct Nop {
+    pub span: Span,
+}
 
 #[derive(Debug, Clone)]
 pub struct Goto<'s> {
-    pub label: Label<'s>,
+    pub label: Spanned<Label<'s>>,
+    pub span: Span,
 }
 
 #[derive(Debug, Clone)]
 pub struct Write<'s> {
-    pub ident: Ident<'s>,
+    pub ident: Spanned<Ident<'s>>,
+    pub span: Span,
 }
 
 #[derive(Debug, Clone)]
 pub struct Read<'s> {
-    pub ident: Ident<'s>,
+    pub ident: Spanned<Ident<'s>>,
+    pub span: Span,
 }
 
 #[derive(Debug, Clone)]
@@ -49,6 +72,7 @@ pub struct Assignment<'s> {
     pub lhs: Lvalue<'s>,
     pub rhs: Expression<'s>,
     pub size: usize,
+    pub span: Span,
 }
 
 #[derive(Debug, Clone)]

@@ -13,8 +13,8 @@ pub fn build_mir<'s>(ast: ast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>
     if let Some(trailing_label) = ast.trailing_label {
         statements.push(Statement {
             label: Some(trailing_label),
-            steps: Vec::new(),
-            span: 0..0, // TODO: trailing_label.span(),
+            steps: Spanned { node: Vec::new(), span: Span::dummy() },
+            span: trailing_label.span,
         });
     }
 
@@ -37,7 +37,14 @@ fn build_statements<'s>(
         .map(|statement| {
             Ok(Statement {
                 label: statement.label,
-                steps: step::build(statement.operations, statement.operations_post, symbols)?,
+                steps: Spanned {
+                    node: step::build(
+                        statement.operations.operations,
+                        statement.operations.operations_post,
+                        symbols,
+                    )?,
+                    span: statement.operations.span,
+                },
                 span: statement.span,
             })
         })

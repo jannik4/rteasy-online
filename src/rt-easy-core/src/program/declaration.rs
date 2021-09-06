@@ -11,7 +11,6 @@ pub enum Declaration {
 #[derive(Debug)]
 pub struct DeclareRegister {
     pub registers: Vec<Register>,
-    pub span: Range<usize>,
 }
 
 #[derive(Debug)]

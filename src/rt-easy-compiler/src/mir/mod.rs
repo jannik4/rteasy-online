@@ -6,8 +6,7 @@ mod operation;
 
 pub use self::{concat::*, declaration::*, expression::*, operation::*};
 pub use rtcore::ast::{Ident, Label};
-pub use rtcore::common::{BinaryOperator, BitRange, CtxSize, Number, UnaryOperator};
-pub use std::ops::Range;
+pub use rtcore::common::{BinaryOperator, BitRange, CtxSize, Number, Span, Spanned, UnaryOperator};
 
 use std::collections::HashSet;
 
@@ -19,9 +18,9 @@ pub struct Mir<'s> {
 
 #[derive(Debug, Clone)]
 pub struct Statement<'s> {
-    pub label: Option<Label<'s>>,
-    pub steps: Vec<Step<'s>>,
-    pub span: Range<usize>,
+    pub label: Option<Spanned<Label<'s>>>,
+    pub steps: Spanned<Vec<Step<'s>>>,
+    pub span: Span,
 }
 
 #[derive(Debug, Clone)]
@@ -30,6 +29,12 @@ pub struct Step<'s> {
     pub criteria: Vec<Criterion>,
     pub operation: Operation<'s>,
     pub annotation: Annotation,
+}
+
+impl Step<'_> {
+    pub fn span(&self) -> Span {
+        self.operation.span()
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

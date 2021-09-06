@@ -1,6 +1,6 @@
 use crate::{execute::Execute, ChangeSet, Error, State};
 use rtcore::{
-    program::{Bus, Criterion, CriterionId, Ident, Program, Register},
+    program::{Bus, Criterion, CriterionId, Ident, Program, Register, Span},
     value::Value,
 };
 use std::collections::HashSet;
@@ -68,15 +68,15 @@ impl Simulator {
         Ok(())
     }
 
-    pub fn step(&mut self) -> Result<Option<std::ops::Range<usize>>, Error> {
+    pub fn step(&mut self) -> Result<Option<Span>, Error> {
         self.step_(false)
     }
 
-    pub fn micro_step(&mut self) -> Result<Option<std::ops::Range<usize>>, Error> {
+    pub fn micro_step(&mut self) -> Result<Option<Span>, Error> {
         self.step_(true)
     }
 
-    pub fn step_(&mut self, micro: bool) -> Result<Option<std::ops::Range<usize>>, Error> {
+    pub fn step_(&mut self, micro: bool) -> Result<Option<Span>, Error> {
         loop {
             // Get cursor
             let cursor = match &mut self.cursor {
@@ -94,7 +94,7 @@ impl Simulator {
             };
 
             // Get current step
-            let (step, _is_pre_pipe) = match statement.steps.get(cursor.step_idx) {
+            let (step, _is_pre_pipe) = match statement.steps.node.get(cursor.step_idx) {
                 Some((step, is_pre_pipe)) => (step, is_pre_pipe),
                 None => {
                     self.cursor = None;
@@ -122,7 +122,7 @@ impl Simulator {
             cursor.step_idx += 1;
 
             // Check if statement completed (= no steps with matching criteria left)
-            let statement_completed = statement.steps[cursor.step_idx..]
+            let statement_completed = statement.steps.node[cursor.step_idx..]
                 .iter()
                 .all(|step| !criteria_match(&step.criteria, &cursor.criteria_set));
 
@@ -136,7 +136,7 @@ impl Simulator {
                         .program
                         .statements()
                         .iter()
-                        .position(|stmt| stmt.label.as_ref() == Some(&goto_label))
+                        .position(|stmt| stmt.label.as_ref().map(|s| &s.node) == Some(&goto_label))
                         .ok_or(Error::Other)?,
                     None => cursor.statement_idx + 1,
                 };
@@ -146,29 +146,22 @@ impl Simulator {
                 self.cycle_count += 1;
             }
             // Else check if steps pre pipe completed
-            else if cursor.step_idx == statement.steps.split_at() {
+            else if cursor.step_idx == statement.steps.node.split_at() {
                 self.state.apply_change_set(mem::take(&mut self.change_set))?;
             }
 
             // Break, if progress has been made
             if micro {
                 if step_executed {
-                    break Ok(Some(step.operation.span.clone()));
+                    break Ok(Some(step.operation.span));
                 }
             } else {
                 if statement_completed {
-                    break Ok(Some(statement.span.clone()));
+                    break Ok(Some(statement.steps.span));
                 }
             }
         }
     }
-}
-
-#[derive(Debug)]
-struct StepResult {
-    statement_span: std::ops::Range<usize>,
-    step_span: std::ops::Range<usize>,
-    statement_completed: bool,
 }
 
 #[derive(Debug)]

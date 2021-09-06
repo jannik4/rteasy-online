@@ -17,9 +17,9 @@ fn check_statement(
     symbols: &Symbols<'_>,
     error_sink: &mut impl FnMut(CompilerError),
 ) {
-    let res = statement.operations.check_op(symbols, error_sink);
+    let res = statement.operations.operations.check_op(symbols, error_sink);
 
-    if let Some(operations_post) = &statement.operations_post {
+    if let Some(operations_post) = &statement.operations.operations_post {
         let res_post = operations_post.check_op(symbols, error_sink);
 
         if res.contains_goto {

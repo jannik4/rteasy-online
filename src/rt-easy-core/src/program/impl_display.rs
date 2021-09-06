@@ -14,11 +14,11 @@ impl Display for Program {
 impl Display for Statement {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match &self.label {
-            Some(label) => write!(f, "{}:\n", label.0)?,
+            Some(label) => write!(f, "{}:\n", label.node.0)?,
             None => write!(f, "_:\n")?,
         }
 
-        for step in self.steps.as_slice() {
+        for step in self.steps.node.as_slice() {
             write!(f, "    {}\n", step)?;
         }
 
@@ -133,8 +133,8 @@ impl Display for Lvalue {
 
 impl Display for Expression {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        use Expression::*;
-        match self {
+        use ExpressionKind::*;
+        match &self.kind {
             Atom(expr) => write!(f, "{}", expr),
             BinaryTerm(expr) => write!(f, "{}", expr),
             UnaryTerm(expr) => write!(f, "{}", expr),

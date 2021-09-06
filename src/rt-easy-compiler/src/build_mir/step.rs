@@ -31,41 +31,32 @@ fn build_operation<'s>(
     context: &Context,
     build: &mut Build<'s>,
 ) -> Result<()> {
-    match operation.kind {
-        ast::OperationKind::Nop(_nop) => build.push(Step {
+    match operation {
+        ast::Operation::Nop(nop) => build.push(Step {
             id: build.next_step_id(),
             criteria: context.criteria.clone(),
-            operation: Operation { kind: OperationKind::Nop(Nop), span: operation.span },
+            operation: Operation::Nop(Nop { span: nop.span }),
             annotation: Annotation::new(false, context.is_post_pipe),
         }),
-        ast::OperationKind::Goto(goto) => build.push(Step {
+        ast::Operation::Goto(goto) => build.push(Step {
             id: build.next_step_id(),
             criteria: context.criteria.clone(),
-            operation: Operation {
-                kind: OperationKind::Goto(Goto { label: goto.label }),
-                span: operation.span,
-            },
+            operation: Operation::Goto(Goto { label: goto.label, span: goto.span }),
             annotation: Annotation::new(false, context.is_post_pipe),
         }),
-        ast::OperationKind::Write(write) => build.push(Step {
+        ast::Operation::Write(write) => build.push(Step {
             id: build.next_step_id(),
             criteria: context.criteria.clone(),
-            operation: Operation {
-                kind: OperationKind::Write(Write { ident: write.ident }),
-                span: operation.span,
-            },
+            operation: Operation::Write(Write { ident: write.ident, span: write.span }),
             annotation: Annotation::new(false, context.is_post_pipe),
         }),
-        ast::OperationKind::Read(read) => build.push(Step {
+        ast::Operation::Read(read) => build.push(Step {
             id: build.next_step_id(),
             criteria: context.criteria.clone(),
-            operation: Operation {
-                kind: OperationKind::Read(Read { ident: read.ident }),
-                span: operation.span,
-            },
+            operation: Operation::Read(Read { ident: read.ident, span: read.span }),
             annotation: Annotation::new(false, context.is_post_pipe),
         }),
-        ast::OperationKind::If(if_) => {
+        ast::Operation::If(if_) => {
             // EvalCriterion
             let criterion_id = {
                 let criterion_id = build.gen_criterion_id();
@@ -74,13 +65,10 @@ fn build_operation<'s>(
                 build.push(Step {
                     id: build.next_step_id(),
                     criteria: context.criteria.clone(),
-                    operation: Operation {
-                        kind: OperationKind::EvalCriterion(EvalCriterion {
-                            criterion_id,
-                            condition: condition.inner,
-                        }),
-                        span: operation.span, // TODO: Use span of condition
-                    },
+                    operation: Operation::EvalCriterion(EvalCriterion {
+                        criterion_id,
+                        condition: condition.inner,
+                    }),
                     annotation: Annotation::new(false, context.is_post_pipe),
                 });
 
@@ -103,7 +91,7 @@ fn build_operation<'s>(
                 }
             }
         }
-        ast::OperationKind::Switch(switch) => {
+        ast::Operation::Switch(switch) => {
             // Split clauses
             let (cases, default) = split_clauses(switch.clauses)?;
 
@@ -115,15 +103,16 @@ fn build_operation<'s>(
                 Expression::build(switch_expression.clone(), symbols)?.size; // TODO: Only get size, do not build
             let cases = cases
                 .into_iter()
-                .map(|case| {
+                .map(|(case, operations)| {
                     let criterion_id = build.gen_criterion_id();
                     eval_criteria.push(EvalCriterion {
                         criterion_id,
                         condition: Expression::build(
                             ast::BinaryTerm {
+                                span: case.value.span(),
                                 lhs: switch_expression.clone(),
                                 rhs: case.value,
-                                operator: BinaryOperator::Eq,
+                                operator: Spanned { node: BinaryOperator::Eq, span: Span::dummy() },
                             }
                             .into(),
                             symbols,
@@ -131,7 +120,7 @@ fn build_operation<'s>(
                         .inner,
                     });
 
-                    Ok((criterion_id, case.operations))
+                    Ok((criterion_id, operations))
                 })
                 .collect::<Result<Vec<_>>>()?;
 
@@ -139,13 +128,11 @@ fn build_operation<'s>(
             build.push(Step {
                 id: build.next_step_id(),
                 criteria: context.criteria.clone(),
-                operation: Operation {
-                    kind: OperationKind::EvalCriterionSwitchGroup(EvalCriterionSwitchGroup(
-                        eval_criteria,
-                        switch_expression_size,
-                    )),
-                    span: operation.span, // TODO: Use spans of clauses
-                },
+                operation: Operation::EvalCriterionSwitchGroup(EvalCriterionSwitchGroup {
+                    eval_criteria,
+                    switch_expression_size,
+                    span: switch_expression.span(),
+                }),
                 annotation: Annotation::new(false, context.is_post_pipe),
             });
 
@@ -155,7 +142,7 @@ fn build_operation<'s>(
                 for (c_id, _) in &cases {
                     context = context.with(Criterion::False(*c_id));
                 }
-                for operation in default.operations {
+                for operation in default.1 {
                     build_operation(operation, symbols, &context, build)?;
                 }
             }
@@ -168,7 +155,7 @@ fn build_operation<'s>(
                 }
             }
         }
-        ast::OperationKind::Assignment(assignment) => {
+        ast::Operation::Assignment(assignment) => {
             let (lhs, lhs_size) = build_lvalue(assignment.lhs, symbols)?;
             let rhs = Expression::build(assignment.rhs, symbols)?;
 
@@ -180,14 +167,12 @@ fn build_operation<'s>(
             build.push(Step {
                 id: build.next_step_id(),
                 criteria: context.criteria.clone(),
-                operation: Operation {
-                    kind: OperationKind::Assignment(Assignment {
-                        lhs,
-                        rhs: rhs.inner,
-                        size: lhs_size,
-                    }),
-                    span: operation.span,
-                },
+                operation: Operation::Assignment(Assignment {
+                    lhs,
+                    rhs: rhs.inner,
+                    size: lhs_size,
+                    span: assignment.span,
+                }),
                 annotation: Annotation::new(is_unclocked_assign, context.is_post_pipe),
             });
         }
@@ -197,15 +182,18 @@ fn build_operation<'s>(
 }
 
 fn split_clauses<'s>(
-    clauses: Vec<Either<ast::CaseClause<'s>, ast::DefaultClause<'s>>>,
-) -> Result<(Vec<ast::CaseClause<'s>>, ast::DefaultClause<'s>)> {
+    clauses: Vec<ast::Clause<'s>>,
+) -> Result<(
+    Vec<(ast::CaseClause<'s>, Vec<ast::Operation<'s>>)>,
+    (ast::DefaultClause, Vec<ast::Operation<'s>>),
+)> {
     let mut cases = Vec::with_capacity(clauses.len() - 1);
     let mut default = None;
 
     for clause in clauses {
-        match clause {
-            Either::Left(case) => cases.push(case),
-            Either::Right(default_) => default = Some(default_),
+        match clause.clause {
+            Either::Left(case) => cases.push((case, clause.operations)),
+            Either::Right(default_) => default = Some((default_, clause.operations)),
         }
     }
 

@@ -76,7 +76,7 @@ function calcRange(sourceCode: string, span: Span): monaco.Range {
         startColumn = 1;
         endColumn = 1;
       } else {
-        endColumn++;
+        endColumn = 1;
       }
       endLineNumber++;
     } else {

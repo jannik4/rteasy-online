@@ -34,25 +34,25 @@ impl<'s> State<'s> {
 }
 
 impl<'s> SimState<'s> for State<'s> {
-    fn condition(&mut self, expression: &Expression<'s>, _: Range<usize>) -> Result {
+    fn condition(&mut self, expression: &Expression<'s>) -> Result {
         visit_expression(expression, self);
         Ok(())
     }
-    fn nop(&mut self, _: &Nop, _: Range<usize>) -> Result {
+    fn nop(&mut self, _: &Nop) -> Result {
         Ok(())
     }
-    fn goto(&mut self, _: &Goto<'s>, _: Range<usize>) -> Result {
+    fn goto(&mut self, _: &Goto<'s>) -> Result {
         Ok(())
     }
-    fn write(&mut self, _: &Write<'s>, _: Range<usize>) -> Result {
-        Ok(())
-    }
-
-    fn read(&mut self, _: &Read<'s>, _: Range<usize>) -> Result {
+    fn write(&mut self, _: &Write<'s>) -> Result {
         Ok(())
     }
 
-    fn assignment(&mut self, assignment: &Assignment<'s>, _: Range<usize>) -> Result {
+    fn read(&mut self, _: &Read<'s>) -> Result {
+        Ok(())
+    }
+
+    fn assignment(&mut self, assignment: &Assignment<'s>) -> Result {
         visit_expression(&assignment.rhs, self);
         Ok(())
     }
@@ -73,7 +73,7 @@ fn visit_expression<'s>(expression: &Expression<'s>, state: &mut State<'s>) {
                 for part in &concat.parts {
                     match part {
                         ConcatPartExpr::RegisterArray(reg_array) => {
-                            state.insert(reg_array.ident);
+                            state.insert(reg_array.ident.node);
                         }
                         ConcatPartExpr::Register(_)
                         | ConcatPartExpr::Bus(_)
@@ -82,7 +82,7 @@ fn visit_expression<'s>(expression: &Expression<'s>, state: &mut State<'s>) {
                 }
             }
             Atom::RegisterArray(reg_array) => {
-                state.insert(reg_array.ident);
+                state.insert(reg_array.ident.node);
             }
             Atom::Register(_) | Atom::Bus(_) | Atom::Number(_) => (),
         },

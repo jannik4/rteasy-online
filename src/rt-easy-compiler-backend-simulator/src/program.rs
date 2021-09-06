@@ -13,15 +13,19 @@ impl Generate<mir::Mir<'_>> for Program {
 impl Generate<mir::Statement<'_>> for Statement {
     fn generate(statement: mir::Statement<'_>) -> Result<Self> {
         Ok(Statement {
-            label: statement.label.map(Into::into),
+            label: statement.label.map(|s| Spanned { node: s.node.into(), span: s.span }),
             steps: {
                 let split_at = statement
                     .steps
+                    .node
                     .iter()
                     .position(|step| step.annotation.is_post_pipe)
-                    .unwrap_or(statement.steps.len());
+                    .unwrap_or(statement.steps.node.len());
 
-                SplitVec::new(Generate::generate(statement.steps)?, split_at)
+                Spanned {
+                    node: SplitVec::new(Generate::generate(statement.steps.node)?, split_at),
+                    span: statement.steps.span,
+                }
             },
             span: statement.span,
         })

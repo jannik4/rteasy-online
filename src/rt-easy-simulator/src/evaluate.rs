@@ -1,8 +1,8 @@
 use crate::{Error, State};
 use rtcore::{
     program::{
-        Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, Number,
-        Register, RegisterArray, UnaryOperator, UnaryTerm,
+        Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, ExpressionKind,
+        Number, Register, RegisterArray, UnaryOperator, UnaryTerm,
     },
     value::Value,
 };
@@ -16,10 +16,10 @@ pub trait Evaluate {
 
 impl Evaluate for Expression {
     fn evaluate(&self, state: &State, ctx_size: usize) -> Result {
-        match self {
-            Self::Atom(atom) => atom.evaluate(state, ctx_size),
-            Self::BinaryTerm(term) => term.evaluate(state, ctx_size),
-            Self::UnaryTerm(term) => term.evaluate(state, ctx_size),
+        match &self.kind {
+            ExpressionKind::Atom(atom) => atom.evaluate(state, ctx_size),
+            ExpressionKind::BinaryTerm(term) => term.evaluate(state, ctx_size),
+            ExpressionKind::UnaryTerm(term) => term.evaluate(state, ctx_size),
         }
     }
 }

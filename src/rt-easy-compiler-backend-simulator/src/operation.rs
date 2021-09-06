@@ -4,23 +4,24 @@ use rtcore::program::*;
 
 impl Generate<mir::Operation<'_>> for Operation {
     fn generate(operation: mir::Operation<'_>) -> Result<Self> {
-        let kind = match operation.kind {
-            mir::OperationKind::EvalCriterion(eval_criterion) => {
+        let span = operation.span();
+        let kind = match operation {
+            mir::Operation::EvalCriterion(eval_criterion) => {
                 OperationKind::EvalCriterion(Generate::generate(eval_criterion)?)
             }
-            mir::OperationKind::EvalCriterionSwitchGroup(eval_criterion_group) => {
+            mir::Operation::EvalCriterionSwitchGroup(eval_criterion_group) => {
                 OperationKind::EvalCriterionGroup(Generate::generate(eval_criterion_group)?)
             }
-            mir::OperationKind::Nop(mir::Nop) => OperationKind::Nop(Nop),
-            mir::OperationKind::Goto(goto) => OperationKind::Goto(Generate::generate(goto)?),
-            mir::OperationKind::Write(write) => OperationKind::Write(Generate::generate(write)?),
-            mir::OperationKind::Read(read) => OperationKind::Read(Generate::generate(read)?),
-            mir::OperationKind::Assignment(assignment) => {
+            mir::Operation::Nop(_nop) => OperationKind::Nop(Nop),
+            mir::Operation::Goto(goto) => OperationKind::Goto(Generate::generate(goto)?),
+            mir::Operation::Write(write) => OperationKind::Write(Generate::generate(write)?),
+            mir::Operation::Read(read) => OperationKind::Read(Generate::generate(read)?),
+            mir::Operation::Assignment(assignment) => {
                 OperationKind::Assignment(Generate::generate(assignment)?)
             }
         };
 
-        Ok(Operation { kind, span: operation.span.clone() })
+        Ok(Operation { kind, span })
     }
 }
 
@@ -35,25 +36,25 @@ impl Generate<mir::EvalCriterion<'_>> for EvalCriterion {
 
 impl Generate<mir::EvalCriterionSwitchGroup<'_>> for EvalCriterionGroup {
     fn generate(eval_criterion_group: mir::EvalCriterionSwitchGroup<'_>) -> Result<Self> {
-        Ok(EvalCriterionGroup(Generate::generate(eval_criterion_group.0)?))
+        Ok(EvalCriterionGroup(Generate::generate(eval_criterion_group.eval_criteria)?))
     }
 }
 
 impl Generate<mir::Goto<'_>> for Goto {
     fn generate(goto: mir::Goto<'_>) -> Result<Self> {
-        Ok(Goto { label: goto.label.into() })
+        Ok(Goto { label: goto.label.node.into() })
     }
 }
 
 impl Generate<mir::Write<'_>> for Write {
     fn generate(write: mir::Write<'_>) -> Result<Self> {
-        Ok(Write { ident: write.ident.into() })
+        Ok(Write { ident: write.ident.node.into() })
     }
 }
 
 impl Generate<mir::Read<'_>> for Read {
     fn generate(read: mir::Read<'_>) -> Result<Self> {
-        Ok(Read { ident: read.ident.into() })
+        Ok(Read { ident: read.ident.node.into() })
     }
 }
 

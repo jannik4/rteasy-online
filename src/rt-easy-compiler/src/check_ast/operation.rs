@@ -44,14 +44,14 @@ impl<'s> CheckOp<'s> for [Operation<'s>] {
 
 impl<'s> CheckOp<'s> for Operation<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
-        match &self.kind {
-            OperationKind::Nop(nop) => nop.check_op(symbols, error_sink),
-            OperationKind::Goto(goto) => goto.check_op(symbols, error_sink),
-            OperationKind::If(if_) => if_.check_op(symbols, error_sink),
-            OperationKind::Switch(switch) => switch.check_op(symbols, error_sink),
-            OperationKind::Write(write) => write.check_op(symbols, error_sink),
-            OperationKind::Read(read) => read.check_op(symbols, error_sink),
-            OperationKind::Assignment(assignment) => assignment.check_op(symbols, error_sink),
+        match self {
+            Operation::Nop(nop) => nop.check_op(symbols, error_sink),
+            Operation::Goto(goto) => goto.check_op(symbols, error_sink),
+            Operation::If(if_) => if_.check_op(symbols, error_sink),
+            Operation::Switch(switch) => switch.check_op(symbols, error_sink),
+            Operation::Write(write) => write.check_op(symbols, error_sink),
+            Operation::Read(read) => read.check_op(symbols, error_sink),
+            Operation::Assignment(assignment) => assignment.check_op(symbols, error_sink),
         }
     }
 }
@@ -64,8 +64,8 @@ impl<'s> CheckOp<'s> for Nop {
 
 impl<'s> CheckOp<'s> for Goto<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
-        if !symbols.contains_label(self.label) {
-            error_sink(CompilerError::LabelNotFound(self.label.0.to_string()));
+        if !symbols.contains_label(self.label.node) {
+            error_sink(CompilerError::LabelNotFound(self.label.node.0.to_string()));
         }
 
         Res { contains_goto: true, contains_mutate: false }
@@ -100,7 +100,7 @@ impl<'s> CheckOp<'s> for Switch<'s> {
         let mut default_clauses_count = 0;
 
         for clause in &self.clauses {
-            match clause {
+            match &clause.clause {
                 Either::Left(case) => {
                     let value_res = case.value.check_expr(symbols, error_sink);
 
@@ -115,11 +115,11 @@ impl<'s> CheckOp<'s> for Switch<'s> {
                         _ => (),
                     }
 
-                    res = Res::merge(res, case.operations.check_op(symbols, error_sink));
+                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink));
                 }
-                Either::Right(default) => {
+                Either::Right(_default) => {
                     default_clauses_count += 1;
-                    res = Res::merge(res, default.operations.check_op(symbols, error_sink));
+                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink));
                 }
             }
         }
@@ -134,7 +134,7 @@ impl<'s> CheckOp<'s> for Switch<'s> {
 
 impl<'s> CheckOp<'s> for Write<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
-        match symbols.symbol(self.ident) {
+        match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
             Some(symbol) => error_sink(CompilerError::WrongSymbolType {
                 expected: &[SymbolType::Memory],
@@ -142,7 +142,7 @@ impl<'s> CheckOp<'s> for Write<'s> {
             }),
             _ => error_sink(CompilerError::SymbolNotFound(
                 &[SymbolType::Memory],
-                self.ident.0.to_string(),
+                self.ident.node.0.to_string(),
             )),
         }
 
@@ -152,7 +152,7 @@ impl<'s> CheckOp<'s> for Write<'s> {
 
 impl<'s> CheckOp<'s> for Read<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
-        match symbols.symbol(self.ident) {
+        match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
             Some(symbol) => error_sink(CompilerError::WrongSymbolType {
                 expected: &[SymbolType::Memory],
@@ -160,7 +160,7 @@ impl<'s> CheckOp<'s> for Read<'s> {
             }),
             _ => error_sink(CompilerError::SymbolNotFound(
                 &[SymbolType::Memory],
-                self.ident.0.to_string(),
+                self.ident.node.0.to_string(),
             )),
         }
 

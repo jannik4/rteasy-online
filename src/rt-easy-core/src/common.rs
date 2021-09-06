@@ -1,3 +1,6 @@
+use std::ops::Range;
+use value::Value;
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum BinaryOperator {
     Eq,
@@ -24,7 +27,7 @@ pub enum UnaryOperator {
 
 #[derive(Debug, Clone)]
 pub struct Number {
-    pub value: crate::value::Value,
+    pub value: Value,
     pub kind: NumberKind,
 }
 
@@ -102,4 +105,32 @@ impl CtxSize {
             Self::Inherit => parent,
         }
     }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub struct Span {
+    pub start: usize,
+    pub end: usize,
+}
+
+impl Span {
+    pub fn dummy() -> Self {
+        Self { start: 0, end: 0 }
+    }
+
+    pub fn range(self) -> Range<usize> {
+        self.start..self.end
+    }
+}
+
+impl From<Range<usize>> for Span {
+    fn from(range: Range<usize>) -> Self {
+        Self { start: range.start, end: range.end }
+    }
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
+pub struct Spanned<T> {
+    pub node: T,
+    pub span: Span,
 }

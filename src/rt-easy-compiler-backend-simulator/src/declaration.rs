@@ -8,7 +8,6 @@ impl Generate<mir::Declaration<'_>> for Declaration {
             mir::Declaration::Register(declare_register) => {
                 Ok(Declaration::Register(DeclareRegister {
                     registers: Generate::generate(declare_register.registers)?,
-                    span: declare_register.span,
                 }))
             }
             mir::Declaration::Bus(declare_bus) => {
@@ -29,10 +28,10 @@ impl Generate<mir::Declaration<'_>> for Declaration {
 impl Generate<mir::Memory<'_>> for Memory {
     fn generate(memory: mir::Memory<'_>) -> Result<Self> {
         Ok(Memory {
-            ident: memory.ident.into(),
+            ident: memory.ident.node.into(),
             range: MemoryRange {
-                address_register: memory.range.address_register.into(),
-                data_register: memory.range.data_register.into(),
+                address_register: memory.range.address_register.node.into(),
+                data_register: memory.range.data_register.node.into(),
             },
         })
     }
@@ -41,8 +40,8 @@ impl Generate<mir::Memory<'_>> for Memory {
 impl Generate<mir::DeclareRegisterArrayItem<'_>> for DeclareRegisterArrayItem {
     fn generate(declare_register_array_item: mir::DeclareRegisterArrayItem<'_>) -> Result<Self> {
         Ok(DeclareRegisterArrayItem {
-            ident: declare_register_array_item.ident.into(),
-            range: declare_register_array_item.range,
+            ident: declare_register_array_item.ident.node.into(),
+            range: declare_register_array_item.range.map(|s| s.node),
             len: declare_register_array_item.len,
         })
     }

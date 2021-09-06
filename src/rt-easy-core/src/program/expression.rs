@@ -1,7 +1,13 @@
 use super::*;
 
 #[derive(Debug)]
-pub enum Expression {
+pub struct Expression {
+    pub kind: ExpressionKind,
+    pub span: Span,
+}
+
+#[derive(Debug)]
+pub enum ExpressionKind {
     Atom(Atom),
     BinaryTerm(Box<BinaryTerm>),
     UnaryTerm(Box<UnaryTerm>),

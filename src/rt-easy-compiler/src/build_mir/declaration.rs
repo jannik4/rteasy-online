@@ -24,6 +24,7 @@ pub fn build<'s>(
                 .into_iter()
                 .map(|bus| Ok(Bus::build(bus, symbols)?.inner))
                 .collect::<Result<_>>()?,
+            span: declare_bus.span,
         })),
         ast::Declaration::Memory(declare_memory) => Ok(Declaration::Memory(DeclareMemory {
             memories: declare_memory
@@ -34,9 +35,12 @@ pub fn build<'s>(
                     range: MemoryRange {
                         address_register: mem.range.address_register,
                         data_register: mem.range.data_register,
+                        span: mem.range.span,
                     },
+                    span: mem.span,
                 })
                 .collect(),
+            span: declare_memory.span,
         })),
         ast::Declaration::RegisterArray(declare_reg_array) => {
             Ok(Declaration::RegisterArray(DeclareRegisterArray {
@@ -49,6 +53,7 @@ pub fn build<'s>(
                         len: declare_register_array_item.len,
                     })
                     .collect(),
+                span: declare_reg_array.span,
             }))
         }
     }

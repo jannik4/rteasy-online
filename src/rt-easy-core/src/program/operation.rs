@@ -3,7 +3,7 @@ use super::*;
 #[derive(Debug)]
 pub struct Operation {
     pub kind: OperationKind,
-    pub span: Range<usize>,
+    pub span: Span,
 }
 
 #[derive(Debug)]

@@ -1,6 +1,6 @@
 // Ast
 pub ast -> Ast<'s>:
-    many0(declaration) many0(statement) opt(terminated(label, ":")) eoi {
+    many0(declaration) many0(statement) opt(terminated(spanned(label), ":")) eoi {
         Ast { declarations: $1, statements: $2, trailing_label: $3 }
     };
 
@@ -11,117 +11,122 @@ declaration -> Declaration<'s>:
     | declare_bus { Declaration::Bus($1) }
     | declare_memory { Declaration::Memory($1) };
 declare_register_array -> DeclareRegisterArray<'s>:
-    "declare" "register" "array" sep1(declare_register_array_item, ",") { DeclareRegisterArray { register_arrays: $4 } };
+    "declare" "register" "array" sep1(declare_register_array_item, ",") { DeclareRegisterArray { register_arrays: $4, span: $span.into() } };
 declare_register -> DeclareRegister<'s>:
-    "declare" "register" sep1(reg_bus, ",") { DeclareRegister { registers: $3, span: $span } };
+    "declare" "register" sep1(reg_bus, ",") { DeclareRegister { registers: $3, span: $span.into() } };
 declare_bus -> DeclareBus<'s>:
-    "declare" "bus" sep1(reg_bus, ",") { DeclareBus { buses: $3 } };
+    "declare" "bus" sep1(reg_bus, ",") { DeclareBus { buses: $3, span: $span.into() } };
 declare_memory -> DeclareMemory<'s>:
-    "declare" "memory" sep1(memory, ",") { DeclareMemory { memories: $3 } };
+    "declare" "memory" sep1(memory, ",") { DeclareMemory { memories: $3, span: $span.into() } };
 
 declare_register_array_item -> DeclareRegisterArrayItem<'s>:
-    ident opt(bit_range) "[" number_usize "]" { DeclareRegisterArrayItem { ident: $1, range: $2, len: $4 } };
+    spanned(ident) opt(spanned(bit_range)) "[" number_usize "]" { DeclareRegisterArrayItem { ident: $1, range: $2, len: $4, span: $span.into() } };
 
 // Statement
 statement -> Statement<'s>:
-    opt(terminated(label, ":")) operations opt(preceded("|", operations)) ";" {
-        Statement { label: $1, operations: $2, operations_post: $3, span: $span }
+    opt(terminated(spanned(label), ":")) statement_operations ";" {
+        Statement { label: $1, operations: $2, span: $span.into() }
+    };
+statement_operations -> Operations<'s>:
+    operations opt(preceded("|", operations)) {
+        Operations { operations: $1, operations_post: $2, span: $span.into() }
     };
 
 // Operations
-nop -> Nop: "nop" { Nop }; 
-goto -> Goto<'s>: "goto" label { Goto { label: $2 } };
-write -> Write<'s>: "write" ident { Write { ident: $2 } };
-read -> Read<'s>: "read" ident { Read { ident: $2 } };
+nop -> Nop: "nop" { Nop { span: $span.into() } }; 
+goto -> Goto<'s>: "goto" spanned(label) { Goto { label: $2, span: $span.into() } };
+write -> Write<'s>: "write" spanned(ident) { Write { ident: $2, span: $span.into() } };
+read -> Read<'s>: "read" spanned(ident) { Read { ident: $2, span: $span.into() } };
 if_ -> If<'s>:
     "if" expression
     "then" operations
     opt(preceded("else", operations))
-    "fi" { If { condition: $2, operations_if: $4, operations_else: $5 } };
+    "fi" { If { condition: $2, operations_if: $4, operations_else: $5, span: $span.into() } };
 switch -> Switch<'s>:
-    "switch" expression "{" many0(either(case_clause, default_clause)) "}" {
-        Switch { expression: $2, clauses: $4 }
+    "switch" expression "{" many0(clause) "}" {
+        Switch { expression: $2, clauses: $4, span: $span.into() }
     };
-case_clause -> CaseClause<'s>: "case" expression ":" operations { CaseClause { value: $2, operations: $4 } };
-default_clause -> DefaultClause<'s>: "default" ":" operations { DefaultClause { operations: $3 } };
+clause -> Clause<'s>:
+    either(case_clause, default_clause) ":" operations { Clause { clause: $1, operations: $3, span: $span.into() } };
+case_clause -> CaseClause<'s>: "case" expression { CaseClause { value: $2, span: $span.into() } };
+default_clause -> DefaultClause: "default" { DefaultClause { span: $span.into() } };
 lvalue -> Lvalue<'s>:
       concat { Lvalue::Concat($1) }
     | register_array { Lvalue::RegisterArray($1) }
     | reg_bus { Lvalue::RegBus($1) };
-assignment -> Assignment<'s>: lvalue "<-" expression { Assignment { lhs: $1, rhs: $3 } };
+assignment -> Assignment<'s>: lvalue "<-" expression { Assignment { lhs: $1, rhs: $3, span: $span.into() } };
 
-operation -> Operation<'s>: operation_kind { Operation { kind: $1, span: $span } };
-operation_kind -> OperationKind<'s>:
-      nop { OperationKind::Nop($1) } | goto { OperationKind::Goto($1) }
-    | write { OperationKind::Write($1) } | read { OperationKind::Read($1) }
-    | if_ { OperationKind::If($1) } | switch { OperationKind::Switch($1) }
-    | assignment { OperationKind::Assignment($1) };
+operation -> Operation<'s>:
+      nop { Operation::Nop($1) } | goto { Operation::Goto($1) }
+    | write { Operation::Write($1) } | read { Operation::Read($1) }
+    | if_ { Operation::If($1) } | switch { Operation::Switch($1) }
+    | assignment { Operation::Assignment($1) };
 operations -> Vec<Operation<'s>>: sep1(operation, ",") { $1 };
 
 // Expression, TODO: ...
 expression -> Expression<'s>:
-      expression_or "xor" expression {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Xor }.into()
+      expression_or spanned("xor") expression {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Xor, $2.span), span: $span.into() }.into()
       }
     | expression_or { $1 };
 
 expression_or -> Expression<'s>:
-      expression_nor "or" expression_or {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Or }.into()
+      expression_nor spanned("or") expression_or {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Or, $2.span), span: $span.into() }.into()
       }
     | expression_nor { $1 };
 
 expression_nor -> Expression<'s>:
-      expression_and "nor" expression_nor {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Nor }.into()
+      expression_and spanned("nor") expression_nor {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Nor, $2.span), span: $span.into() }.into()
       }
     | expression_and { $1 };
 
 expression_and -> Expression<'s>:
-      expression_nand "and" expression_and {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::And }.into()
+      expression_nand spanned("and") expression_and {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::And, $2.span), span: $span.into() }.into()
       }
     | expression_nand { $1 };
 
 expression_nand -> Expression<'s>:
-      expression_not "nand" expression_nand {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Nand }.into()
+      expression_not spanned("nand") expression_nand {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Nand, $2.span), span: $span.into() }.into()
       }
     | expression_not { $1 };
 
 expression_not -> Expression<'s>:
-      "not" expression_not {
-        UnaryTerm { expression: $2, operator: UnaryOperator::Not }.into()
+      spanned("not") expression_not {
+        UnaryTerm { expression: $2, operator: sp(UnaryOperator::Not, $1.span), span: $span.into() }.into()
       }
     | expression_cmp { $1 };
 
 expression_cmp -> Expression<'s>:
-      expression_plus "=" expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Eq }.into()
+      expression_plus spanned("=") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Eq, $2.span), span: $span.into() }.into()
       }
-    | expression_plus "<>" expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Ne }.into()
+    | expression_plus spanned("<>") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Ne, $2.span), span: $span.into() }.into()
       }
     | expression_plus { $1 };
 
 expression_plus -> Expression<'s>:
-      expression_sxt "+" expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Add }.into()
+      expression_sxt spanned("+") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Add, $2.span), span: $span.into() }.into()
       }
-    | expression_sxt "-" expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: BinaryOperator::Sub }.into()
+    | expression_sxt spanned("-") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Sub, $2.span), span: $span.into() }.into()
       }
     | expression_sxt { $1 };
 
 expression_sxt -> Expression<'s>:
-      "sxt" expression_sxt {
-        UnaryTerm { expression: $2, operator: UnaryOperator::Sxt }.into()
+      spanned("sxt") expression_sxt {
+        UnaryTerm { expression: $2, operator: sp(UnaryOperator::Sxt, $1.span), span: $span.into() }.into()
       }
     | expression_sign_neg { $1 };
 
 expression_sign_neg -> Expression<'s>:
-      either("-", "neg") expression_sign_neg {
-        UnaryTerm { expression: $2, operator: UnaryOperator::SignNeg }.into()
+      spanned(either("-", "neg")) expression_sign_neg {
+        UnaryTerm { expression: $2, operator: sp(UnaryOperator::SignNeg, $1.span), span: $span.into() }.into()
       }
     | expression_leaf { $1 };
 
@@ -130,29 +135,29 @@ expression_leaf -> Expression<'s>:
     | concat { Atom::Concat($1).into() }
     | register_array { Atom::RegisterArray($1).into() }
     | reg_bus { Atom::RegBus($1).into() }
-    | number { Atom::Number($1).into() };
+    | spanned(number) { Atom::Number($1).into() };
 
 // ...
-memory -> Memory<'s>: ident memory_range { Memory { ident: $1, range: $2 } };
-reg_bus -> RegBus<'s>: ident opt(bit_range) { RegBus { ident: $1, range: $2 } };
-register_array -> RegisterArray<'s>: ident "[" expression "]" { RegisterArray { ident: $1, index: Box::new($3) } };
+memory -> Memory<'s>: spanned(ident) memory_range { Memory { ident: $1, range: $2, span: $span.into() } };
+reg_bus -> RegBus<'s>: spanned(ident) opt(spanned(bit_range)) { RegBus { ident: $1, range: $2, span: $span.into() } };
+register_array -> RegisterArray<'s>: spanned(ident) "[" expression "]" { RegisterArray { ident: $1, index: Box::new($3), span: $span.into() } };
 concat -> Concat<'s>:
     concat_part many1(preceded(".", concat_part)) {
         let mut parts = $2;
         parts.insert(0, $1);
-        Concat { parts }
+        Concat { parts, span: $span.into() }
     };
 concat_part -> ConcatPart<'s>:
       register_array { ConcatPart::RegisterArray($1) }
     | reg_bus { ConcatPart::RegBus($1) }
-    | number { ConcatPart::Number($1) };
+    | spanned(number) { ConcatPart::Number($1) };
 
 // Common rules
 bit_range -> BitRange:
       "(" number_usize ":" number_usize ")" { BitRange { msb: $2, lsb: Some($4) } }
     | "(" number_usize ")" { BitRange { msb: $2, lsb: None } };
 memory_range -> MemoryRange<'s>:
-    "(" ident "," ident ")" { MemoryRange { address_register: $2, data_register: $4 } };
+    "(" spanned(ident) "," spanned(ident) ")" { MemoryRange { address_register: $2, data_register: $4, span: $span.into() } };
 
 // Number rules
 number_usize -> usize: exact(Token::LiteralNumberDec) { parse_usize($1, $span) }?;
@@ -222,7 +227,7 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 
 use rtcore::{ast::*, value::Value};
 use crate::lexer::Token;
-use toktok::combinator::{sep1, eoi, many0, many1, exact, opt, preceded, terminated, either};
+use toktok::combinator::{sep1, eoi, many0, many1, exact, opt, preceded, terminated, either, positioned};
 use toktok::Error;
 use std::ops::Range;
 
@@ -264,4 +269,20 @@ fn parse_bit_string(s: &str, span: Range<usize>) -> Result<Number> {
         Ok(value) => Ok(Number { value, kind: NumberKind::BitString }),
         Err(()) => Err(Error::new_custom(span, "invalid bit string".into())),
     }
+}
+
+fn spanned<'s, 't, T, O, F>(f: F) -> impl Fn(toktok::State<'s, 't, T>) -> toktok::PResult<'s, 't, T, Spanned<O>>
+where
+    F: toktok::Parser<'s, 't, T, O>,
+    's: 't,
+{
+    move |state| {
+        let (state, (output, range)) = positioned(f.as_ref()).parse(state)?;
+
+        Ok((state, Spanned { node: output, span: range.into() }))
+    }
+}
+
+fn sp<T>(node: T, span: Span) -> Spanned<T> {
+  Spanned { node, span }
 }

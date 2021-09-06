@@ -32,7 +32,7 @@ struct AssignTarget<'s> {
 #[derive(Debug, Clone)]
 struct AssignInfo {
     range: Option<BitRange>,
-    span: Range<usize>,
+    span: Span,
 }
 
 impl<'s> State<'s> {
@@ -40,13 +40,7 @@ impl<'s> State<'s> {
         Self { symbols, assigned: HashMap::new() }
     }
 
-    fn insert(
-        &mut self,
-        name: Ident<'s>,
-        type_: SymbolType,
-        range: Option<BitRange>,
-        span: Range<usize>,
-    ) {
+    fn insert(&mut self, name: Ident<'s>, type_: SymbolType, range: Option<BitRange>, span: Span) {
         self.assigned
             .entry(AssignTarget { name, type_ })
             .or_default()
@@ -55,53 +49,68 @@ impl<'s> State<'s> {
 }
 
 impl<'s> SimState<'s> for State<'s> {
-    fn condition(&mut self, _: &Expression<'s>, _: Range<usize>) -> Result {
+    fn condition(&mut self, _: &Expression<'s>) -> Result {
         Ok(())
     }
-    fn nop(&mut self, _: &Nop, _: Range<usize>) -> Result {
+    fn nop(&mut self, _: &Nop) -> Result {
         Ok(())
     }
-    fn goto(&mut self, _: &Goto<'s>, _: Range<usize>) -> Result {
+    fn goto(&mut self, _: &Goto<'s>) -> Result {
         Ok(())
     }
-    fn write(&mut self, write: &Write<'s>, span: Range<usize>) -> Result {
-        self.insert(write.ident, SymbolType::Memory, None, span);
+    fn write(&mut self, write: &Write<'s>) -> Result {
+        self.insert(write.ident.node, SymbolType::Memory, None, write.span);
         Ok(())
     }
 
-    fn read(&mut self, read: &Read<'s>, span: Range<usize>) -> Result {
-        match self.symbols.symbol(read.ident) {
+    fn read(&mut self, read: &Read<'s>) -> Result {
+        match self.symbols.symbol(read.ident.node) {
             Some(Symbol::Memory(mem_range)) => {
-                self.insert(mem_range.data_register, SymbolType::Register, None, span);
+                self.insert(mem_range.data_register.node, SymbolType::Register, None, read.span);
                 Ok(())
             }
-            _ => Err(InternalError(format!("missing memory: {}", read.ident.0))),
+            _ => Err(InternalError(format!("missing memory: {}", read.ident.node.0))),
         }
     }
 
-    fn assignment(&mut self, assignment: &Assignment<'s>, span: Range<usize>) -> Result {
+    fn assignment(&mut self, assignment: &Assignment<'s>) -> Result {
         match &assignment.lhs {
             Lvalue::Register(reg) => {
-                self.insert(reg.ident, SymbolType::Register, reg.range, span);
+                self.insert(
+                    reg.ident.node,
+                    SymbolType::Register,
+                    reg.range.map(|s| s.node),
+                    assignment.span,
+                );
             }
             Lvalue::Bus(bus) => {
-                self.insert(bus.ident, SymbolType::Bus, bus.range, span);
+                self.insert(
+                    bus.ident.node,
+                    SymbolType::Bus,
+                    bus.range.map(|s| s.node),
+                    assignment.span,
+                );
             }
             Lvalue::RegisterArray(reg_array) => {
-                self.insert(reg_array.ident, SymbolType::RegisterArray, None, span);
+                self.insert(reg_array.ident.node, SymbolType::RegisterArray, None, assignment.span);
             }
             Lvalue::ConcatClocked(concat) => {
                 for part in &concat.parts {
                     match part {
                         ConcatPartLvalueClocked::Register(reg, _) => {
-                            self.insert(reg.ident, SymbolType::Register, reg.range, span.clone());
+                            self.insert(
+                                reg.ident.node,
+                                SymbolType::Register,
+                                reg.range.map(|s| s.node),
+                                assignment.span,
+                            );
                         }
                         ConcatPartLvalueClocked::RegisterArray(reg_array, _) => {
                             self.insert(
-                                reg_array.ident,
+                                reg_array.ident.node,
                                 SymbolType::RegisterArray,
                                 None,
-                                span.clone(),
+                                assignment.span,
                             );
                         }
                     }
@@ -111,7 +120,12 @@ impl<'s> SimState<'s> for State<'s> {
                 for part in &concat.parts {
                     match part {
                         ConcatPartLvalueUnclocked::Bus(bus, _) => {
-                            self.insert(bus.ident, SymbolType::Bus, bus.range, span.clone());
+                            self.insert(
+                                bus.ident.node,
+                                SymbolType::Bus,
+                                bus.range.map(|s| s.node),
+                                assignment.span,
+                            );
                         }
                     }
                 }

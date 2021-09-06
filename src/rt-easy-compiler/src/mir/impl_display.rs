@@ -14,11 +14,11 @@ impl Display for Mir<'_> {
 impl Display for Statement<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.label {
-            Some(label) => write!(f, "{}:\n", label.0)?,
+            Some(label) => write!(f, "{}:\n", label.node.0)?,
             None => write!(f, "_:\n")?,
         }
 
-        for step in &self.steps {
+        for step in &self.steps.node {
             write!(f, "    {}\n", step)?;
         }
 
@@ -56,8 +56,8 @@ impl Display for Criterion {
 
 impl Display for Operation<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        use OperationKind::*;
-        match &self.kind {
+        use Operation::*;
+        match self {
             EvalCriterion(op) => write!(f, "{}", op),
             EvalCriterionSwitchGroup(op) => write!(f, "{}", op),
             Nop(op) => write!(f, "{}", op),
@@ -77,7 +77,7 @@ impl Display for EvalCriterion<'_> {
 
 impl Display for EvalCriterionSwitchGroup<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let mut elements = self.0.iter();
+        let mut elements = self.eval_criteria.iter();
 
         if let Some(e) = elements.next() {
             write!(f, "{}", e)?;
@@ -98,19 +98,19 @@ impl Display for Nop {
 
 impl Display for Goto<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "goto {}", self.label.0)
+        write!(f, "goto {}", self.label.node.0)
     }
 }
 
 impl Display for Write<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "write {}", self.ident.0)
+        write!(f, "write {}", self.ident.node.0)
     }
 }
 
 impl Display for Read<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "read {}", self.ident.0)
+        write!(f, "read {}", self.ident.node.0)
     }
 }
 
@@ -152,28 +152,28 @@ impl Display for Atom<'_> {
             Register(atom) => write!(f, "{}", atom),
             Bus(atom) => write!(f, "{}", atom),
             RegisterArray(atom) => write!(f, "{}", atom),
-            Number(atom) => write!(f, "{}", atom.value.as_dec()),
+            Number(atom) => write!(f, "{}", atom.node.value.as_dec()),
         }
     }
 }
 
 impl Display for BinaryTerm<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {} {})", self.lhs, binary_op(self.operator), self.rhs)
+        write!(f, "({} {} {})", self.lhs, binary_op(self.operator.node), self.rhs)
     }
 }
 
 impl Display for UnaryTerm<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {})", unary_op(self.operator), self.expression)
+        write!(f, "({} {})", unary_op(self.operator.node), self.expression)
     }
 }
 
 impl Display for Register<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.range {
-            Some(range) => write!(f, "{}{}", self.ident.0, bit_range(range)),
-            None => write!(f, "{}", self.ident.0),
+            Some(range) => write!(f, "{}{}", self.ident.node.0, bit_range(range.node)),
+            None => write!(f, "{}", self.ident.node.0),
         }
     }
 }
@@ -181,15 +181,15 @@ impl Display for Register<'_> {
 impl Display for Bus<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.range {
-            Some(range) => write!(f, "{}{}", self.ident.0, bit_range(range)),
-            None => write!(f, "{}", self.ident.0),
+            Some(range) => write!(f, "{}{}", self.ident.node.0, bit_range(range.node)),
+            None => write!(f, "{}", self.ident.node.0),
         }
     }
 }
 
 impl Display for RegisterArray<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{}[{}]", self.ident.0, self.index)
+        write!(f, "{}[{}]", self.ident.node.0, self.index)
     }
 }
 
@@ -236,7 +236,7 @@ impl Display for ConcatPartExpr<'_> {
             Register(reg) => write!(f, "{}", reg),
             Bus(bus) => write!(f, "{}", bus),
             RegisterArray(reg_array) => write!(f, "{}", reg_array),
-            Number(number) => write!(f, "{}", number.value.as_dec()),
+            Number(number) => write!(f, "{}", number.node.value.as_dec()),
         }
     }
 }
