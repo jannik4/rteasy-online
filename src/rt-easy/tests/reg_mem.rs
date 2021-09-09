@@ -20,7 +20,7 @@ fn dr_then_write() {
     }
 
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("DR".to_string())).unwrap(),
+        simulator.register_value(&Ident("DR".to_string())).unwrap(),
         Value::parse_dec("17").unwrap()
     );
 }
@@ -44,7 +44,7 @@ fn ar_then_read() {
     }
 
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("DR".to_string())).unwrap(),
+        simulator.register_value(&Ident("DR".to_string())).unwrap(),
         Value::parse_dec("17").unwrap()
     );
 }
@@ -78,11 +78,11 @@ fn read_then_read() {
     }
 
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("AR".to_string())).unwrap(),
+        simulator.register_value(&Ident("AR".to_string())).unwrap(),
         Value::parse_dec("5").unwrap()
     );
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("DR".to_string())).unwrap(),
+        simulator.register_value(&Ident("DR".to_string())).unwrap(),
         Value::parse_dec("1").unwrap()
     );
 }

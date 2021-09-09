@@ -20,35 +20,35 @@ fn mult() {
     // xor
     simulator.step().unwrap();
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("A".to_string())).unwrap(),
+        simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("1011", false).unwrap()
     );
 
     // or
     simulator.step().unwrap();
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("A".to_string())).unwrap(),
+        simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("1111", false).unwrap()
     );
 
     // nor
     simulator.step().unwrap();
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("A".to_string())).unwrap(),
+        simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("11111111111111111111111111110000", false).unwrap()
     );
 
     // and
     simulator.step().unwrap();
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("A".to_string())).unwrap(),
+        simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("100", false).unwrap()
     );
 
     // nand
     simulator.step().unwrap();
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("A".to_string())).unwrap(),
+        simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("11111111111111111111111111111011", false).unwrap()
     );
 }

@@ -7,7 +7,6 @@ mod simulator;
 mod state;
 
 pub use self::{
-    error::Error,
+    error::{Error, Result},
     simulator::Simulator,
-    state::{ChangeSet, State},
 };

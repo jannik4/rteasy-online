@@ -1,8 +1,5 @@
 use rt_easy::{
-    rtcore::{
-        program::{Bus, Ident},
-        value::Value,
-    },
+    rtcore::{program::Ident, value::Value},
     simulator::Simulator,
 };
 
@@ -26,21 +23,11 @@ fn mult() {
     let mut simulator = compile(SOURCE);
 
     // A
-    simulator
-        .write_into_bus(
-            &Bus { ident: Ident("INBUS".to_string()), range: None },
-            Value::parse_dec("3").unwrap(),
-        )
-        .unwrap();
+    simulator.write_bus(&Ident("INBUS".to_string()), Value::parse_dec("3").unwrap()).unwrap();
     simulator.step().unwrap();
 
     // FACTOR
-    simulator
-        .write_into_bus(
-            &Bus { ident: Ident("INBUS".to_string()), range: None },
-            Value::parse_dec("7").unwrap(),
-        )
-        .unwrap();
+    simulator.write_bus(&Ident("INBUS".to_string()), Value::parse_dec("7").unwrap()).unwrap();
     simulator.step().unwrap();
 
     // Run to end
@@ -49,7 +36,7 @@ fn mult() {
     }
 
     assert_eq!(
-        simulator.state().registers().read_full(&Ident("RES".to_string())).unwrap(),
+        simulator.register_value(&Ident("RES".to_string())).unwrap(),
         Value::parse_dec("21").unwrap()
     );
 }

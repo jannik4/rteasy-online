@@ -1,6 +1,10 @@
-use crate::{execute::Execute, ChangeSet, Error, State};
+use crate::{
+    execute::{Execute, ExecuteResult},
+    state::State,
+    Error,
+};
 use rtcore::{
-    program::{Bus, Criterion, CriterionId, Ident, Program, Register, Span},
+    program::{Criterion, CriterionId, Ident, Label, Program, Span},
     value::Value,
 };
 use std::collections::HashSet;
@@ -9,7 +13,6 @@ use std::mem;
 pub struct Simulator {
     cycle_count: usize,
     state: State,
-    change_set: ChangeSet,
     buses_persist: HashSet<Ident>,
 
     program: Program,
@@ -21,7 +24,6 @@ impl Simulator {
         Self {
             cycle_count: 0,
             state: State::init(&program),
-            change_set: ChangeSet::new(),
             buses_persist: HashSet::new(),
 
             program,
@@ -32,7 +34,6 @@ impl Simulator {
     pub fn reset(&mut self) {
         self.cycle_count = 0;
         self.state = State::init(&self.program);
-        self.change_set = ChangeSet::new();
         self.buses_persist = HashSet::new();
 
         self.cursor = Some(Cursor::new(0));
@@ -42,30 +43,8 @@ impl Simulator {
         self.cycle_count
     }
 
-    pub fn state(&self) -> &State {
-        &self.state
-    }
-
     pub fn is_finished(&self) -> bool {
         self.cursor.is_none()
-    }
-
-    pub fn write_into_register(&mut self, register: Register, value: Value) -> Result<(), Error> {
-        let mut change_set = ChangeSet::new();
-        change_set.write_into_register(register, value)?;
-        self.state.apply_change_set(change_set)?;
-        Ok(())
-    }
-
-    pub fn write_into_bus(&mut self, bus: &Bus, value: Value) -> Result<(), Error> {
-        self.state.write_into_bus(bus, value)?;
-
-        // Persist bus value if between statements
-        if self.cursor.as_ref().map(Cursor::is_at_statement_start).unwrap_or(false) {
-            self.buses_persist.insert(bus.ident.clone());
-        }
-
-        Ok(())
     }
 
     pub fn step(&mut self) -> Result<Option<Span>, Error> {
@@ -109,9 +88,13 @@ impl Simulator {
 
             // Execute step
             let step_executed = if criteria_match(&step.criteria, &cursor.criteria_set) {
-                let res = step.operation.execute(&mut self.state, &mut self.change_set)?;
-                for criterion in res {
-                    cursor.criteria_set.insert(criterion);
+                match step.operation.execute(&self.state)? {
+                    ExecuteResult::Void => (),
+                    ExecuteResult::Criterion(Criterion::True(id)) => {
+                        cursor.criteria_set.insert(id);
+                    }
+                    ExecuteResult::Criterion(Criterion::False(_)) => (),
+                    ExecuteResult::Goto(label) => cursor.goto = Some(label),
                 }
                 true
             } else {
@@ -128,10 +111,10 @@ impl Simulator {
 
             if statement_completed {
                 // Apply changes
-                let goto_label = self.state.apply_change_set(mem::take(&mut self.change_set))?;
+                self.state.clock();
 
                 // Update cursor
-                let next_statement_idx = match goto_label {
+                let next_statement_idx = match cursor.goto.take() {
                     Some(goto_label) => self
                         .program
                         .statements()
@@ -147,7 +130,7 @@ impl Simulator {
             }
             // Else check if steps pre pipe completed
             else if cursor.step_idx == statement.steps.node.split_at() {
-                self.state.apply_change_set(mem::take(&mut self.change_set))?;
+                self.state.clock();
             }
 
             // Break, if progress has been made
@@ -169,11 +152,12 @@ struct Cursor {
     statement_idx: usize,
     step_idx: usize,
     criteria_set: HashSet<CriterionId>,
+    goto: Option<Label>,
 }
 
 impl Cursor {
     fn new(statement_idx: usize) -> Self {
-        Self { statement_idx, step_idx: 0, criteria_set: HashSet::new() }
+        Self { statement_idx, step_idx: 0, criteria_set: HashSet::new(), goto: None }
     }
 
     fn is_at_statement_start(&self) -> bool {
@@ -186,4 +170,46 @@ fn criteria_match(criteria: &[Criterion], criteria_set: &HashSet<CriterionId>) -
         Criterion::True(id) => criteria_set.contains(id),
         Criterion::False(id) => !criteria_set.contains(id),
     })
+}
+
+impl Simulator {
+    // ------------------------------------------------------------
+    // Registers
+    // ------------------------------------------------------------
+
+    pub fn registers(&self) -> impl Iterator<Item = &Ident> {
+        self.state.register_names()
+    }
+    pub fn register_value(&self, name: &Ident) -> Result<Value, Error> {
+        self.state.register(name)?.read(None)
+    }
+    pub fn register_value_next(&self, name: &Ident) -> Result<Option<Value>, Error> {
+        Ok(self.state.register(name)?.value_next())
+    }
+    pub fn write_register(&mut self, name: &Ident, value: Value) -> Result<(), Error> {
+        self.state.register_mut(name)?.write(None, value)?;
+        self.state.register_mut(name)?.clock();
+        Ok(())
+    }
+
+    // ------------------------------------------------------------
+    // Buses
+    // ------------------------------------------------------------
+
+    pub fn buses(&self) -> impl Iterator<Item = &Ident> {
+        self.state.bus_names()
+    }
+    pub fn bus_value(&self, name: &Ident) -> Result<Value, Error> {
+        self.state.bus(name)?.read(None)
+    }
+    pub fn write_bus(&mut self, name: &Ident, value: Value) -> Result<(), Error> {
+        self.state.bus_mut(name)?.write(None, value)?;
+
+        // Persist bus value if between statements
+        if self.cursor.as_ref().map(Cursor::is_at_statement_start).unwrap_or(false) {
+            self.buses_persist.insert(name.clone());
+        }
+
+        Ok(())
+    }
 }

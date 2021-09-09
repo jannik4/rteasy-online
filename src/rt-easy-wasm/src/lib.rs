@@ -78,19 +78,14 @@ impl Simulator {
     }
 
     pub fn registers(&self) -> Vec<JsValue> {
-        let mut registers =
-            self.0.state().registers().names().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        let mut registers = self.0.registers().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         registers.sort();
 
         registers.into_iter().map(Into::into).collect()
     }
 
     pub fn register_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
-        let value = match self
-            .0
-            .state()
-            .registers()
-            .read_full(&rt_easy::rtcore::program::Ident(name.to_string()))
+        let value = match self.0.register_value(&rt_easy::rtcore::program::Ident(name.to_string()))
         {
             Ok(value) => value,
             Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
@@ -121,33 +116,21 @@ impl Simulator {
         let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
 
         self.0
-            .write_into_register(
-                rt_easy::rtcore::program::Register {
-                    ident: rt_easy::rtcore::program::Ident(name.to_string()),
-                    range: None,
-                },
-                value,
-            )
+            .write_register(&rt_easy::rtcore::program::Ident(name.to_string()), value)
             .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
 
         Ok(())
     }
 
     pub fn buses(&self) -> Vec<JsValue> {
-        let mut buses =
-            self.0.state().buses().names().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        let mut buses = self.0.buses().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         buses.sort();
 
         buses.into_iter().map(Into::into).collect()
     }
 
     pub fn bus_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
-        let value = match self
-            .0
-            .state()
-            .buses()
-            .read_full(&rt_easy::rtcore::program::Ident(name.to_string()))
-        {
+        let value = match self.0.bus_value(&rt_easy::rtcore::program::Ident(name.to_string())) {
             Ok(value) => value,
             Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
         };
@@ -172,13 +155,7 @@ impl Simulator {
         let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
 
         self.0
-            .write_into_bus(
-                &rt_easy::rtcore::program::Bus {
-                    ident: rt_easy::rtcore::program::Ident(name.to_string()),
-                    range: None,
-                },
-                value,
-            )
+            .write_bus(&rt_easy::rtcore::program::Ident(name.to_string()), value)
             .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
 
         Ok(())

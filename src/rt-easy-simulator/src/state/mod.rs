@@ -1,143 +1,214 @@
-mod buses;
-mod memories;
-mod reg_bus;
-mod register_arrays;
-mod registers;
+mod bus;
+mod memory;
+mod register;
+mod register_array;
+mod util;
 
 use self::{
-    buses::BusesState, memories::MemoriesState, register_arrays::RegisterArraysState,
-    registers::RegistersState,
+    bus::BusState, memory::MemoryState, register::RegisterState, register_array::RegisterArrayState,
 };
-use crate::Error;
+use crate::{Error, Result};
 use rtcore::{
-    program::{Bus, Ident, Label, Program, Register},
+    program::{Declaration, Ident, Program},
     value::Value,
 };
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 #[derive(Debug)]
 pub struct State {
-    registers: RegistersState,
-    buses: BusesState,
-    memories: MemoriesState,
-    register_arrays: RegisterArraysState,
+    registers: HashMap<Ident, RegisterState>,
+    buses: HashMap<Ident, BusState>,
+    register_arrays: HashMap<Ident, RegisterArrayState>,
+    memories: HashMap<Ident, MemoryState>,
 }
 
 impl State {
     pub fn init(program: &Program) -> Self {
-        let registers = RegistersState::init(program);
-        let buses = BusesState::init(program);
-        let memories = MemoriesState::init(program, &registers);
-        let register_arrays = RegisterArraysState::init(program);
+        let mut registers = HashMap::new();
+        let mut buses = HashMap::new();
+        let mut memories = HashMap::new();
+        let mut register_arrays = HashMap::new();
+
+        // Init all, but memories (memories need access to registers)
+        for declaration in program.declarations() {
+            match declaration {
+                Declaration::Register(declare_register) => {
+                    for reg in &declare_register.registers {
+                        registers.insert(reg.ident.clone(), RegisterState::init(reg.range));
+                    }
+                }
+                Declaration::Bus(declare_bus) => {
+                    for bus in &declare_bus.buses {
+                        buses.insert(bus.ident.clone(), BusState::init(bus.range));
+                    }
+                }
+                Declaration::RegisterArray(declare_register_array) => {
+                    for reg_array in &declare_register_array.register_arrays {
+                        let index_size = log_2(reg_array.len);
+                        let data_size = reg_array.range.unwrap_or_default().size();
+                        register_arrays.insert(
+                            reg_array.ident.clone(),
+                            RegisterArrayState::init(index_size, data_size),
+                        );
+                    }
+                }
+                Declaration::Memory(_) => (),
+            }
+        }
+
+        // Init memories
+        for declaration in program.declarations() {
+            if let Declaration::Memory(declare_memory) = declaration {
+                for mem in &declare_memory.memories {
+                    let ar_size =
+                        registers.get(&mem.range.address_register).unwrap().range().size();
+                    let dr_size = registers.get(&mem.range.data_register).unwrap().range().size();
+                    memories.insert(
+                        mem.ident.clone(),
+                        MemoryState::init(mem.range.clone(), ar_size, dr_size),
+                    );
+                }
+            }
+        }
+
         Self { registers, buses, memories, register_arrays }
     }
 
-    pub fn clear_buses(&mut self, buses_persist: &HashSet<Ident>) {
-        self.buses.clear(buses_persist);
-    }
-
-    pub fn write_into_bus(&mut self, bus: &Bus, value: Value) -> Result<(), Error> {
-        self.buses.write(bus, value)
-    }
-
-    pub fn apply_change_set(&mut self, change_set: ChangeSet) -> Result<Option<Label>, Error> {
-        for mem in change_set.write_memory {
-            self.memories.write(&mem, &self.registers)?;
+    pub fn clock(&mut self) {
+        for state in self.registers.values_mut() {
+            state.clock();
         }
-        for (reg, val) in change_set.write_register {
-            self.registers.write(&reg.ident, reg.range, val)?;
+        for state in self.memories.values_mut() {
+            state.clock();
         }
-        for (name, idx, val) in change_set.write_register_array {
-            self.register_arrays.write(&name, idx, val)?;
+        for state in self.register_arrays.values_mut() {
+            state.clock();
         }
-
-        Ok(change_set.goto)
     }
 
-    // --------------------------------
-    // Getters
-    // --------------------------------
-
-    pub fn registers(&self) -> &RegistersState {
-        &self.registers
+    pub fn clear_buses(&self, buses_persist: &HashSet<Ident>) {
+        for (ident, bus) in &self.buses {
+            if !buses_persist.contains(ident) {
+                bus.write(None, Value::zero(bus.range().size())).unwrap();
+            }
+        }
     }
 
-    pub fn buses(&self) -> &BusesState {
-        &self.buses
+    pub fn register_names(&self) -> impl Iterator<Item = &Ident> {
+        self.registers.keys()
+    }
+    pub fn register(&self, name: &Ident) -> Result<&RegisterState> {
+        self.registers.get(name).ok_or(Error::Other)
+    }
+    pub fn register_mut(&mut self, name: &Ident) -> Result<&mut RegisterState> {
+        self.registers.get_mut(name).ok_or(Error::Other)
     }
 
-    pub fn memories(&self) -> &MemoriesState {
-        &self.memories
+    pub fn bus_names(&self) -> impl Iterator<Item = &Ident> {
+        self.buses.keys()
+    }
+    pub fn bus(&self, name: &Ident) -> Result<&BusState> {
+        self.buses.get(name).ok_or(Error::Other)
+    }
+    pub fn bus_mut(&mut self, name: &Ident) -> Result<&mut BusState> {
+        self.buses.get_mut(name).ok_or(Error::Other)
     }
 
-    pub fn register_arrays(&self) -> &RegisterArraysState {
-        &self.register_arrays
+    pub fn register_array_names(&self) -> impl Iterator<Item = &Ident> {
+        self.register_arrays.keys()
+    }
+    pub fn register_array(&self, name: &Ident) -> Result<&RegisterArrayState> {
+        self.register_arrays.get(name).ok_or(Error::Other)
+    }
+    pub fn register_array_mut(&mut self, name: &Ident) -> Result<&mut RegisterArrayState> {
+        self.register_arrays.get_mut(name).ok_or(Error::Other)
+    }
+
+    pub fn memory_names(&self) -> impl Iterator<Item = &Ident> {
+        self.memories.keys()
+    }
+    pub fn memory(&self, name: &Ident) -> Result<&MemoryState> {
+        self.memories.get(name).ok_or(Error::Other)
+    }
+    pub fn memory_mut(&mut self, name: &Ident) -> Result<&mut MemoryState> {
+        self.memories.get_mut(name).ok_or(Error::Other)
     }
 }
 
 impl fmt::Display for State {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "--- Registers ---\n{}\n\n", self.registers)?;
-        write!(f, "--- Buses ---\n{}\n\n", self.buses)?;
-        write!(f, "--- Register Arrays ---\n{}\n\n", self.register_arrays)?;
-        write!(f, "--- Memories ---\n{}", self.memories)?;
-
-        Ok(())
-    }
-}
-
-#[derive(Debug)]
-pub struct ChangeSet {
-    goto: Option<Label>,
-    write_register: Vec<(Register, Value)>,
-    write_register_array: Vec<(Ident, Value, Value)>,
-    write_memory: Vec<Ident>,
-}
-
-impl ChangeSet {
-    pub fn new() -> Self {
-        Default::default()
-    }
-
-    pub fn goto(&mut self, label: Label) -> Result<(), Error> {
-        match self.goto {
-            Some(_) => Err(Error::Other),
-            None => {
-                self.goto = Some(label);
-                Ok(())
-            }
+        // Registers
+        write!(f, "--- Registers ---\n")?;
+        let mut registers = self.register_names().collect::<Vec<_>>();
+        registers.sort();
+        for (idx, reg) in registers.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                reg.0,
+                self.register(reg).unwrap().read(None).unwrap().as_dec()
+            )?;
         }
-    }
+        write!(f, "\n\n")?;
 
-    pub fn write_into_register(&mut self, register: Register, value: Value) -> Result<(), Error> {
-        self.write_register.push((register, value));
-        Ok(())
-    }
+        // Buses
+        write!(f, "--- Buses ---\n")?;
+        let mut buses = self.bus_names().collect::<Vec<_>>();
+        buses.sort();
+        for (idx, bus) in buses.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                bus.0,
+                self.bus(bus).unwrap().read(None).unwrap().as_dec()
+            )?;
+        }
+        write!(f, "\n\n")?;
 
-    pub fn write_into_register_array(
-        &mut self,
-        name: Ident,
-        idx: Value,
-        value: Value,
-    ) -> Result<(), Error> {
-        self.write_register_array.push((name, idx, value));
-        Ok(())
-    }
+        // Register arrays
+        write!(f, "--- Register Arrays ---\n")?;
+        let mut register_arrays = self.register_array_names().collect::<Vec<_>>();
+        register_arrays.sort();
+        for (idx, reg_array) in register_arrays.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                reg_array.0,
+                self.register_array(reg_array).unwrap()
+            )?;
+        }
+        write!(f, "\n\n")?;
 
-    pub fn write_memory(&mut self, name: Ident) -> Result<(), Error> {
-        self.write_memory.push(name);
+        // Memories
+        write!(f, "--- Memories ---\n")?;
+        let mut memories = self.memory_names().collect::<Vec<_>>();
+        memories.sort();
+        for (idx, mem) in memories.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                mem.0,
+                self.memory(mem).unwrap()
+            )?;
+        }
+
         Ok(())
     }
 }
 
-impl Default for ChangeSet {
-    fn default() -> Self {
-        Self {
-            goto: None,
-            write_register: Vec::new(),
-            write_register_array: Vec::new(),
-            write_memory: Vec::new(),
-        }
+fn log_2(x: usize) -> usize {
+    const fn num_bits<T>() -> usize {
+        std::mem::size_of::<T>() * 8
+    }
+
+    if x == 0 {
+        0
+    } else {
+        num_bits::<usize>() - x.leading_zeros() as usize - 1
     }
 }

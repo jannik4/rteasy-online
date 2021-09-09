@@ -1,4 +1,4 @@
-use crate::{Error, State};
+use crate::{state::State, Error};
 use rtcore::{
     program::{
         Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, ExpressionKind,
@@ -87,7 +87,7 @@ impl Evaluate for UnaryTerm {
 
 impl Evaluate for Register {
     fn evaluate(&self, state: &State, ctx_size: usize) -> Result {
-        let mut value = state.registers().read(&self.ident, self.range)?;
+        let mut value = state.register(&self.ident)?.read(self.range)?;
         value.extend_zero(ctx_size);
         Ok(value)
     }
@@ -95,7 +95,7 @@ impl Evaluate for Register {
 
 impl Evaluate for Bus {
     fn evaluate(&self, state: &State, ctx_size: usize) -> Result {
-        let mut value = state.buses().read(&self.ident, self.range)?;
+        let mut value = state.bus(&self.ident)?.read(self.range)?;
         value.extend_zero(ctx_size);
         Ok(value)
     }
@@ -105,7 +105,7 @@ impl Evaluate for RegisterArray {
     fn evaluate(&self, state: &State, ctx_size: usize) -> Result {
         let idx = self.index.evaluate(state, self.index_ctx_size)?;
 
-        let mut value = state.register_arrays().read(&self.ident, idx)?;
+        let mut value = state.register_array(&self.ident)?.read(idx)?;
         value.extend_zero(ctx_size);
 
         Ok(value)
@@ -126,11 +126,11 @@ impl Evaluate for Concat<ConcatPartExpr> {
             .parts
             .iter()
             .map(|part| match part {
-                ConcatPartExpr::Register(reg) => state.registers().read(&reg.ident, reg.range),
-                ConcatPartExpr::Bus(bus) => state.buses().read(&bus.ident, bus.range),
+                ConcatPartExpr::Register(reg) => state.register(&reg.ident)?.read(reg.range),
+                ConcatPartExpr::Bus(bus) => state.bus(&bus.ident)?.read(bus.range),
                 ConcatPartExpr::RegisterArray(reg_array) => {
                     let idx = reg_array.index.evaluate(state, reg_array.index_ctx_size)?;
-                    state.register_arrays().read(&reg_array.ident, idx)
+                    state.register_array(&reg_array.ident)?.read(idx)
                 }
                 ConcatPartExpr::Number(number) => Ok(number.value.clone()),
             })
