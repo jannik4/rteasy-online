@@ -101,6 +101,26 @@ impl Simulator {
         Ok(value)
     }
 
+    pub fn register_value_next(&self, name: &str, base: &str) -> Result<Option<String>, JsValue> {
+        let value =
+            match self.0.register_value_next(&rt_easy::rtcore::program::Ident(name.to_string())) {
+                Ok(value) => value,
+                Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+            };
+
+        let value = match value {
+            Some(value) => match base {
+                "BIN" => Some(value.as_bin()),
+                "DEC" => Some(value.as_dec()),
+                "HEX" => Some(value.as_hex()),
+                _ => return Err(JsValue::from_str("invalid base")),
+            },
+            None => None,
+        };
+
+        Ok(value)
+    }
+
     pub fn write_into_register(
         &mut self,
         name: &str,

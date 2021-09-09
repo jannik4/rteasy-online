@@ -31,6 +31,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
   cycleCount: () => number;
   registers: () => string[];
   registerValue: (name: string, base: string) => string;
+  registerValueNext: (name: string, base: string) => string | null;
   writeIntoRegister: (name: string, value: string, base: string) => void;
   buses: () => string[];
   busValue: (name: string, base: string) => string;

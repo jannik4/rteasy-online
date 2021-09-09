@@ -83,6 +83,8 @@ export function model(
     registers: () => state.simulator.registers(),
     registerValue: (name: string, base: string) =>
       state.simulator.register_value(name, base),
+    registerValueNext: (name: string, base: string) =>
+      state.simulator.register_value_next(name, base) ?? null,
     writeIntoRegister: (name: string, value: string, base: string) => {
       try {
         state.simulator.write_into_register(name, value, base);
