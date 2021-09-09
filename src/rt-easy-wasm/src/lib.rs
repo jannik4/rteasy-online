@@ -180,6 +180,13 @@ impl Simulator {
 
         Ok(())
     }
+
+    pub fn memories(&self) -> Vec<JsValue> {
+        let mut memories = self.0.memories().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        memories.sort();
+
+        memories.into_iter().map(Into::into).collect()
+    }
 }
 
 #[wasm_bindgen]

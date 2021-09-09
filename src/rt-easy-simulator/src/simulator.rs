@@ -212,4 +212,12 @@ impl Simulator {
 
         Ok(())
     }
+
+    // ------------------------------------------------------------
+    // Memories
+    // ------------------------------------------------------------
+
+    pub fn memories(&self) -> impl Iterator<Item = &Ident> {
+        self.state.memory_names()
+    }
 }
