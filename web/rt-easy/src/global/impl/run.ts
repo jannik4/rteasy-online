@@ -102,5 +102,6 @@ export function model(
         console.log(e); // TODO: ???
       }
     },
+    memories: () => state.simulator.memories(),
   };
 }

@@ -47,4 +47,5 @@ export interface GlobalModelRun extends GlobalModelCommon {
   buses: () => string[];
   busValue: (name: string, base: string) => string;
   writeIntoBus: (name: string, value: string, base: string) => void;
+  memories: () => string[];
 }

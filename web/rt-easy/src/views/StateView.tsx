@@ -1,7 +1,17 @@
 import React, { useState, useContext } from "react";
-import { HTMLTable, HTMLSelect, Text, H5, InputGroup } from "@blueprintjs/core";
+import {
+  HTMLTable,
+  HTMLSelect,
+  Text,
+  H5,
+  InputGroup,
+  Button,
+} from "@blueprintjs/core";
+import { DockLocation, Orientation } from "flexlayout-react";
 
 import { GlobalContext } from "../global/context";
+import { LayoutModelContext, LayoutModel } from "../layout/context";
+import * as consts from "../layout/consts";
 
 interface Props {}
 
@@ -15,6 +25,7 @@ interface InputValue {
 const StateView: React.FC<Props> = () => {
   const [focused, setFocused] = useState<InputValue | null>(null);
   const globalModel = useContext(GlobalContext);
+  const layoutModel = useContext(LayoutModelContext);
 
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
@@ -152,8 +163,84 @@ const StateView: React.FC<Props> = () => {
           }
         </tbody>
       </HTMLTable>
+
+      <div style={{ height: 16 }} />
+      <H5>Memories</H5>
+
+      <HTMLTable width="100%" bordered condensed>
+        <thead>
+          <tr>
+            <th>Identifier</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            // TODO: Only get names one time!!! (on simulator create)
+            globalModel.memories().map((memory) => (
+              <tr key={memory}>
+                <td>{memory}</td>
+                <td>
+                  <Button
+                    small
+                    onClick={() => {
+                      // Select if exists
+                      const memoryStateId = consts.ID_TAB_STATE_MEMORY(memory);
+                      if (layoutModel.selectTab(memoryStateId)) {
+                        return;
+                      }
+
+                      // Find position
+                      const position = findPosition(layoutModel);
+                      if (position === null) return;
+
+                      // Create tab
+                      layoutModel.createTab(
+                        memoryStateId,
+                        `Memory (${memory})`,
+                        `memory-${memory}`,
+                        position.toNodeId,
+                        position.location
+                      );
+                    }}
+                  >
+                    Content
+                  </Button>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </HTMLTable>
     </div>
   );
 };
 
 export default StateView;
+
+function findPosition(
+  layoutModel: LayoutModel
+): { toNodeId: string; location: DockLocation } | null {
+  // Try to find "state extra tab"
+  const stateExtraTabParentId = layoutModel
+    .findOne((n) => n.getId().includes(consts.MARKER_STATE_EXTRA))
+    ?.getParent()
+    ?.getId();
+  if (stateExtraTabParentId !== undefined) {
+    return { toNodeId: stateExtraTabParentId, location: DockLocation.CENTER };
+  }
+
+  // Get state tab and parent
+  const stateTab = layoutModel.getNodeById(consts.ID_TAB_STATE);
+  if (stateTab === undefined) return null;
+  const stateTabParent = stateTab.getParent();
+  if (stateTabParent === undefined) return null;
+
+  return {
+    toNodeId: stateTabParent.getId(),
+    location:
+      stateTabParent.getOrientation() === Orientation.HORZ
+        ? DockLocation.RIGHT
+        : DockLocation.BOTTOM,
+  };
+}
