@@ -1,7 +1,7 @@
 import React from "react";
 
 import { RtEasy, Span } from "../../wasm";
-import { GlobalModelRun } from "../model";
+import { GlobalModelRun } from "../context";
 import { State, StateRun } from "../state";
 
 export function model(

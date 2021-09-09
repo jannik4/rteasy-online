@@ -4,8 +4,7 @@ import { Toolbar } from "./";
 import { EditPage, RunPage } from "../pages";
 
 import { RtEasyContext } from "../wasm/context";
-import { GlobalContext } from "../global/context";
-import { GlobalModel } from "../global/model";
+import { GlobalContext, GlobalModel } from "../global/context";
 import { State, initialState } from "../global/state";
 import { model as modelEdit } from "../global/impl/edit";
 import { model as modelRun } from "../global/impl/run";

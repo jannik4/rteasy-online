@@ -1,4 +1,4 @@
-import { Base } from "./model";
+import { Base } from "./context";
 import { Span, Simulator } from "../wasm";
 
 export type State = StateEdit | StateRun;

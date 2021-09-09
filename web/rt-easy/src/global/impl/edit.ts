@@ -1,7 +1,7 @@
 import React from "react";
 
 import { RtEasy } from "../../wasm";
-import { GlobalModelEdit } from "../model";
+import { GlobalModelEdit } from "../context";
 import { State, StateEdit } from "../state";
 
 export function model(
