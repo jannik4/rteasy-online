@@ -88,6 +88,7 @@ export function model(
     writeIntoRegister: (name: string, value: string, base: string) => {
       try {
         state.simulator.write_into_register(name, value, base);
+        setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
       }
@@ -98,6 +99,7 @@ export function model(
     writeIntoBus: (name: string, value: string, base: string) => {
       try {
         state.simulator.write_into_bus(name, value, base);
+        setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
       }
