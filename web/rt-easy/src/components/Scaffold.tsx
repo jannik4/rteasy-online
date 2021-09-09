@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 
 import { Toolbar } from "./";
-import { EditPage, RunPage } from "../pages";
+import { EditPage, RunPage } from "../layout";
 
 import { RtEasyContext } from "../wasm/context";
 import { GlobalContext, GlobalModel } from "../global/context";
