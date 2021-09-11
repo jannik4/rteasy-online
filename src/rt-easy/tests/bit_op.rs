@@ -14,7 +14,7 @@ A <- 0b1110 nand 0b0101;
 "#;
 
 #[test]
-fn mult() {
+fn bit_op() {
     let mut simulator = compile(SOURCE);
 
     // xor
