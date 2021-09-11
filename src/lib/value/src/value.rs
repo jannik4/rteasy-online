@@ -1,8 +1,9 @@
 use super::{Bit, ValueSlice};
 use std::borrow::{Borrow, BorrowMut};
+use std::hash::{Hash, Hasher};
 use std::ops::{Deref, DerefMut};
 
-#[derive(Debug, Clone, Eq, Hash)]
+#[derive(Debug, Clone, Eq)]
 pub struct Value {
     pub(crate) bits: Vec<Bit>,
 }
@@ -198,6 +199,12 @@ impl Borrow<ValueSlice> for Value {
 impl BorrowMut<ValueSlice> for Value {
     fn borrow_mut(&mut self) -> &mut ValueSlice {
         &mut *self
+    }
+}
+
+impl Hash for Value {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.as_slice().hash(state);
     }
 }
 

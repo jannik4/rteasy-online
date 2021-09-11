@@ -1,5 +1,6 @@
 use super::{Bit, Value};
 use std::borrow::ToOwned;
+use std::hash::{Hash, Hasher};
 
 #[derive(Debug, Eq)]
 #[repr(C)]
@@ -86,6 +87,22 @@ impl ToOwned for ValueSlice {
 
     fn to_owned(&self) -> Self::Owned {
         Value { bits: self.bits.into() }
+    }
+}
+
+impl Hash for ValueSlice {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        // Remove leading zeros
+        let mut len = self.bits.len();
+        while len > 1 {
+            if self.bits[len - 1] == Bit::Zero {
+                len -= 1;
+            } else {
+                break;
+            }
+        }
+
+        self.bits[0..len].hash(state);
     }
 }
 
