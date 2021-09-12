@@ -47,6 +47,17 @@ impl Value {
         }
     }
 
+    pub fn with_size(mut self, size: usize) -> Self {
+        assert!(size != 0);
+        while self.bits.len() < size {
+            self.bits.push(Bit::Zero);
+        }
+        while self.bits.len() > size {
+            self.bits.pop();
+        }
+        self
+    }
+
     /// Parse from binary string. The result will have no leading zeros
     ///
     /// # Errors
