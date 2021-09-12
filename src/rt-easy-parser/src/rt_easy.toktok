@@ -235,8 +235,11 @@ type Result<T> = std::result::Result<T, Error<Token>>;
 
 fn parse_bin(s: &str, span: Range<usize>) -> Result<Number> {
     let s = &s[2..]; // TODO: Check if s begins with 0b/0B/%
-    match Value::parse_bin(s, true) {
-        Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
+    match Value::parse_bin(s) {
+        Ok(mut value) => {
+          value.remove_leading_zeros();
+          Ok(Number { value, kind: NumberKind::Other })
+        },
         Err(()) => Err(Error::new_custom(span, "invalid binary number".into())),
     }
 }
@@ -250,8 +253,11 @@ fn parse_dec(s: &str, span: Range<usize>) -> Result<Number> {
 
 fn parse_hex(s: &str, span: Range<usize>) -> Result<Number> {
     let s = &s[2..]; // TODO: Check if s begins with 0x/0X/$
-    match Value::parse_hex(s, true) {
-        Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
+    match Value::parse_hex(s) {
+        Ok(mut value) => {
+          value.remove_leading_zeros();
+          Ok(Number { value, kind: NumberKind::Other })
+        },
         Err(()) => Err(Error::new_custom(span, "invalid hexadecimal number".into())),
     }
 }
@@ -265,7 +271,7 @@ fn parse_usize(s: &str, span: Range<usize>) -> Result<usize> {
 
 fn parse_bit_string(s: &str, span: Range<usize>) -> Result<Number> {
     let s = &s[1..s.len() - 1];
-    match Value::parse_bin(s, false) {
+    match Value::parse_bin(s) {
         Ok(value) => Ok(Number { value, kind: NumberKind::BitString }),
         Err(()) => Err(Error::new_custom(span, "invalid bit string".into())),
     }

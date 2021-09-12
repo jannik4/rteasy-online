@@ -36,7 +36,7 @@ fn misc() {
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("11001110", false).unwrap()
+        Value::parse_bin("11001110").unwrap()
     );
 
     // -------- 2 --------
@@ -52,70 +52,70 @@ fn misc() {
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("1111", false).unwrap()
+        Value::parse_bin("1111").unwrap()
     );
 
     // -------- 4 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("11111111", false).unwrap()
+        Value::parse_bin("11111111").unwrap()
     );
 
     // -------- 6 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("11110000", false).unwrap()
+        Value::parse_bin("11110000").unwrap()
     );
 
     // -------- 7 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("11110000", false).unwrap()
+        Value::parse_bin("11110000").unwrap()
     );
 
     // -------- 8 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("C".to_string())).unwrap(),
-        Value::parse_bin("1111", false).unwrap()
+        Value::parse_bin("1111").unwrap()
     );
 
     // -------- 9 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1101", false).unwrap()
+        Value::parse_bin("1101").unwrap()
     );
 
     // -------- 10 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1111", false).unwrap()
+        Value::parse_bin("1111").unwrap()
     );
 
     // -------- 11 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1111", false).unwrap()
+        Value::parse_bin("1111").unwrap()
     );
 
     // -------- 12 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1000", false).unwrap()
+        Value::parse_bin("1000").unwrap()
     );
 
     // -------- 13 --------
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("0", false).unwrap()
+        Value::parse_bin("0").unwrap()
     );
 
     simulator.step().unwrap();

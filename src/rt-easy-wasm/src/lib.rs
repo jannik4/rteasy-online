@@ -128,9 +128,9 @@ impl Simulator {
         base: &str,
     ) -> Result<(), JsValue> {
         let value = match base {
-            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value, false),
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value),
             "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
-            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value, false),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value),
             _ => return Err(JsValue::from_str("invalid base")),
         };
         let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
@@ -167,9 +167,9 @@ impl Simulator {
 
     pub fn write_into_bus(&mut self, name: &str, value: &str, base: &str) -> Result<(), JsValue> {
         let value = match base {
-            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value, false),
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value),
             "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
-            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value, false),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value),
             _ => return Err(JsValue::from_str("invalid base")),
         };
         let value = value.map_err(|()| JsValue::from_str("invalid value"))?;

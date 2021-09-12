@@ -21,35 +21,35 @@ fn bit_op() {
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1011", false).unwrap()
+        Value::parse_bin("1011").unwrap()
     );
 
     // or
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("1111", false).unwrap()
+        Value::parse_bin("1111").unwrap()
     );
 
     // nor
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("11111111111111111111111111110000", false).unwrap()
+        Value::parse_bin("11111111111111111111111111110000").unwrap()
     );
 
     // and
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("100", false).unwrap()
+        Value::parse_bin("100").unwrap()
     );
 
     // nand
     simulator.step().unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
-        Value::parse_bin("11111111111111111111111111111011", false).unwrap()
+        Value::parse_bin("11111111111111111111111111111011").unwrap()
     );
 }
 

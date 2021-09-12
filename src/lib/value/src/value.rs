@@ -58,17 +58,17 @@ impl Value {
         self
     }
 
-    /// Parse from binary string. The result will have no leading zeros
+    /// Parse from binary string. Leading zeros from input are retained.
     ///
     /// # Errors
     ///
     /// Errors if `bin` is empty or contains any other char then `[01]`.
-    pub fn parse_bin(bin: &str, remove_leading_zeros: bool) -> Result<Self, ()> {
+    pub fn parse_bin(bin: &str) -> Result<Self, ()> {
         if bin.is_empty() {
             return Err(());
         }
 
-        let mut value = Self {
+        let value = Self {
             bits: bin
                 .chars()
                 .rev()
@@ -80,14 +80,10 @@ impl Value {
                 .collect::<Result<_, _>>()?,
         };
 
-        if remove_leading_zeros {
-            value.remove_leading_zeros();
-        }
-
         Ok(value)
     }
 
-    /// Parse from decimal string. The result will have no leading zeros
+    /// Parse from decimal string. The result will have no leading zeros.
     ///
     /// # Errors
     ///
@@ -123,12 +119,12 @@ impl Value {
         Ok(value)
     }
 
-    /// Parse from hexadecimal string. The result will have no leading zeros
+    /// Parse from hexadecimal string. Leading zeros from input are retained.
     ///
     /// # Errors
     ///
     /// Errors if `hex` is empty or contains any other char then `[0-9a-fA-F]`.
-    pub fn parse_hex(hex: &str, remove_leading_zeros: bool) -> Result<Self, ()> {
+    pub fn parse_hex(hex: &str) -> Result<Self, ()> {
         if hex.is_empty() {
             return Err(());
         }
@@ -143,13 +139,7 @@ impl Value {
             bits.push((val & 0b1000 != 0).into());
         }
 
-        let mut value = Self { bits };
-
-        if remove_leading_zeros {
-            value.remove_leading_zeros();
-        }
-
-        Ok(value)
+        Ok(Self { bits })
     }
 
     pub fn concat<'a, I>(slices: I) -> Self
@@ -226,19 +216,19 @@ mod tests {
     #[test]
     fn test_parse_bin() {
         assert_eq!(
-            Value::parse_bin("1101", false).unwrap(),
+            Value::parse_bin("1101").unwrap(),
             Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
         );
 
         assert_eq!(
-            Value::parse_bin("000101", true).unwrap(),
-            Value { bits: vec![Bit::One, Bit::Zero, Bit::One] }
+            Value::parse_bin("000101").unwrap(),
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::Zero, Bit::Zero, Bit::Zero,] }
         );
 
-        assert!(Value::parse_bin("-000101", true).is_err());
-        assert!(Value::parse_bin("0b000101", true).is_err());
-        assert!(Value::parse_bin("", true).is_err());
-        assert!(Value::parse_bin("01020", true).is_err());
+        assert!(Value::parse_bin("-000101").is_err());
+        assert!(Value::parse_bin("0b000101").is_err());
+        assert!(Value::parse_bin("").is_err());
+        assert!(Value::parse_bin("01020").is_err());
     }
 
     #[test]
@@ -271,7 +261,7 @@ mod tests {
     #[test]
     fn test_parse_hex() {
         assert_eq!(
-            Value::parse_hex("ffA1", true).unwrap(),
+            Value::parse_hex("ffA1").unwrap(),
             Value {
                 bits: vec![
                     Bit::One,
@@ -294,9 +284,9 @@ mod tests {
             }
         );
 
-        assert!(Value::parse_hex("-ff", true).is_err());
-        assert!(Value::parse_hex("FFaG", true).is_err());
-        assert!(Value::parse_hex("", true).is_err());
-        assert!(Value::parse_hex("ff 12", true).is_err());
+        assert!(Value::parse_hex("-ff").is_err());
+        assert!(Value::parse_hex("FFaG").is_err());
+        assert!(Value::parse_hex("").is_err());
+        assert!(Value::parse_hex("ff 12").is_err());
     }
 }
