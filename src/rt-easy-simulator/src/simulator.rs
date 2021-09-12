@@ -220,4 +220,19 @@ impl Simulator {
     pub fn memories(&self) -> impl Iterator<Item = &Ident> {
         self.state.memory_names()
     }
+    pub fn memory_page_count(&self, name: &Ident) -> Result<Value, Error> {
+        Ok(self.state.memory(name)?.page_count())
+    }
+    pub fn memory_page_prev(&self, name: &Ident, page_nr: Value) -> Result<Option<Value>, Error> {
+        Ok(self.state.memory(name)?.page_prev(page_nr))
+    }
+    pub fn memory_page_next(&self, name: &Ident, page_nr: Value) -> Result<Option<Value>, Error> {
+        Ok(self.state.memory(name)?.page_next(page_nr))
+    }
+    pub fn memory_page(&self, name: &Ident, page_nr: Value) -> Result<Vec<(Value, Value)>, Error> {
+        Ok(self.state.memory(name)?.page(page_nr))
+    }
+    pub fn write_memory(&mut self, name: &Ident, addr: Value, value: Value) -> Result<(), Error> {
+        Ok(self.state.memory_mut(name)?.write_at(addr, value)?)
+    }
 }

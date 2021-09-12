@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import FlexLayout, { TabNode, Model, IJsonModel, Node } from "flexlayout-react";
 
 import { LayoutModelContext, LayoutModel } from "./context";
-import { EditorView, LogView, StateView } from "../views";
+import { EditorView, LogView, StateView, MemoryStateView } from "../views";
 import * as consts from "./consts";
 
 interface Props {
@@ -15,6 +15,7 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
 
   const factory = (node: TabNode) => {
     const component = node.getComponent();
+
     switch (component) {
       case "editor":
         return <EditorView />;
@@ -23,6 +24,10 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
       case "state":
         return <StateView />;
       default:
+        if (component?.startsWith("memory-")) {
+          return <MemoryStateView memory={component.slice(7)} />;
+        }
+
         console.log("Missing component: " + component);
         return <div>missing component {component}</div>;
     }

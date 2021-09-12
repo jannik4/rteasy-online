@@ -187,6 +187,92 @@ impl Simulator {
 
         memories.into_iter().map(Into::into).collect()
     }
+
+    pub fn memory_page_count(&self, name: &str) -> Result<String, JsValue> {
+        match self.0.memory_page_count(&rt_easy::rtcore::program::Ident(name.to_string())) {
+            Ok(value) => Ok(value.as_dec()),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
+        }
+    }
+
+    pub fn memory_page_prev(&self, name: &str, page_nr: &str) -> Result<Option<String>, JsValue> {
+        let page_nr = match rt_easy::rtcore::value::Value::parse_dec(page_nr) {
+            Ok(page_nr) => page_nr,
+            Err(()) => return Err(JsValue::from_str("invalid page nr")),
+        };
+
+        match self.0.memory_page_prev(&rt_easy::rtcore::program::Ident(name.to_string()), page_nr) {
+            Ok(value) => Ok(value.map(|value| value.as_dec())),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
+        }
+    }
+
+    pub fn memory_page_next(&self, name: &str, page_nr: &str) -> Result<Option<String>, JsValue> {
+        let page_nr = match rt_easy::rtcore::value::Value::parse_dec(page_nr) {
+            Ok(page_nr) => page_nr,
+            Err(()) => return Err(JsValue::from_str("invalid page nr")),
+        };
+
+        match self.0.memory_page_next(&rt_easy::rtcore::program::Ident(name.to_string()), page_nr) {
+            Ok(value) => Ok(value.map(|value| value.as_dec())),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
+        }
+    }
+
+    pub fn memory_page(
+        &self,
+        name: &str,
+        page_nr: &str,
+        base: &str,
+    ) -> Result<Vec<JsValue>, JsValue> {
+        let page_nr = match rt_easy::rtcore::value::Value::parse_dec(page_nr) {
+            Ok(page_nr) => page_nr,
+            Err(()) => return Err(JsValue::from_str("invalid page nr")),
+        };
+
+        let page =
+            match self.0.memory_page(&rt_easy::rtcore::program::Ident(name.to_string()), page_nr) {
+                Ok(page) => page,
+                Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+            };
+
+        let mut res = Vec::with_capacity(page.len() * 2);
+        for (addr, value) in page {
+            res.push(JsValue::from_str(&addr.as_hex()));
+            res.push(JsValue::from_str(&match base {
+                "BIN" => value.as_bin(),
+                "DEC" => value.as_dec(),
+                "HEX" => value.as_hex(),
+                _ => return Err(JsValue::from_str("invalid base")),
+            }));
+        }
+
+        Ok(res)
+    }
+
+    pub fn write_into_memory(
+        &mut self,
+        name: &str,
+        addr: &str,
+        value: &str,
+        base: &str,
+    ) -> Result<(), JsValue> {
+        let addr = rt_easy::rtcore::value::Value::parse_hex(addr)
+            .map_err(|()| JsValue::from_str("invalid addr"))?;
+        let value = match base {
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value),
+            "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+        let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
+
+        self.0
+            .write_memory(&rt_easy::rtcore::program::Ident(name.to_string()), addr, value)
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+
+        Ok(())
+    }
 }
 
 #[wasm_bindgen]
