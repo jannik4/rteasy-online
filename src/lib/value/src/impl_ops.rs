@@ -1,6 +1,6 @@
 use super::{Bit, Value, ValueSlice};
 use std::cmp::{self, Ord, PartialEq, PartialOrd};
-use std::ops::{Add, BitAnd, BitOr, BitXor, Index, IndexMut, Neg, Not, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Index, IndexMut, Neg, Not, Shl, Shr, Sub};
 
 // ------------------------------------------------------------------
 // Cmp
@@ -224,6 +224,56 @@ impl_binary_ops!(&Value, &ValueSlice);
 impl_binary_ops!(&ValueSlice, Value);
 impl_binary_ops!(&ValueSlice, &Value);
 impl_binary_ops!(&ValueSlice, &ValueSlice);
+
+// ------------------------------------------------------------------
+// Binaray Ops (usize)
+// ------------------------------------------------------------------
+
+fn shl(lhs: &ValueSlice, rhs: usize) -> Value {
+    if rhs >= lhs.size() {
+        return Value::zero(lhs.size());
+    }
+
+    let mut bits = Vec::with_capacity(lhs.size());
+    bits.extend((0..rhs).map(|_| Bit::Zero));
+    bits.extend(&lhs.bits[0..lhs.bits.len() - rhs]);
+    Value { bits }
+}
+
+fn shr(lhs: &ValueSlice, rhs: usize) -> Value {
+    if rhs >= lhs.size() {
+        return Value::zero(lhs.size());
+    }
+
+    let mut bits = Vec::with_capacity(lhs.size());
+    bits.extend(&lhs.bits[rhs..]);
+    bits.extend((0..rhs).map(|_| Bit::Zero));
+    Value { bits }
+}
+
+macro_rules! impl_binary_ops_usize {
+    ($lhs:ty) => {
+        impl Shl<usize> for $lhs {
+            type Output = Value;
+
+            fn shl(self, rhs: usize) -> Self::Output {
+                shl(&self, rhs)
+            }
+        }
+
+        impl Shr<usize> for $lhs {
+            type Output = Value;
+
+            fn shr(self, rhs: usize) -> Self::Output {
+                shr(&self, rhs)
+            }
+        }
+    };
+}
+
+impl_binary_ops_usize!(Value);
+impl_binary_ops_usize!(&Value);
+impl_binary_ops_usize!(&ValueSlice);
 
 // ------------------------------------------------------------------
 // Unary Ops
