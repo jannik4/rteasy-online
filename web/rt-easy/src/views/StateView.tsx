@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useMemo, useContext } from "react";
 import {
   HTMLTable,
   HTMLSelect,
@@ -22,9 +22,21 @@ interface InputValue {
 }
 
 const StateView: React.FC<Props> = () => {
+  // Context and state
   const [focused, setFocused] = useState<InputValue | null>(null);
   const globalModel = useContext(GlobalContext);
   const layoutModel = useContext(LayoutModelContext);
+
+  // Names
+  const [registers, buses, memories] = useMemo(() => {
+    if (globalModel.tag === "Edit") return [[], [], []];
+    return [
+      globalModel.registers(),
+      globalModel.buses(),
+      globalModel.memories(),
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [globalModel.tag]);
 
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
@@ -106,33 +118,27 @@ const StateView: React.FC<Props> = () => {
               ---- Registers ----
             </th>
           </tr>
-          {
-            // TODO: Only get names one time!!! (on simulator create)
-            globalModel.registers().map((register) => (
-              <tr key={register}>
-                <td>{register}</td>
-                <td>
-                  {inputValue({
-                    key: register,
-                    value: globalModel.registerValue(
+          {registers.map((register) => (
+            <tr key={register}>
+              <td>{register}</td>
+              <td>
+                {inputValue({
+                  key: register,
+                  value: globalModel.registerValue(register, globalModel.base),
+                  valueNext: globalModel.registerValueNext(
+                    register,
+                    globalModel.base
+                  ),
+                  onChanged: (value) =>
+                    globalModel.writeIntoRegister(
                       register,
+                      value,
                       globalModel.base
                     ),
-                    valueNext: globalModel.registerValueNext(
-                      register,
-                      globalModel.base
-                    ),
-                    onChanged: (value) =>
-                      globalModel.writeIntoRegister(
-                        register,
-                        value,
-                        globalModel.base
-                      ),
-                  })}
-                </td>
-              </tr>
-            ))
-          }
+                })}
+              </td>
+            </tr>
+          ))}
           <tr>
             <td colSpan={2}></td>
           </tr>
@@ -141,63 +147,57 @@ const StateView: React.FC<Props> = () => {
               ---- Buses ----
             </th>
           </tr>
-          {
-            // TODO: Only get names one time!!! (on simulator create)
-            globalModel.buses().map((bus) => (
-              <tr key={bus}>
-                <td>{bus}</td>
-                <td>
-                  {inputValue({
-                    key: bus,
-                    value: globalModel.busValue(bus, globalModel.base),
-                    valueNext: null,
-                    onChanged: (value) =>
-                      globalModel.writeIntoBus(bus, value, globalModel.base),
-                  })}
-                </td>
-              </tr>
-            ))
-          }
+          {buses.map((bus) => (
+            <tr key={bus}>
+              <td>{bus}</td>
+              <td>
+                {inputValue({
+                  key: bus,
+                  value: globalModel.busValue(bus, globalModel.base),
+                  valueNext: null,
+                  onChanged: (value) =>
+                    globalModel.writeIntoBus(bus, value, globalModel.base),
+                })}
+              </td>
+            </tr>
+          ))}
           <tr>
             <th colSpan={2} style={{ textAlign: "center" }}>
               ---- Memories ----
             </th>
           </tr>
-          {
-            // TODO: Only get names one time!!! (on simulator create)
-            globalModel.memories().map((memory) => (
-              <tr key={memory}>
-                <td>{memory}</td>
-                <td>
-                  <Button
-                    small
-                    onClick={() => {
-                      // Select if exists
-                      const memoryStateId = consts.ID_TAB_STATE_MEMORY(memory);
-                      if (layoutModel.selectTab(memoryStateId)) {
-                        return;
-                      }
+          {memories.map((memory) => (
+            <tr key={memory}>
+              <td>{memory}</td>
+              <td>
+                <Button
+                  small
+                  onClick={() => {
+                    // Select if exists
+                    const memoryStateId = consts.ID_TAB_STATE_MEMORY(memory);
+                    if (layoutModel.selectTab(memoryStateId)) {
+                      return;
+                    }
 
-                      // Find position
-                      const position = findPosition(layoutModel);
-                      if (position === null) return;
+                    // Find position
+                    const position = findPosition(layoutModel);
+                    if (position === null) return;
 
-                      // Create tab
-                      layoutModel.createTab(
-                        memoryStateId,
-                        `Memory (${memory})`,
-                        `memory-${memory}`,
-                        position.toNodeId,
-                        position.location
-                      );
-                    }}
-                  >
-                    Content
-                  </Button>
-                </td>
-              </tr>
-            ))
-          }
+                    // Create tab
+                    layoutModel.createTab(
+                      memoryStateId,
+                      `Memory (${memory})`,
+                      `memory-${memory}`,
+                      position.toNodeId,
+                      position.location
+                    );
+                  }}
+                >
+                  Content
+                </Button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </HTMLTable>
     </div>
