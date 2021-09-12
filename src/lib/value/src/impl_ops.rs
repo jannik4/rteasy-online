@@ -75,7 +75,7 @@ impl_cmp!(ValueSlice, Value);
 impl_cmp!(ValueSlice, ValueSlice);
 
 // ------------------------------------------------------------------
-// Binaray Ops
+// Binary Ops
 // ------------------------------------------------------------------
 
 fn add(lhs: &ValueSlice, rhs: &ValueSlice) -> Value {
@@ -226,7 +226,7 @@ impl_binary_ops!(&ValueSlice, &Value);
 impl_binary_ops!(&ValueSlice, &ValueSlice);
 
 // ------------------------------------------------------------------
-// Binaray Ops (usize)
+// Binary Ops (usize)
 // ------------------------------------------------------------------
 
 fn shl(lhs: &ValueSlice, rhs: usize) -> Value {
