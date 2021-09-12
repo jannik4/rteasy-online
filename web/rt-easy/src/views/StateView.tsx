@@ -3,7 +3,6 @@ import {
   HTMLTable,
   HTMLSelect,
   Text,
-  H5,
   InputGroup,
   Button,
 } from "@blueprintjs/core";
@@ -93,7 +92,6 @@ const StateView: React.FC<Props> = () => {
       </div>
 
       <div style={{ height: 16 }} />
-      <H5>Registers</H5>
 
       <HTMLTable width="100%" bordered condensed>
         <thead>
@@ -103,6 +101,11 @@ const StateView: React.FC<Props> = () => {
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              ---- Registers ----
+            </th>
+          </tr>
           {
             // TODO: Only get names one time!!! (on simulator create)
             globalModel.registers().map((register) => (
@@ -130,20 +133,14 @@ const StateView: React.FC<Props> = () => {
               </tr>
             ))
           }
-        </tbody>
-      </HTMLTable>
-
-      <div style={{ height: 16 }} />
-      <H5>Buses</H5>
-
-      <HTMLTable width="100%" bordered condensed>
-        <thead>
           <tr>
-            <th>Identifier</th>
-            <th>Value</th>
+            <td colSpan={2}></td>
           </tr>
-        </thead>
-        <tbody>
+          <tr>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              ---- Buses ----
+            </th>
+          </tr>
           {
             // TODO: Only get names one time!!! (on simulator create)
             globalModel.buses().map((bus) => (
@@ -161,20 +158,11 @@ const StateView: React.FC<Props> = () => {
               </tr>
             ))
           }
-        </tbody>
-      </HTMLTable>
-
-      <div style={{ height: 16 }} />
-      <H5>Memories</H5>
-
-      <HTMLTable width="100%" bordered condensed>
-        <thead>
           <tr>
-            <th>Identifier</th>
-            <th>Value</th>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              ---- Memories ----
+            </th>
           </tr>
-        </thead>
-        <tbody>
           {
             // TODO: Only get names one time!!! (on simulator create)
             globalModel.memories().map((memory) => (
