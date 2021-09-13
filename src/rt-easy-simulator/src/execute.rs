@@ -2,7 +2,7 @@ use crate::{evaluate::Evaluate, state::State, Error};
 use rtcore::{
     program::{
         Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, Criterion, EvalCriterion,
-        EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind, Read, Write,
+        EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind, Read, Span, Write,
     },
     value::Value,
 };
@@ -12,7 +12,7 @@ type Result = std::result::Result<ExecuteResult, Error>;
 #[derive(Debug)]
 pub enum ExecuteResult {
     Void,
-    Criterion(Criterion),
+    Criterion(Criterion, Span),
     Goto(Label),
 }
 
@@ -41,9 +41,9 @@ impl Execute for EvalCriterion {
         let cond = self.condition.evaluate(state, 1)?;
 
         if cond == Value::one(1) {
-            Ok(ExecuteResult::Criterion(Criterion::True(self.criterion_id)))
+            Ok(ExecuteResult::Criterion(Criterion::True(self.criterion_id), self.condition.span))
         } else {
-            Ok(ExecuteResult::Criterion(Criterion::False(self.criterion_id)))
+            Ok(ExecuteResult::Criterion(Criterion::False(self.criterion_id), self.condition.span))
         }
     }
 }
@@ -52,7 +52,7 @@ impl Execute for EvalCriterionGroup {
     fn execute(&self, state: &State) -> Result {
         for eval_criterion in &self.0 {
             match eval_criterion.execute(state)? {
-                r @ ExecuteResult::Criterion(Criterion::True(_)) => return Ok(r),
+                r @ ExecuteResult::Criterion(Criterion::True(_), _) => return Ok(r),
                 _ => (),
             }
         }

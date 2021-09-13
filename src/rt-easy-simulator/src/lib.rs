@@ -8,5 +8,5 @@ mod state;
 
 pub use self::{
     error::{Error, Result},
-    simulator::Simulator,
+    simulator::{Simulator, StepResult},
 };

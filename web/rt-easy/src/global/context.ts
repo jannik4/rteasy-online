@@ -1,5 +1,5 @@
 import React from "react";
-import { Span } from "../wasm";
+import { Range } from "monaco-editor";
 
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
@@ -34,7 +34,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
   isFinished: () => boolean;
   microStep: () => void;
   step: () => void;
-  currSpan: () => Span | null;
+  simState: SimState | null;
 
   runStop: () => void;
   isRunning: () => boolean;
@@ -62,4 +62,15 @@ export interface GlobalModelRun extends GlobalModelCommon {
     value: string,
     base: string
   ) => void;
+}
+
+export interface SimState {
+  span: Range;
+  currCondition: SimStateCondition | null;
+  conditions: SimStateCondition[];
+}
+
+export interface SimStateCondition {
+  value: boolean;
+  span: Range;
 }

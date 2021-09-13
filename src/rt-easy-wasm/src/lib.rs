@@ -61,19 +61,17 @@ impl Simulator {
         self.0.cycle_count()
     }
 
-    pub fn micro_step(&mut self) -> Option<Span> {
-        let span = self.0.micro_step().unwrap();
-        match span {
-            Some(span) => Some(Span { start: span.start, end: span.end }),
-            None => None,
+    pub fn micro_step(&mut self) -> Result<Option<StepResult>, JsValue> {
+        match self.0.micro_step() {
+            Ok(step_result) => Ok(step_result.map(Into::into)),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
         }
     }
 
-    pub fn step(&mut self) -> Option<Span> {
-        let span = self.0.step().unwrap();
-        match span {
-            Some(span) => Some(Span { start: span.start, end: span.end }),
-            None => None,
+    pub fn step(&mut self) -> Result<Option<StepResult>, JsValue> {
+        match self.0.step() {
+            Ok(step_result) => Ok(step_result.map(Into::into)),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
         }
     }
 
@@ -276,7 +274,41 @@ impl Simulator {
 }
 
 #[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub struct StepResult {
+    pub is_at_statement_start: bool,
+    pub span: Span,
+    pub condition: Option<StepResultCondition>,
+}
+
+impl From<rt_easy::simulator::StepResult> for StepResult {
+    fn from(step_result: rt_easy::simulator::StepResult) -> Self {
+        Self {
+            is_at_statement_start: step_result.is_at_statement_start,
+            span: step_result.span.into(),
+            condition: step_result
+                .condition
+                .map(|(value, span)| StepResultCondition { value, span: span.into() }),
+        }
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Clone, Copy)]
+pub struct StepResultCondition {
+    pub value: bool,
+    pub span: Span,
+}
+
+#[wasm_bindgen]
+#[derive(Clone, Copy)]
 pub struct Span {
     pub start: usize,
     pub end: usize,
+}
+
+impl From<rt_easy::rtcore::program::Span> for Span {
+    fn from(span: rt_easy::rtcore::program::Span) -> Self {
+        Self { start: span.start, end: span.end }
+    }
 }

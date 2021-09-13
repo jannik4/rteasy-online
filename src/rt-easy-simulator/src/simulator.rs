@@ -47,21 +47,23 @@ impl Simulator {
         self.cursor.is_none()
     }
 
-    pub fn step(&mut self) -> Result<Option<Span>, Error> {
+    pub fn step(&mut self) -> Result<Option<StepResult>, Error> {
         self.step_(false)
     }
 
-    pub fn micro_step(&mut self) -> Result<Option<Span>, Error> {
+    pub fn micro_step(&mut self) -> Result<Option<StepResult>, Error> {
         self.step_(true)
     }
 
-    pub fn step_(&mut self, micro: bool) -> Result<Option<Span>, Error> {
+    pub fn step_(&mut self, micro: bool) -> Result<Option<StepResult>, Error> {
         loop {
             // Get cursor
             let cursor = match &mut self.cursor {
                 Some(cursor) => cursor,
                 None => break Ok(None),
             };
+
+            let is_at_statement_start = cursor.is_at_statement_start();
 
             // Get current statement
             let statement = match self.program.statements().get(cursor.statement_idx) {
@@ -82,23 +84,36 @@ impl Simulator {
             };
 
             // Clear buses if cursor is at a new statement
-            if cursor.is_at_statement_start() {
+            if is_at_statement_start {
                 self.state.clear_buses(&mem::take(&mut self.buses_persist));
             }
 
             // Execute step
-            let step_executed = if criteria_match(&step.criteria, &cursor.criteria_set) {
-                match step.operation.execute(&self.state)? {
-                    ExecuteResult::Void => (),
-                    ExecuteResult::Criterion(Criterion::True(id)) => {
-                        cursor.criteria_set.insert(id);
+            let step_result = if criteria_match(&step.criteria, &cursor.criteria_set) {
+                Some(match step.operation.execute(&self.state)? {
+                    ExecuteResult::Void => {
+                        StepResult { is_at_statement_start, span: step.span(), condition: None }
                     }
-                    ExecuteResult::Criterion(Criterion::False(_)) => (),
-                    ExecuteResult::Goto(label) => cursor.goto = Some(label),
-                }
-                true
+                    ExecuteResult::Criterion(Criterion::True(id), cond_span) => {
+                        cursor.criteria_set.insert(id);
+                        StepResult {
+                            is_at_statement_start,
+                            span: step.span(),
+                            condition: Some((true, cond_span)),
+                        }
+                    }
+                    ExecuteResult::Criterion(Criterion::False(_), cond_span) => StepResult {
+                        is_at_statement_start,
+                        span: step.span(),
+                        condition: Some((false, cond_span)),
+                    },
+                    ExecuteResult::Goto(label) => {
+                        cursor.goto = Some(label);
+                        StepResult { is_at_statement_start, span: step.span(), condition: None }
+                    }
+                })
             } else {
-                false
+                None
             };
 
             // Advance cursor
@@ -135,16 +150,27 @@ impl Simulator {
 
             // Break, if progress has been made
             if micro {
-                if step_executed {
-                    break Ok(Some(step.operation.span));
+                if let Some(step_result) = step_result {
+                    break Ok(Some(step_result));
                 }
             } else {
                 if statement_completed {
-                    break Ok(Some(statement.steps.span));
+                    break Ok(Some(StepResult {
+                        is_at_statement_start,
+                        span: statement.steps.span,
+                        condition: None,
+                    }));
                 }
             }
         }
     }
+}
+
+#[derive(Debug)]
+pub struct StepResult {
+    pub is_at_statement_start: bool,
+    pub span: Span,
+    pub condition: Option<(bool, Span)>,
 }
 
 #[derive(Debug)]

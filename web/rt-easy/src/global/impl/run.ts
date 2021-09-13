@@ -1,7 +1,8 @@
 import React from "react";
+import { Range } from "monaco-editor";
 
-import { RtEasy, Span } from "../../wasm";
-import { GlobalModelRun } from "../context";
+import { RtEasy, Span, StepResult } from "../../wasm";
+import { GlobalModelRun, SimState } from "../context";
 import { State, StateRun } from "../state";
 
 export function model(
@@ -27,21 +28,28 @@ export function model(
     reset: () => {
       if (state.timerId !== null) clearInterval(state.timerId);
       state.simulator.reset();
-      state.currSpan?.free();
-      setState({ ...state, currSpan: null, timerId: null });
+      setState({ ...state, simState: null, timerId: null });
     },
     isFinished: () => state.simulator.is_finished(),
     microStep: () => {
-      const currSpan = state.simulator.micro_step() ?? null;
-      state.currSpan?.free();
-      setState({ ...state, currSpan });
+      const stepResult = state.simulator.micro_step() ?? null;
+      const simState = calcNextSimState(
+        state.sourceCode,
+        state.simState,
+        stepResult
+      );
+      setState({ ...state, simState });
     },
     step: () => {
-      const currSpan = state.simulator.step() ?? null;
-      state.currSpan?.free();
-      setState({ ...state, currSpan });
+      const stepResult = state.simulator.step() ?? null;
+      const simState = calcNextSimState(
+        state.sourceCode,
+        state.simState,
+        stepResult
+      );
+      setState({ ...state, simState });
     },
-    currSpan: () => state.currSpan,
+    simState: state.simState,
 
     runStop: () => {
       if (state.timerId === null) {
@@ -49,26 +57,24 @@ export function model(
           if (state.simulator.is_finished()) {
             clearInterval(timerId);
             setState((prev) => {
-              if (prev.tag === "Run") prev.currSpan?.free();
-              return { ...prev, timerId: null, currSpan: null };
+              return { ...prev, timerId: null, simState: null };
             });
             return;
           }
 
           // Run for x ms
-          let currSpan: Span | null = null;
+          let simState = state.simState;
           let start = performance.now();
           const MS = 5;
           while (true) {
-            currSpan?.free();
-            currSpan = state.simulator.step() ?? null;
+            const stepResult = state.simulator.step() ?? null;
+            simState = calcNextSimState(state.sourceCode, simState, stepResult);
 
             if (performance.now() - start > MS) break;
           }
 
           setState((prev) => {
-            if (prev.tag === "Run") prev.currSpan?.free();
-            return { ...prev, currSpan };
+            return { ...prev, simState };
           });
         }, 10);
         setState({ ...state, timerId });
@@ -137,4 +143,55 @@ export function model(
       }
     },
   };
+}
+
+function calcNextSimState(
+  sourceCode: string,
+  currSimState: SimState | null,
+  stepResult: StepResult | null
+): SimState | null {
+  if (stepResult === null) return null;
+
+  const nextSimState = {
+    span: calcRange(sourceCode, stepResult.span),
+    currCondition: stepResult.condition
+      ? {
+          value: stepResult.condition.value,
+          span: calcRange(sourceCode, stepResult.condition.span),
+        }
+      : null,
+    conditions: stepResult.is_at_statement_start
+      ? []
+      : currSimState?.currCondition
+      ? [...currSimState.conditions, currSimState.currCondition]
+      : currSimState?.conditions ?? [],
+  };
+
+  stepResult.free();
+  return nextSimState;
+}
+
+function calcRange(sourceCode: string, span: Span): Range {
+  let startLineNumber = 1;
+  let startColumn = 1;
+  let endLineNumber = 1;
+  let endColumn = 1;
+
+  for (let i = 0; i < sourceCode.length && i < span.end; i++) {
+    if (sourceCode.charAt(i) === "\n") {
+      if (i < span.start) {
+        startLineNumber++;
+        startColumn = 1;
+        endColumn = 1;
+      } else {
+        endColumn = 1;
+      }
+      endLineNumber++;
+    } else {
+      if (i < span.start) startColumn++;
+      endColumn++;
+    }
+  }
+
+  return new Range(startLineNumber, startColumn, endLineNumber, endColumn);
 }

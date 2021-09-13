@@ -35,7 +35,7 @@ export function model(
           sourceCode: state.sourceCode,
           base: state.base,
           simulator,
-          currSpan: null,
+          simState: null,
           timerId: null,
         });
       } catch (e) {

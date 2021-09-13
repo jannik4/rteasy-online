@@ -12,8 +12,24 @@ body,
   font-family: "Open Sans", sans-serif;
 }
 
-.monacoCurrSpanInlineDecoration {
-  background-color: orange;
+.monacoInlineDecorationYellow {
+  background-color: yellow;
+}
+
+.monacoInlineDecorationRed {
+  background-color: rgb(226, 0, 0) !important;
+}
+
+.monacoInlineDecorationLightRed {
+  background-color: rgb(255, 109, 109) !important;
+}
+
+.monacoInlineDecorationGreen {
+  background-color: rgb(91, 214, 91) !important;
+}
+
+.monacoInlineDecorationLightGreen {
+  background-color: rgb(204, 247, 204) !important;
 }
 
 .noFocus:focus {

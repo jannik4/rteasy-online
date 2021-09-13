@@ -4,7 +4,6 @@ import * as monaco from "monaco-editor";
 import { languages } from "monaco-editor";
 
 import { GlobalContext } from "../global/context";
-import { Span } from "../wasm";
 
 interface Props {}
 
@@ -14,20 +13,39 @@ const EditorView: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
 
   if (editorRef.current !== null && globalModel.tag === "Run") {
-    const span = globalModel.currSpan();
-    if (span) {
-      const range = calcRange(globalModel.sourceCode, span);
+    const simState = globalModel.simState;
+    if (simState) {
+      let decorations = [];
+      decorations.push({
+        range: simState.span,
+        options: {
+          inlineClassName: "monacoInlineDecorationYellow",
+        },
+      });
+      if (simState.currCondition) {
+        decorations.push({
+          range: simState.currCondition.span,
+          options: {
+            inlineClassName: simState.currCondition.value
+              ? "monacoInlineDecorationGreen"
+              : "monacoInlineDecorationRed",
+          },
+        });
+      }
+      for (const condition of simState.conditions) {
+        decorations.push({
+          range: condition.span,
+          options: {
+            inlineClassName: condition.value
+              ? "monacoInlineDecorationLightGreen"
+              : "monacoInlineDecorationLightRed",
+          },
+        });
+      }
 
       oldDecorations.current = editorRef.current.deltaDecorations(
         oldDecorations.current,
-        [
-          {
-            range,
-            options: {
-              inlineClassName: "monacoCurrSpanInlineDecoration",
-            },
-          },
-        ]
+        decorations
       );
     } else {
       oldDecorations.current = editorRef.current.deltaDecorations(
@@ -61,37 +79,6 @@ const EditorView: React.FC<Props> = () => {
 };
 
 export default EditorView;
-
-// TODO: Move this to rust
-function calcRange(sourceCode: string, span: Span): monaco.Range {
-  let startLineNumber = 1;
-  let startColumn = 1;
-  let endLineNumber = 1;
-  let endColumn = 1;
-
-  for (let i = 0; i < sourceCode.length && i < span.end; i++) {
-    if (sourceCode.charAt(i) === "\n") {
-      if (i < span.start) {
-        startLineNumber++;
-        startColumn = 1;
-        endColumn = 1;
-      } else {
-        endColumn = 1;
-      }
-      endLineNumber++;
-    } else {
-      if (i < span.start) startColumn++;
-      endColumn++;
-    }
-  }
-
-  return new monaco.Range(
-    startLineNumber,
-    startColumn,
-    endLineNumber,
-    endColumn
-  );
-}
 
 function setUpLang(monaco: Monaco) {
   monaco.languages.register({ id: "rt-easy" });

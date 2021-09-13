@@ -1,5 +1,5 @@
-import { Base } from "./context";
-import { Span, Simulator } from "../wasm";
+import { Base, SimState } from "./context";
+import { Simulator } from "../wasm";
 
 export type State = StateEdit | StateRun;
 
@@ -15,7 +15,7 @@ export interface StateEdit extends StateCommon {
 
 export interface StateRun extends StateCommon {
   tag: "Run";
-  currSpan: Span | null;
+  simState: SimState | null;
   simulator: Simulator;
   timerId: NodeJS.Timeout | null;
 }
