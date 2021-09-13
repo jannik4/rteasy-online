@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useCallback, useEffect } from "react";
 import {
   Button,
   Classes,
@@ -16,8 +16,7 @@ interface Props {}
 
 const Toolbar: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
-
-  const toggleMode = () => {
+  const toggleMode = useCallback(() => {
     switch (globalModel.tag) {
       case "Edit":
         globalModel.build();
@@ -26,7 +25,40 @@ const Toolbar: React.FC<Props> = () => {
         globalModel.goToEditMode();
         break;
     }
-  };
+  }, [globalModel]);
+  const handleUserKeyPress = useCallback(
+    (event: KeyboardEvent) => {
+      switch (event.key) {
+        case "F5":
+          event.preventDefault();
+          toggleMode();
+          break;
+        case "F6":
+          event.preventDefault();
+          if (globalModel.tag === "Run") globalModel.runStop();
+          break;
+        case "F7":
+          event.preventDefault();
+          if (globalModel.tag === "Run") globalModel.reset();
+          break;
+        case "F8":
+          event.preventDefault();
+          if (globalModel.tag === "Run") globalModel.step();
+          break;
+        case "F9":
+          event.preventDefault();
+          if (globalModel.tag === "Run") globalModel.microStep();
+          break;
+      }
+    },
+    [globalModel, toggleMode]
+  );
+  useEffect(() => {
+    window.addEventListener("keydown", handleUserKeyPress);
+    return () => {
+      window.removeEventListener("keydown", handleUserKeyPress);
+    };
+  }, [handleUserKeyPress]);
 
   const fileMenu = (
     <Menu>
@@ -51,6 +83,66 @@ const Toolbar: React.FC<Props> = () => {
     </Menu>
   );
 
+  const runMenu = (
+    <Menu>
+      <MenuItem
+        icon={globalModel.tag === "Edit" ? "build" : "code"}
+        text={globalModel.tag === "Edit" ? "Build" : "Code"}
+        label="F5"
+        intent="primary"
+        onClick={toggleMode}
+      />
+      <MenuItem
+        icon={
+          globalModel.tag === "Run" && globalModel.isRunning() ? "stop" : "play"
+        }
+        text={
+          globalModel.tag === "Run" && globalModel.isRunning() ? "Stop" : "Run"
+        }
+        label="F6"
+        intent={
+          globalModel.tag === "Run" && globalModel.isRunning()
+            ? "danger"
+            : "success"
+        }
+        disabled={globalModel.tag === "Edit"}
+        onClick={() => {
+          if (globalModel.tag === "Run") globalModel.runStop();
+        }}
+      />
+      <MenuItem
+        icon="reset"
+        text="Reset"
+        label="F7"
+        intent="success"
+        disabled={globalModel.tag === "Edit"}
+        onClick={() => {
+          if (globalModel.tag === "Run") globalModel.reset();
+        }}
+      />
+      <MenuItem
+        icon="step-forward"
+        text="Step"
+        label="F8"
+        intent="none"
+        disabled={globalModel.tag === "Edit"}
+        onClick={() => {
+          if (globalModel.tag === "Run") globalModel.step();
+        }}
+      />
+      <MenuItem
+        icon="caret-right"
+        text="Micro Step"
+        label="F9"
+        intent="none"
+        disabled={globalModel.tag === "Edit"}
+        onClick={() => {
+          if (globalModel.tag === "Run") globalModel.microStep();
+        }}
+      />
+    </Menu>
+  );
+
   return (
     <div
       style={{
@@ -72,7 +164,9 @@ const Toolbar: React.FC<Props> = () => {
         <Popover content={editMenu} position={Position.BOTTOM_RIGHT} minimal>
           <Button className={Classes.MINIMAL} text="Edit" />
         </Popover>
-        <Button className={Classes.MINIMAL} text="Run" />
+        <Popover content={runMenu} position={Position.BOTTOM_RIGHT} minimal>
+          <Button className={Classes.MINIMAL} text="Run" />
+        </Popover>
         <Button className={Classes.MINIMAL} text="Help" />
         <div style={{ margin: "auto" }}>
           <Text>RTeasy-Online</Text>
