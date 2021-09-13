@@ -57,8 +57,8 @@ impl Execute for EvalCriterionGroup {
             }
         }
 
-        // Err: expected (exactly) one criterion to be tru
-        Err(Error::Other)
+        // No criterion was true
+        Ok(ExecuteResult::Void)
     }
 }
 
