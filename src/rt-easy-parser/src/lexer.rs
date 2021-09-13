@@ -68,6 +68,8 @@ pub enum Token {
     KeywordCase,
     #[token("default")]
     KeywordDefault,
+    #[token("assert")]
+    KeywordAssert,
 
     // Binary Operators
     #[token("=")]

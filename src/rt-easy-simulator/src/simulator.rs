@@ -111,6 +111,15 @@ impl Simulator {
                         cursor.goto = Some(label);
                         StepResult { is_at_statement_start, span: step.span(), condition: None }
                     }
+                    ExecuteResult::AssertError => {
+                        self.cursor = None;
+                        // TODO: Return error instead ???
+                        break Ok(Some(StepResult {
+                            is_at_statement_start,
+                            span: step.span(),
+                            condition: Some((false, step.span())),
+                        }));
+                    }
                 })
             } else {
                 None

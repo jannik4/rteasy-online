@@ -15,6 +15,7 @@ pub enum OperationKind {
     Write(Write),
     Read(Read),
     Assignment(Assignment),
+    Assert(Assert),
 }
 
 #[derive(Debug)]
@@ -58,4 +59,9 @@ pub enum Lvalue {
     RegisterArray(RegisterArray),
     ConcatClocked(ConcatLvalueClocked),
     ConcatUnclocked(ConcatLvalueUnclocked),
+}
+
+#[derive(Debug)]
+pub struct Assert {
+    pub condition: Expression,
 }

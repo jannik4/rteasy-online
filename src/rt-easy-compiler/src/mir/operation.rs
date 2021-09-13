@@ -9,6 +9,7 @@ pub enum Operation<'s> {
     Write(Write<'s>),
     Read(Read<'s>),
     Assignment(Assignment<'s>),
+    Assert(Assert<'s>),
 }
 
 impl Operation<'_> {
@@ -21,6 +22,7 @@ impl Operation<'_> {
             Self::Write(n) => n.span,
             Self::Read(n) => n.span,
             Self::Assignment(n) => n.span,
+            Self::Assert(n) => n.span,
         }
     }
 }
@@ -82,4 +84,10 @@ pub enum Lvalue<'s> {
     RegisterArray(RegisterArray<'s>),
     ConcatClocked(ConcatLvalueClocked<'s>),
     ConcatUnclocked(ConcatLvalueUnclocked<'s>),
+}
+
+#[derive(Debug, Clone)]
+pub struct Assert<'s> {
+    pub condition: Expression<'s>,
+    pub span: Span,
 }

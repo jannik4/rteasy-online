@@ -5,7 +5,7 @@ pub fn calc_direct_dependencies(step: &Step<'_>, others: &[Step<'_>]) -> HashSet
     let mut ids = HashSet::new();
 
     for other in others {
-        let is_dependent = match &other.operation {
+        let is_dependent_on_other = match &other.operation {
             Operation::EvalCriterion(eval_criterion) => {
                 step.criteria.iter().any(|criterion| criterion.id() == eval_criterion.criterion_id)
             }
@@ -23,12 +23,14 @@ pub fn calc_direct_dependencies(step: &Step<'_>, others: &[Step<'_>]) -> HashSet
                 }),
                 Lvalue::Register(_) | Lvalue::RegisterArray(_) | Lvalue::ConcatClocked(_) => false,
             },
-            Operation::Nop(_) | Operation::Goto(_) | Operation::Write(_) | Operation::Read(_) => {
-                false
-            }
+            Operation::Nop(_)
+            | Operation::Goto(_)
+            | Operation::Write(_)
+            | Operation::Read(_)
+            | Operation::Assert(_) => false,
         };
 
-        if is_dependent {
+        if is_dependent_on_other {
             ids.insert(other.id);
         }
     }
@@ -51,6 +53,7 @@ impl IsDependentOn for Step<'_> {
                 .iter()
                 .any(|eval_criterion| eval_criterion.condition.is_dependent_on(bus)),
             Operation::Assignment(assignment) => assignment.rhs.is_dependent_on(bus),
+            Operation::Assert(assert) => assert.condition.is_dependent_on(bus),
             Operation::Nop(_) | Operation::Goto(_) | Operation::Write(_) | Operation::Read(_) => {
                 false
             }

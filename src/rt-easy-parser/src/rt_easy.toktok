@@ -50,6 +50,7 @@ clause -> Clause<'s>:
     either(case_clause, default_clause) ":" operations { Clause { clause: $1, operations: $3, span: $span.into() } };
 case_clause -> CaseClause<'s>: "case" expression { CaseClause { value: $2, span: $span.into() } };
 default_clause -> DefaultClause: "default" { DefaultClause { span: $span.into() } };
+assert -> Assert<'s>: "assert" expression { Assert { condition: $2, span: $span.into() } };
 lvalue -> Lvalue<'s>:
       concat { Lvalue::Concat($1) }
     | register_array { Lvalue::RegisterArray($1) }
@@ -60,7 +61,7 @@ operation -> Operation<'s>:
       nop { Operation::Nop($1) } | goto { Operation::Goto($1) }
     | write { Operation::Write($1) } | read { Operation::Read($1) }
     | if_ { Operation::If($1) } | switch { Operation::Switch($1) }
-    | assignment { Operation::Assignment($1) };
+    | assert { Operation::Assert($1) } | assignment { Operation::Assignment($1) };
 operations -> Vec<Operation<'s>>: sep1(operation, ",") { $1 };
 
 // Expression, TODO: ...
@@ -209,6 +210,7 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 "switch" = Token::KeywordSwitch
 "case" = Token::KeywordCase
 "default" = Token::KeywordDefault
+"assert" = Token::KeywordAssert
 
 "=" = Token::OperatorEquality
 "<>" = Token::OperatorInequality

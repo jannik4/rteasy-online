@@ -52,6 +52,7 @@ impl<'s> CheckOp<'s> for Operation<'s> {
             Operation::Write(write) => write.check_op(symbols, error_sink),
             Operation::Read(read) => read.check_op(symbols, error_sink),
             Operation::Assignment(assignment) => assignment.check_op(symbols, error_sink),
+            Operation::Assert(assert) => assert.check_op(symbols, error_sink),
         }
     }
 }
@@ -191,6 +192,18 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
         if let (Some(lhs), Some(rhs)) = (lhs.size, rhs.size) {
             if lhs < rhs {
                 error_sink(CompilerError::AssignmentDoesNotFit(lhs, rhs))
+            }
+        }
+
+        Res { contains_goto: false, contains_mutate: true }
+    }
+}
+
+impl<'s> CheckOp<'s> for Assert<'s> {
+    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+        if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
+            if size > 1 {
+                error_sink(CompilerError::ConditionToWide(size));
             }
         }
 

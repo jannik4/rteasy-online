@@ -134,6 +134,10 @@ impl<'s> SimState<'s> for State<'s> {
         Ok(())
     }
 
+    fn assert(&mut self, _: &Assert<'_>) -> Result {
+        Ok(())
+    }
+
     fn finish(self, error_sink: &mut impl FnMut(CompilerError)) {
         for (target, infos) in self.assigned {
             if has_conflict(infos) {

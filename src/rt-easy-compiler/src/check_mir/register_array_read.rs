@@ -57,6 +57,10 @@ impl<'s> SimState<'s> for State<'s> {
         Ok(())
     }
 
+    fn assert(&mut self, _: &Assert<'_>) -> Result {
+        Ok(())
+    }
+
     fn finish(self, error_sink: &mut impl FnMut(CompilerError)) {
         for (name, reads) in self.reads {
             if reads > 2 {

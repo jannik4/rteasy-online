@@ -1,8 +1,9 @@
 use crate::{evaluate::Evaluate, state::State, Error};
 use rtcore::{
     program::{
-        Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, Criterion, EvalCriterion,
-        EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind, Read, Span, Write,
+        Assert, Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, Criterion,
+        EvalCriterion, EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind,
+        Read, Span, Write,
     },
     value::Value,
 };
@@ -14,6 +15,7 @@ pub enum ExecuteResult {
     Void,
     Criterion(Criterion, Span),
     Goto(Label),
+    AssertError,
 }
 
 pub trait Execute {
@@ -32,6 +34,7 @@ impl Execute for Operation {
             OperationKind::Write(write) => write.execute(state),
             OperationKind::Read(read) => read.execute(state),
             OperationKind::Assignment(assignment) => assignment.execute(state),
+            OperationKind::Assert(assert) => assert.execute(state),
         }
     }
 }
@@ -137,5 +140,17 @@ impl Execute for Assignment {
         }
 
         Ok(ExecuteResult::Void)
+    }
+}
+
+impl Execute for Assert {
+    fn execute(&self, state: &State) -> Result {
+        let cond = self.condition.evaluate(state, 1)?;
+
+        if cond == Value::one(1) {
+            Ok(ExecuteResult::Void)
+        } else {
+            Ok(ExecuteResult::AssertError)
+        }
     }
 }

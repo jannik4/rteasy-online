@@ -176,6 +176,15 @@ fn build_operation<'s>(
                 annotation: Annotation::new(is_unclocked_assign, context.is_post_pipe),
             });
         }
+        ast::Operation::Assert(assert) => build.push(Step {
+            id: build.next_step_id(),
+            criteria: context.criteria.clone(),
+            operation: Operation::Assert(Assert {
+                condition: Expression::build(assert.condition, symbols)?.inner,
+                span: assert.span,
+            }),
+            annotation: Annotation::new(false, context.is_post_pipe),
+        }),
     }
 
     Ok(())

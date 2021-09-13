@@ -19,6 +19,7 @@ impl Generate<mir::Operation<'_>> for Operation {
             mir::Operation::Assignment(assignment) => {
                 OperationKind::Assignment(Generate::generate(assignment)?)
             }
+            mir::Operation::Assert(assert) => OperationKind::Assert(Generate::generate(assert)?),
         };
 
         Ok(Operation { kind, span })
@@ -83,5 +84,11 @@ impl Generate<mir::Lvalue<'_>> for Lvalue {
                 Ok(Lvalue::ConcatUnclocked(Generate::generate(concat)?))
             }
         }
+    }
+}
+
+impl Generate<mir::Assert<'_>> for Assert {
+    fn generate(assert: mir::Assert<'_>) -> Result<Self> {
+        Ok(Assert { condition: Generate::generate(assert.condition)? })
     }
 }

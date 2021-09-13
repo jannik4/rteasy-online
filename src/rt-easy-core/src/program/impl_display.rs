@@ -63,6 +63,7 @@ impl Display for Operation {
             Write(op) => write!(f, "{}", op),
             Read(op) => write!(f, "{}", op),
             Assignment(op) => write!(f, "{}", op),
+            Assert(op) => write!(f, "{}", op),
         }
     }
 }
@@ -128,6 +129,12 @@ impl Display for Lvalue {
             ConcatClocked(lvalue) => write!(f, "{}", lvalue),
             ConcatUnclocked(lvalue) => write!(f, "{}", lvalue),
         }
+    }
+}
+
+impl Display for Assert {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "assert {}", self.condition)
     }
 }
 

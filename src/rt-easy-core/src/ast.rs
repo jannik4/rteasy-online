@@ -126,6 +126,7 @@ pub enum Operation<'s> {
     If(If<'s>),
     Switch(Switch<'s>),
     Assignment(Assignment<'s>),
+    Assert(Assert<'s>),
 }
 
 impl Operation<'_> {
@@ -138,6 +139,7 @@ impl Operation<'_> {
             Self::If(n) => n.span,
             Self::Switch(n) => n.span,
             Self::Assignment(n) => n.span,
+            Self::Assert(n) => n.span,
         }
     }
 }
@@ -219,6 +221,12 @@ impl Lvalue<'_> {
 pub struct Assignment<'s> {
     pub lhs: Lvalue<'s>,
     pub rhs: Expression<'s>,
+    pub span: Span,
+}
+
+#[derive(Debug, Clone)]
+pub struct Assert<'s> {
+    pub condition: Expression<'s>,
     pub span: Span,
 }
 

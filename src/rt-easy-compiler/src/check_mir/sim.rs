@@ -11,6 +11,7 @@ pub trait SimState<'s> {
     fn write(&mut self, write: &Write<'s>) -> Result;
     fn read(&mut self, read: &Read<'s>) -> Result;
     fn assignment(&mut self, assignment: &Assignment<'s>) -> Result;
+    fn assert(&mut self, assert: &Assert<'s>) -> Result;
 
     fn finish(self, error_sink: &mut impl FnMut(CompilerError));
 }
@@ -69,6 +70,7 @@ where
                     Operation::Write(write) => state.write(write)?,
                     Operation::Read(read) => state.read(read)?,
                     Operation::Assignment(assignment) => state.assignment(assignment)?,
+                    Operation::Assert(assert) => state.assert(assert)?,
                 }
             }
 

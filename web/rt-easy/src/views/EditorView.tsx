@@ -96,6 +96,7 @@ function setUpLang(monaco: Monaco) {
       "switch",
       "case",
       "default",
+      "assert",
     ],
     typeKeywords: ["register", "bus", "memory", "array"],
     operators: ["=", "<>", "+", "-", "xor", "not", "sxt"],
