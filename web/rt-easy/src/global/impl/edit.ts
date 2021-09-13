@@ -21,7 +21,7 @@ export function model(
         rtEasy.check(sourceCode);
         log = "--- ok ---";
       } catch (e) {
-        log = e;
+        log = e as string;
       }
 
       localStorage.setItem("source-code", sourceCode);
