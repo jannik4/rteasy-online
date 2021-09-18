@@ -11,7 +11,10 @@ import {
 } from "@blueprintjs/core";
 
 import { useFilePicker } from "../hooks/useFilePicker";
+import { downloadFile } from "../util/downloadFile";
 import { GlobalContext, GlobalModel } from "../global/context";
+
+const FILENAME = "code.rt";
 
 interface Props {}
 
@@ -54,6 +57,7 @@ const Toolbar: React.FC<Props> = () => {
         icon="download"
         text="Save File..."
         label={ctrlKeyShortCut("S")}
+        onClick={() => downloadFile(FILENAME, globalModel.sourceCode)}
       />
     </Menu>
   );
@@ -257,6 +261,12 @@ function handleUserKeyPress(
       if (ctrlKeyPressed(event)) {
         event.preventDefault();
         openFilePicker();
+      }
+      break;
+    case "s":
+      if (ctrlKeyPressed(event)) {
+        event.preventDefault();
+        downloadFile(FILENAME, globalModel.sourceCode);
       }
       break;
     case "F5":
