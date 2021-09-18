@@ -31,8 +31,9 @@ const Toolbar: React.FC<Props> = () => {
     },
   });
   const handleUserKeyPressCallback = useCallback(
-    (event: KeyboardEvent) => handleUserKeyPress(event, globalModel),
-    [globalModel]
+    (event: KeyboardEvent) =>
+      handleUserKeyPress(event, globalModel, openFilePicker),
+    [globalModel, openFilePicker]
   );
   useEffect(() => {
     window.addEventListener("keydown", handleUserKeyPressCallback);
@@ -46,9 +47,10 @@ const Toolbar: React.FC<Props> = () => {
       <MenuItem
         icon="document-open"
         text="Open File..."
+        label="Ctrl+O"
         onClick={openFilePicker}
       />
-      <MenuItem icon="download" text="Save File..." />
+      <MenuItem icon="download" text="Save File..." label="Ctrl+S" />
     </Menu>
   );
 
@@ -237,8 +239,18 @@ const Toolbar: React.FC<Props> = () => {
 
 export default Toolbar;
 
-function handleUserKeyPress(event: KeyboardEvent, globalModel: GlobalModel) {
+function handleUserKeyPress(
+  event: KeyboardEvent,
+  globalModel: GlobalModel,
+  openFilePicker: () => void
+) {
   switch (event.key) {
+    case "o":
+      if (ctrlKeyPressed(event)) {
+        event.preventDefault();
+        openFilePicker();
+      }
+      break;
     case "F5":
       event.preventDefault();
       globalModel.toggleMode();
@@ -260,4 +272,12 @@ function handleUserKeyPress(event: KeyboardEvent, globalModel: GlobalModel) {
       if (globalModel.tag === "Run") globalModel.microStep();
       break;
   }
+}
+
+function ctrlKeyPressed(event: KeyboardEvent): boolean {
+  return isMac() ? event.metaKey : event.ctrlKey;
+}
+
+function isMac(): boolean {
+  return navigator.userAgent.includes("Mac");
 }
