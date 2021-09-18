@@ -10,21 +10,24 @@ export function model(
   state: StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>
 ): GlobalModelRun {
+  const goToEditMode = (sourceCode?: string) => {
+    if (state.timerId !== null) clearInterval(state.timerId);
+    state.simulator.free();
+    setState({
+      tag: "Edit",
+      sourceCode: sourceCode ?? state.sourceCode,
+      base: state.base,
+      log: "",
+    });
+  };
+
   return {
     tag: "Run",
     sourceCode: state.sourceCode,
+    toggleMode: () => goToEditMode(),
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
-    goToEditMode: (sourceCode?: string) => {
-      if (state.timerId !== null) clearInterval(state.timerId);
-      state.simulator.free();
-      setState({
-        tag: "Edit",
-        sourceCode: sourceCode ?? state.sourceCode,
-        base: state.base,
-        log: "",
-      });
-    },
+    goToEditMode,
     reset: () => {
       if (state.timerId !== null) clearInterval(state.timerId);
       state.simulator.reset();

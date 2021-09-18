@@ -9,9 +9,26 @@ export function model(
   state: StateEdit,
   setState: React.Dispatch<React.SetStateAction<State>>
 ): GlobalModelEdit {
+  const build = () => {
+    try {
+      const simulator = rtEasy.build(state.sourceCode);
+      setState({
+        tag: "Run",
+        sourceCode: state.sourceCode,
+        base: state.base,
+        simulator,
+        simState: null,
+        timerId: null,
+      });
+    } catch (e) {
+      alert(e);
+    }
+  };
+
   return {
     tag: "Edit",
     sourceCode: state.sourceCode,
+    toggleMode: () => build(),
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
     log: state.log,
@@ -27,20 +44,6 @@ export function model(
       localStorage.setItem("source-code", sourceCode);
       setState({ ...state, sourceCode, log });
     },
-    build: () => {
-      try {
-        const simulator = rtEasy.build(state.sourceCode);
-        setState({
-          tag: "Run",
-          sourceCode: state.sourceCode,
-          base: state.base,
-          simulator,
-          simState: null,
-          timerId: null,
-        });
-      } catch (e) {
-        alert(e);
-      }
-    },
+    build,
   };
 }

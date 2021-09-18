@@ -4,6 +4,7 @@ import { Range } from "monaco-editor";
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
   sourceCode: "",
+  toggleMode: () => {},
   base: "DEC",
   setBase: () => {},
   log: "",
@@ -16,6 +17,7 @@ export type GlobalModel = GlobalModelEdit | GlobalModelRun;
 export type Base = "BIN" | "DEC" | "HEX";
 export interface GlobalModelCommon {
   sourceCode: string;
+  toggleMode: () => void;
   base: Base;
   setBase: (base: Base) => void;
 }

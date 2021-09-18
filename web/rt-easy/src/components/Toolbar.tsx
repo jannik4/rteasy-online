@@ -30,22 +30,12 @@ const Toolbar: React.FC<Props> = () => {
       }
     },
   });
-  const toggleMode = useCallback(() => {
-    switch (globalModel.tag) {
-      case "Edit":
-        globalModel.build();
-        break;
-      case "Run":
-        globalModel.goToEditMode();
-        break;
-    }
-  }, [globalModel]);
   const handleUserKeyPress = useCallback(
     (event: KeyboardEvent) => {
       switch (event.key) {
         case "F5":
           event.preventDefault();
-          toggleMode();
+          globalModel.toggleMode();
           break;
         case "F6":
           event.preventDefault();
@@ -65,7 +55,7 @@ const Toolbar: React.FC<Props> = () => {
           break;
       }
     },
-    [globalModel, toggleMode]
+    [globalModel]
   );
   useEffect(() => {
     window.addEventListener("keydown", handleUserKeyPress);
@@ -108,7 +98,7 @@ const Toolbar: React.FC<Props> = () => {
         text={globalModel.tag === "Edit" ? "Build" : "Code"}
         label="F5"
         intent="primary"
-        onClick={toggleMode}
+        onClick={() => globalModel.toggleMode()}
       />
       <MenuItem
         icon={
@@ -201,7 +191,7 @@ const Toolbar: React.FC<Props> = () => {
       >
         <Button
           icon={globalModel.tag === "Edit" ? "build" : "code"}
-          onClick={toggleMode}
+          onClick={() => globalModel.toggleMode()}
           className="noFocus"
           style={{ marginLeft: "8px", marginRight: "16px" }}
           intent="primary"
