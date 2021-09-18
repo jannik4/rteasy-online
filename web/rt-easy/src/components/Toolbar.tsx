@@ -11,7 +11,7 @@ import {
 } from "@blueprintjs/core";
 
 import { useFilePicker } from "../hooks/useFilePicker";
-import { GlobalContext } from "../global/context";
+import { GlobalContext, GlobalModel } from "../global/context";
 
 interface Props {}
 
@@ -30,39 +30,16 @@ const Toolbar: React.FC<Props> = () => {
       }
     },
   });
-  const handleUserKeyPress = useCallback(
-    (event: KeyboardEvent) => {
-      switch (event.key) {
-        case "F5":
-          event.preventDefault();
-          globalModel.toggleMode();
-          break;
-        case "F6":
-          event.preventDefault();
-          if (globalModel.tag === "Run") globalModel.runStop();
-          break;
-        case "F7":
-          event.preventDefault();
-          if (globalModel.tag === "Run") globalModel.reset();
-          break;
-        case "F8":
-          event.preventDefault();
-          if (globalModel.tag === "Run") globalModel.step();
-          break;
-        case "F9":
-          event.preventDefault();
-          if (globalModel.tag === "Run") globalModel.microStep();
-          break;
-      }
-    },
+  const handleUserKeyPressCallback = useCallback(
+    (event: KeyboardEvent) => handleUserKeyPress(event, globalModel),
     [globalModel]
   );
   useEffect(() => {
-    window.addEventListener("keydown", handleUserKeyPress);
+    window.addEventListener("keydown", handleUserKeyPressCallback);
     return () => {
-      window.removeEventListener("keydown", handleUserKeyPress);
+      window.removeEventListener("keydown", handleUserKeyPressCallback);
     };
-  }, [handleUserKeyPress]);
+  }, [handleUserKeyPressCallback]);
 
   const fileMenu = (
     <Menu>
@@ -259,3 +236,28 @@ const Toolbar: React.FC<Props> = () => {
 };
 
 export default Toolbar;
+
+function handleUserKeyPress(event: KeyboardEvent, globalModel: GlobalModel) {
+  switch (event.key) {
+    case "F5":
+      event.preventDefault();
+      globalModel.toggleMode();
+      break;
+    case "F6":
+      event.preventDefault();
+      if (globalModel.tag === "Run") globalModel.runStop();
+      break;
+    case "F7":
+      event.preventDefault();
+      if (globalModel.tag === "Run") globalModel.reset();
+      break;
+    case "F8":
+      event.preventDefault();
+      if (globalModel.tag === "Run") globalModel.step();
+      break;
+    case "F9":
+      event.preventDefault();
+      if (globalModel.tag === "Run") globalModel.microStep();
+      break;
+  }
+}
