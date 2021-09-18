@@ -15,12 +15,12 @@ export function model(
     sourceCode: state.sourceCode,
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
-    goToEditMode: () => {
+    goToEditMode: (sourceCode?: string) => {
       if (state.timerId !== null) clearInterval(state.timerId);
       state.simulator.free();
       setState({
         tag: "Edit",
-        sourceCode: state.sourceCode,
+        sourceCode: sourceCode ?? state.sourceCode,
         base: state.base,
         log: "",
       });

@@ -10,12 +10,26 @@ import {
   Text,
 } from "@blueprintjs/core";
 
+import { useFilePicker } from "../hooks/useFilePicker";
 import { GlobalContext } from "../global/context";
 
 interface Props {}
 
 const Toolbar: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
+  const openFilePicker = useFilePicker({
+    accept: [".rt", ".txt"],
+    onChange: (_name, content) => {
+      switch (globalModel.tag) {
+        case "Edit":
+          globalModel.setSourceCode(content);
+          break;
+        case "Run":
+          globalModel.goToEditMode(content);
+          break;
+      }
+    },
+  });
   const toggleMode = useCallback(() => {
     switch (globalModel.tag) {
       case "Edit":
@@ -62,7 +76,11 @@ const Toolbar: React.FC<Props> = () => {
 
   const fileMenu = (
     <Menu>
-      <MenuItem icon="document-open" text="Open File..." />
+      <MenuItem
+        icon="document-open"
+        text="Open File..."
+        onClick={openFilePicker}
+      />
       <MenuItem icon="download" text="Save File..." />
     </Menu>
   );
