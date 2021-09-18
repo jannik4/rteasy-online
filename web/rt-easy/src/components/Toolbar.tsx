@@ -260,25 +260,30 @@ function handleUserKeyPress(
     case "o":
       if (ctrlKeyPressed(event)) {
         event.preventDefault();
+        if (event.repeat) return;
         openFilePicker();
       }
       break;
     case "s":
       if (ctrlKeyPressed(event)) {
         event.preventDefault();
+        if (event.repeat) return;
         downloadFile(FILENAME, globalModel.sourceCode);
       }
       break;
     case "F5":
       event.preventDefault();
+      if (event.repeat) return;
       globalModel.toggleMode();
       break;
     case "F6":
       event.preventDefault();
+      if (event.repeat) return;
       if (globalModel.tag === "Run") globalModel.runStop();
       break;
     case "F7":
       event.preventDefault();
+      if (event.repeat) return;
       if (globalModel.tag === "Run") globalModel.reset();
       break;
     case "F8":
