@@ -47,26 +47,34 @@ const Toolbar: React.FC<Props> = () => {
       <MenuItem
         icon="document-open"
         text="Open File..."
-        label="Ctrl+O"
+        label={ctrlKeyShortCut("O")}
         onClick={openFilePicker}
       />
-      <MenuItem icon="download" text="Save File..." label="Ctrl+S" />
+      <MenuItem
+        icon="download"
+        text="Save File..."
+        label={ctrlKeyShortCut("S")}
+      />
     </Menu>
   );
 
   const editMenu = (
     <Menu>
-      <MenuItem icon="undo" text="Undo" label="Ctrl+Z" />
-      <MenuItem icon="redo" text="Redo" label="Ctrl+Y" />
+      <MenuItem icon="undo" text="Undo" label={ctrlKeyShortCut("Z")} />
+      <MenuItem icon="redo" text="Redo" label={ctrlKeyShortCut("Y")} />
 
       <MenuDivider />
-      <MenuItem icon="cut" text="Cut" label="Ctrl+X" />
-      <MenuItem icon="duplicate" text="Copy" label="Ctrl+C" />
-      <MenuItem icon="clipboard" text="Paste" label="Ctrl+V" />
+      <MenuItem icon="cut" text="Cut" label={ctrlKeyShortCut("X")} />
+      <MenuItem icon="duplicate" text="Copy" label={ctrlKeyShortCut("C")} />
+      <MenuItem icon="clipboard" text="Paste" label={ctrlKeyShortCut("V")} />
 
       <MenuDivider />
-      <MenuItem icon="search" text="Find" label="Ctrl+F" />
-      <MenuItem icon="multi-select" text="Replace" label="Ctrl+H" />
+      <MenuItem icon="search" text="Find" label={ctrlKeyShortCut("F")} />
+      <MenuItem
+        icon="multi-select"
+        text="Replace"
+        label={ctrlKeyShortCut("H")}
+      />
     </Menu>
   );
 
@@ -276,6 +284,10 @@ function handleUserKeyPress(
 
 function ctrlKeyPressed(event: KeyboardEvent): boolean {
   return isMac() ? event.metaKey : event.ctrlKey;
+}
+
+function ctrlKeyShortCut(char: string): string {
+  return (isMac() ? "⌘+" : "Ctrl+") + char;
 }
 
 function isMac(): boolean {
