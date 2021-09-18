@@ -1,5 +1,6 @@
 # rt-easy
 
+[![pages](https://github.com/jannik4/rteasy-online/workflows/gh-pages/badge.svg)](https://github.com/jannik4/rteasy-online/actions)
 [![Lines Of Code](https://tokei.rs/b1/github/jannik4/rteasy-online?category=code)](https://github.com/jannik4/rteasy-online)
 
 ## Backend
