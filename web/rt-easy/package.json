@@ -19,7 +19,6 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
-    "rt-easy-wasm": "file:../../src/rt-easy-wasm/pkg",
     "typescript": "^4.1.2",
     "web-vitals": "^1.0.1"
   },
