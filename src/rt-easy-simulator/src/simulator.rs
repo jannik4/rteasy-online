@@ -270,4 +270,16 @@ impl Simulator {
     pub fn write_memory(&mut self, name: &Ident, addr: Value, value: Value) -> Result<(), Error> {
         Ok(self.state.memory_mut(name)?.write_at(addr, value)?)
     }
+    pub fn memory_save<W>(&self, name: &Ident, writer: W) -> Result<(), Error>
+    where
+        W: std::io::Write,
+    {
+        self.state.memory(name)?.save(writer)
+    }
+    pub fn memory_load_from_save<R>(&mut self, name: &Ident, reader: R) -> Result<(), Error>
+    where
+        R: std::io::Read,
+    {
+        self.state.memory_mut(name)?.load_from_save(reader)
+    }
 }

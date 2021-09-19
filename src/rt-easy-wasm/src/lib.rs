@@ -271,6 +271,26 @@ impl Simulator {
 
         Ok(())
     }
+
+    pub fn memory_save(&self, name: &str) -> Result<String, JsValue> {
+        let mut save_bytes = Vec::new();
+        self.0
+            .memory_save(&rt_easy::rtcore::program::Ident(name.to_string()), &mut save_bytes)
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+        let save =
+            String::from_utf8(save_bytes).map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+        Ok(save)
+    }
+
+    pub fn memory_load_from_save(&mut self, name: &str, save: &str) -> Result<(), JsValue> {
+        self.0
+            .memory_load_from_save(
+                &rt_easy::rtcore::program::Ident(name.to_string()),
+                save.as_bytes(),
+            )
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+        Ok(())
+    }
 }
 
 #[wasm_bindgen]

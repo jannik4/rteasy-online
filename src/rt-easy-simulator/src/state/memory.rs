@@ -4,6 +4,7 @@ use rtcore::{program::MemoryRange, value::Value};
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::fmt;
+use std::io;
 
 const MEMORY_PAGE_SIZE_EXP: usize = 5;
 const MEMORY_PAGE_SIZE: usize = 2usize.pow(MEMORY_PAGE_SIZE_EXP as u32);
@@ -131,6 +132,45 @@ impl MemoryState {
         }
         result
     }
+
+    pub fn save<W>(&self, writer: W) -> Result<(), Error>
+    where
+        W: io::Write,
+    {
+        let save = MemorySave {
+            version: "v1".to_string(),
+            data: self.data.iter().map(|(addr, value)| (addr.as_hex(), value.as_hex())).collect(),
+            ar_size: self.ar_size,
+            dr_size: self.dr_size,
+        };
+        serde_json::to_writer(writer, &save).map_err(|_| Error::Other)
+    }
+
+    pub fn load_from_save<R>(&mut self, reader: R) -> Result<(), Error>
+    where
+        R: io::Read,
+    {
+        let save = serde_json::from_reader::<_, MemorySave>(reader).map_err(|_| Error::Other)?;
+        if save.version != "v1" || save.ar_size != self.ar_size || save.dr_size != self.dr_size {
+            return Err(Error::Other);
+        }
+
+        self.data = save
+            .data
+            .into_iter()
+            .map(|(addr, value)| {
+                let addr = Value::parse_hex(&addr).map_err(|()| Error::Other)?;
+                let value = Value::parse_hex(&value).map_err(|()| Error::Other)?;
+                if addr.size() > self.ar_size || value.size() > self.dr_size {
+                    return Err(Error::Other);
+                }
+                Ok((addr, value))
+            })
+            .collect::<Result<_, _>>()?;
+        *self.data_next.get_mut() = None;
+
+        Ok(())
+    }
 }
 
 impl fmt::Display for MemoryState {
@@ -146,4 +186,12 @@ impl fmt::Display for MemoryState {
 
         Ok(())
     }
+}
+
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+struct MemorySave {
+    version: String,
+    data: Vec<(String, String)>,
+    ar_size: usize,
+    dr_size: usize,
 }

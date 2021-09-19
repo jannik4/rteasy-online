@@ -64,6 +64,8 @@ export interface GlobalModelRun extends GlobalModelCommon {
     value: string,
     base: string
   ) => void;
+  memorySave: (name: string) => string;
+  memoryLoadFromSave: (name: string, save: string) => void;
 }
 
 export interface SimState {

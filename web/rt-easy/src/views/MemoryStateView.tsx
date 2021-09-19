@@ -1,6 +1,8 @@
 import React, { useState, useContext, useMemo } from "react";
 import { HTMLTable, Text, InputGroup, Button } from "@blueprintjs/core";
 
+import { useFilePicker } from "../hooks/useFilePicker";
+import { downloadFile } from "../util/downloadFile";
 import { GlobalContext } from "../global/context";
 
 interface Props {
@@ -26,6 +28,16 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
     return globalModel.memoryPageCount(memory);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalModel.tag, memory]);
+
+  // File picker
+  const openLoadFromSaveFilePicker = useFilePicker({
+    accept: [".rtmem"],
+    onChange: (_name, content) => {
+      if (globalModel.tag === "Edit") return;
+      console.log("ccc");
+      globalModel.memoryLoadFromSave(memory, content);
+    },
+  });
 
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
@@ -63,6 +75,31 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
+      <div style={{ height: 16 }} />
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <Button onClick={() => openLoadFromSaveFilePicker()} small>
+          Load
+        </Button>
+        <div style={{ width: 8 }} />
+        <Button
+          onClick={() =>
+            downloadFile(
+              `memory-${memory}.rtmem`,
+              globalModel.memorySave(memory)
+            )
+          }
+          small
+        >
+          Save
+        </Button>
+      </div>
+
       <div style={{ height: 16 }} />
 
       <div

@@ -145,6 +145,15 @@ export function model(
         console.log(e); // TODO: ???
       }
     },
+    memorySave: (name: string) => state.simulator.memory_save(name),
+    memoryLoadFromSave: (name: string, save: string) => {
+      try {
+        state.simulator.memory_load_from_save(name, save);
+        setState({ ...state }); // Force state update
+      } catch (e) {
+        console.log(e); // TODO: ???
+      }
+    },
   };
 }
 
