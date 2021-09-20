@@ -22,10 +22,11 @@ pub fn parse(source: &str) -> Result<rtcore::ast::Ast<'_>, toktok::Error<Token>>
     Ok(ast)
 }
 
-pub fn pretty_print_error(error: &toktok::Error<Token>, source: &str) -> String {
+pub fn pretty_print_error(error: &toktok::Error<Token>, source: &str, ansi_colors: bool) -> String {
     let options = toktok::PrettyPrintOptions {
         source: Some(source),
         file_name: None,
+        ansi_colors,
         rename_token: Some(Box::new(|token: &Token| {
             use Token::*;
             match token {

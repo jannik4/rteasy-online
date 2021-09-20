@@ -1,32 +1,27 @@
 import React, { useContext } from "react";
-import MonacoEditor from "@monaco-editor/react";
+import Anser from "anser";
 
-// import { RtEasyContext } from "../context";
 import { GlobalContext } from "../global/context";
 
 interface Props {}
 
 const LogView: React.FC<Props> = () => {
-  // const rtEasy = useContext(RtEasyContext);
   const globalModel = useContext(GlobalContext);
 
   if (globalModel.tag === "Run") {
     return <div>Err</div>;
   }
 
-  // let result: string;
-  // try {
-  //   result = rtEasy.run(globalModel.sourceCode);
-  // } catch (e) {
-  //   result = e;
-  // }
-
   return (
-    <div style={{ height: "100%" /*, overflow: "hidden"*/ }}>
-      <MonacoEditor
-        value={globalModel.log}
-        options={{ readOnly: true, fixedOverflowWidgets: true }}
-      />
+    <div
+      style={{
+        padding: 8,
+      }}
+    >
+      <pre
+        dangerouslySetInnerHTML={{ __html: Anser.ansiToHtml(globalModel.log) }}
+        style={{ margin: 0 }}
+      ></pre>
     </div>
   );
 };

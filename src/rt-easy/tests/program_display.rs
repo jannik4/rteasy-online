@@ -84,7 +84,7 @@ fn program_display() {
 fn compile(source: &str) -> rt_easy::rtcore::program::Program {
     let ast = match rt_easy::parser::parse(source) {
         Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
+        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source, false)),
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;

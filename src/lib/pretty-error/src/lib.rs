@@ -1,5 +1,6 @@
 #![deny(rust_2018_idioms)]
 
+use ansi_term::Colour::{Blue, Red};
 use std::fmt;
 use std::ops::Range;
 
@@ -14,11 +15,12 @@ pub struct Error<'a> {
     message: &'a str,
     source: Option<(&'a str, Span)>,
     file_name: Option<&'a str>,
+    ansi_colors: bool,
 }
 
 impl<'a> Error<'a> {
     pub fn new(message: &'a str) -> Self {
-        Self { message, source: None, file_name: None }
+        Self { message, source: None, file_name: None, ansi_colors: false }
     }
 
     pub fn with_source(mut self, source: &'a str, span: Span) -> Self {
@@ -28,6 +30,11 @@ impl<'a> Error<'a> {
 
     pub fn with_file_name(mut self, file_name: &'a str) -> Self {
         self.file_name = Some(file_name);
+        self
+    }
+
+    pub fn with_ansi_colors(mut self, ansi_colors: bool) -> Self {
+        self.ansi_colors = ansi_colors;
         self
     }
 }
@@ -47,7 +54,11 @@ impl fmt::Display for Error<'_> {
             for _ in 0..indent - 1 {
                 write!(f, " ")?;
             }
-            write!(f, "--> ")?;
+            if self.ansi_colors {
+                write!(f, "{}", Blue.paint("--> "))?;
+            } else {
+                write!(f, "--> ")?;
+            }
             if let Some(file_name) = self.file_name {
                 write!(f, "{}", file_name)?;
                 write!(f, ":")?;
@@ -58,26 +69,29 @@ impl fmt::Display for Error<'_> {
                 Some(locations) => {
                     write!(f, "{}:{}\n", locations[0].line, locations[0].column)?;
 
-                    pre(f, "", indent)?;
+                    pre(f, "", indent, self.ansi_colors)?;
                     write!(f, "\n")?;
 
                     for loc in locations {
-                        pre(f, &loc.line.to_string(), indent)?;
+                        pre(f, &loc.line.to_string(), indent, self.ansi_colors)?;
                         write!(f, "    {}\n", loc.line_slice)?;
 
-                        pre(f, "", indent)?;
+                        pre(f, "", indent, self.ansi_colors)?;
                         write!(f, "    ")?;
-                        for i in 0..loc.column_last {
-                            if i < loc.column - 1 {
-                                write!(f, " ")?;
-                            } else {
-                                write!(f, "^")?;
-                            }
+                        for _ in 0..loc.column - 1 {
+                            write!(f, " ")?;
+                        }
+                        let circumflexes =
+                            (loc.column - 1..loc.column_last).map(|_| '^').collect::<String>();
+                        if self.ansi_colors {
+                            write!(f, "{}", Red.paint(circumflexes))?;
+                        } else {
+                            write!(f, "{}", circumflexes)?;
                         }
                         write!(f, "\n")?;
                     }
 
-                    pre(f, "", indent)?;
+                    pre(f, "", indent, self.ansi_colors)?;
                     write!(f, "\n")?;
                 }
             }
@@ -86,18 +100,30 @@ impl fmt::Display for Error<'_> {
         for _ in 0..indent {
             write!(f, " ")?;
         }
-        write!(f, "= {}", self.message)?;
+        if self.ansi_colors {
+            write!(f, "= {}", Red.paint(self.message))?;
+        } else {
+            write!(f, "= {}", self.message)?;
+        }
 
         Ok(())
     }
 }
 
-fn pre(result: &mut impl fmt::Write, s: &str, len: usize) -> fmt::Result {
-    write!(result, "{}", s)?;
+fn pre(result: &mut impl fmt::Write, s: &str, len: usize, ansi_colors: bool) -> fmt::Result {
+    if ansi_colors {
+        write!(result, "{}", Blue.paint(s))?;
+    } else {
+        write!(result, "{}", s)?;
+    }
     for _ in 0..len - s.len() {
         write!(result, " ")?;
     }
-    write!(result, "|")?;
+    if ansi_colors {
+        write!(result, "{}", Blue.paint("|"))?;
+    } else {
+        write!(result, "|")?;
+    }
 
     Ok(())
 }

@@ -10,7 +10,7 @@ pub enum Error {
 }
 
 impl Error {
-    pub fn pretty_print(&self, source: &str, file_name: Option<&str>) -> String {
+    pub fn pretty_print(&self, source: &str, file_name: Option<&str>, ansi_colors: bool) -> String {
         match self {
             Error::Errors(errors) => {
                 // Sort errors
@@ -23,7 +23,7 @@ impl Error {
                     if idx != 0 {
                         result += "\n\n";
                     }
-                    result += &error.pretty_print(source, file_name);
+                    result += &error.pretty_print(source, file_name, ansi_colors);
                 }
                 result
             }
@@ -56,13 +56,15 @@ impl CompilerError {
         Self { kind, span }
     }
 
-    pub fn pretty_print(&self, source: &str, file_name: Option<&str>) -> String {
+    pub fn pretty_print(&self, source: &str, file_name: Option<&str>, ansi_colors: bool) -> String {
         let message = self.kind.message();
         let mut error = pretty_error::Error::new(&message)
-            .with_source(source, pretty_error::Span::Range(self.span.range()));
+            .with_source(source, pretty_error::Span::Range(self.span.range()))
+            .with_ansi_colors(ansi_colors);
         if let Some(file_name) = file_name {
             error = error.with_file_name(file_name);
         }
+
         error.to_string()
     }
 }

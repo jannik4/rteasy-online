@@ -160,6 +160,7 @@ impl<T> Error<T> {
         if let Some(file_name) = options.file_name {
             error = error.with_file_name(file_name);
         }
+        error = error.with_ansi_colors(options.ansi_colors);
 
         error.to_string()
     }
@@ -251,12 +252,13 @@ where
 pub struct PrettyPrintOptions<'a, T> {
     pub source: Option<&'a str>,
     pub file_name: Option<&'a str>,
+    pub ansi_colors: bool,
     pub rename_token: Option<Box<dyn Fn(&T) -> String>>,
 }
 
 impl<T> Default for PrettyPrintOptions<'_, T> {
     fn default() -> Self {
-        Self { source: None, file_name: None, rename_token: None }
+        Self { source: None, ansi_colors: false, file_name: None, rename_token: None }
     }
 }
 

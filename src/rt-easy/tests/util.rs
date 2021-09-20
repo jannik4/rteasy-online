@@ -20,7 +20,7 @@ pub fn compile_error(source: &str) -> Error {
 fn compile_(source: &str) -> Result<Program, Error> {
     let ast = match rt_easy::parser::parse(source) {
         Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
+        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source, false)),
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
