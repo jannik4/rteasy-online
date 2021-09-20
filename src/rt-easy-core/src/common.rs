@@ -83,7 +83,9 @@ impl BitRange {
     }
 
     pub fn contains_range(&self, idx: Self) -> bool {
-        self.contains(idx.msb) && idx.lsb.map(|lsb| self.contains(lsb)).unwrap_or(true)
+        self.contains(idx.msb)
+            && self.contains(idx.lsb())
+            && (self.msb >= self.lsb()) == (idx.msb >= idx.lsb())
     }
 
     pub fn bits(&self) -> impl Iterator<Item = usize> {
