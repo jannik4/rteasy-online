@@ -1,3 +1,4 @@
+use std::fmt;
 use std::ops::Range;
 use value::Value;
 
@@ -108,6 +109,15 @@ impl BitRange {
             (Some(a), Some(b)) => {
                 a.contains(b.msb) || a.contains(b.lsb()) || b.contains(a.msb) || b.contains(a.lsb())
             }
+        }
+    }
+}
+
+impl fmt::Display for BitRange {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.lsb {
+            Some(lsb) => write!(f, "({}:{})", self.msb, lsb),
+            None => write!(f, "({})", self.msb),
         }
     }
 }
