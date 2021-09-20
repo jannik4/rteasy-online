@@ -122,9 +122,9 @@ impl<'s> CheckOp<'s> for Switch<'s> {
                     }
 
                     match (expr_res.size, value_res.size) {
-                        (Some(expr_size), Some(value_size)) if value_size > expr_size => {
+                        (Some(expr_size), Some(case_value_size)) if case_value_size > expr_size => {
                             error_sink(CompilerError::new(
-                                CompilerErrorKind::CaseValueTooWide,
+                                CompilerErrorKind::CaseValueTooWide { expr_size, case_value_size },
                                 case.value.span(),
                             ));
                         }
@@ -211,7 +211,7 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
         if let (Some(lhs), Some(rhs)) = (lhs.size, rhs.size) {
             if lhs < rhs {
                 error_sink(CompilerError::new(
-                    CompilerErrorKind::AssignmentDoesNotFit(lhs, rhs),
+                    CompilerErrorKind::AssignmentDoesNotFit { lhs_size: lhs, rhs_size: rhs },
                     self.span,
                 ))
             }

@@ -96,7 +96,10 @@ pub fn range_into(
     if range.contains_range(range_idx.node) {
         Ok(range_idx.node.size())
     } else {
-        Err(CompilerError::new(CompilerErrorKind::RangeMismatch, range_idx.span))
+        Err(CompilerError::new(
+            CompilerErrorKind::RangeMismatch { range, range_idx: range_idx.node },
+            range_idx.span,
+        ))
     }
 }
 

@@ -62,10 +62,14 @@ impl<'s> SimState<'s> for State<'s> {
     }
 
     fn finish(self, statement: &Statement<'s>, error_sink: &mut impl FnMut(CompilerError)) {
+        let allowed_reads = 2;
         for (name, reads) in self.reads {
-            if reads > 2 {
+            if reads > allowed_reads {
                 error_sink(CompilerError::new(
-                    CompilerErrorKind::RegisterArrayTooManyReads(name.0.to_string()),
+                    CompilerErrorKind::RegisterArrayTooManyReads {
+                        name: name.0.to_string(),
+                        allowed: allowed_reads,
+                    },
                     statement.steps.span,
                 ));
             }

@@ -8,7 +8,7 @@ mod symbols;
 mod util;
 
 pub mod mir;
-pub use self::error::{CompilerError, CompilerErrorKind, Error, InternalError};
+pub use self::error::{BackendError, CompilerError, CompilerErrorKind, Error, InternalError};
 pub use self::symbols::SymbolType;
 
 pub trait Backend {
@@ -36,7 +36,7 @@ where
 
     match backend.generate(mir) {
         Ok(output) => Ok(output),
-        Err(e) => Err(Error::Backend(e.into())),
+        Err(e) => Err(Error::Backend(BackendError(e.into()))),
     }
 }
 

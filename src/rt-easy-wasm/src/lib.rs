@@ -21,7 +21,7 @@ pub fn check(code: String) -> Result<(), JsValue> {
 
     match rt_easy::compiler::check(ast, &Default::default()) {
         Ok(()) => (),
-        Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+        Err(e) => return Err(JsValue::from_str(&e.pretty_print(&code, None))),
     };
 
     Ok(())
@@ -37,7 +37,7 @@ pub fn build(code: String) -> Result<Simulator, JsValue> {
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
     let program = match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
         Ok(program) => program,
-        Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+        Err(e) => return Err(JsValue::from_str(&e.pretty_print(&code, None))),
     };
 
     Ok(Simulator(rt_easy::simulator::Simulator::init(program)))

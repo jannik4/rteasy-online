@@ -1,6 +1,9 @@
 use crate::{CompilerError, CompilerErrorKind};
 use rtcore::ast;
 use std::collections::{HashMap, HashSet};
+use std::fmt;
+
+const MAX_BIT_RANGE_SIZE: usize = u16::MAX as usize;
 
 #[derive(Debug, Default)]
 pub struct Symbols<'s> {
@@ -31,12 +34,14 @@ impl<'s> Symbols<'s> {
                             ));
                         }
 
-                        // TODO: Instead of this check use u16 in BitRange ???
                         if let Some(range) = reg.range {
                             let size = range.node.size();
-                            if size > u16::MAX as usize {
+                            if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide(size),
+                                    CompilerErrorKind::BitRangeToWide {
+                                        max_size: MAX_BIT_RANGE_SIZE,
+                                        size,
+                                    },
                                     range.span,
                                 ));
                             }
@@ -59,12 +64,14 @@ impl<'s> Symbols<'s> {
                             ));
                         }
 
-                        // TODO: Instead of this check use u16 in BitRange ???
                         if let Some(range) = bus.range {
                             let size = range.node.size();
-                            if size > u16::MAX as usize {
+                            if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide(size),
+                                    CompilerErrorKind::BitRangeToWide {
+                                        max_size: MAX_BIT_RANGE_SIZE,
+                                        size,
+                                    },
                                     range.span,
                                 ));
                             }
@@ -137,12 +144,14 @@ impl<'s> Symbols<'s> {
                             ));
                         }
 
-                        // TODO: Instead of this check use u16 in BitRange ???
                         if let Some(range) = reg_array.range {
                             let size = range.node.size();
-                            if size > u16::MAX as usize {
+                            if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide(size),
+                                    CompilerErrorKind::BitRangeToWide {
+                                        max_size: MAX_BIT_RANGE_SIZE,
+                                        size,
+                                    },
                                     range.span,
                                 ));
                             }
@@ -209,4 +218,15 @@ pub enum SymbolType {
     Bus,
     Memory,
     RegisterArray,
+}
+
+impl fmt::Display for SymbolType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Self::Register => write!(f, "register"),
+            Self::Bus => write!(f, "bus"),
+            Self::Memory => write!(f, "memory"),
+            Self::RegisterArray => write!(f, "register array"),
+        }
+    }
 }

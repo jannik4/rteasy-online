@@ -173,7 +173,10 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
                 if let Some(index_expr_size) = index_expr.size {
                     if index_size < index_expr_size {
                         error_sink(CompilerError::new(
-                            CompilerErrorKind::RegArrayIndexDoesNotFit(index_size, index_expr_size),
+                            CompilerErrorKind::RegArrayIndexDoesNotFit {
+                                index_size,
+                                index_expr_size,
+                            },
                             self.index.span(),
                         ))
                     }
