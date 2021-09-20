@@ -112,11 +112,26 @@ expression_not -> Expression<'s>:
     | expression_cmp { $1 };
 
 expression_cmp -> Expression<'s>:
-      expression_plus spanned("=") expression_plus {
+      expression_cmpo spanned("=") expression_cmpo {
         BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Eq, $2.span), span: $span.into() }.into()
       }
-    | expression_plus spanned("<>") expression_plus {
+    | expression_cmpo spanned("<>") expression_cmpo {
         BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Ne, $2.span), span: $span.into() }.into()
+      }
+    | expression_cmpo { $1 };
+
+expression_cmpo -> Expression<'s>:
+      expression_plus spanned("<=") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Le, $2.span), span: $span.into() }.into()
+      }
+    | expression_plus spanned("<") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Lt, $2.span), span: $span.into() }.into()
+      }
+    | expression_plus spanned(">=") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Ge, $2.span), span: $span.into() }.into()
+      }
+    | expression_plus spanned(">") expression_plus {
+        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Gt, $2.span), span: $span.into() }.into()
       }
     | expression_plus { $1 };
 
@@ -226,6 +241,10 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 
 "=" = Token::OperatorEquality
 "<>" = Token::OperatorInequality
+"<=" = Token::OperatorLessEquals
+"<" = Token::OperatorLess
+">=" = Token::OperatorGreaterEquals
+">" = Token::OperatorGreater
 "+" = Token::OperatorAddition
 "-" = Token::OperatorSubtraction
 "and" = Token::OperatorAnd

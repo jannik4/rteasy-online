@@ -4,7 +4,7 @@ use rtcore::{
         Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, ExpressionKind,
         Number, Register, RegisterArray, UnaryOperator, UnaryTerm,
     },
-    value::Value,
+    value::{Bit, Value},
 };
 use std::convert::Infallible;
 
@@ -43,20 +43,12 @@ impl Evaluate for BinaryTerm {
         let rhs = self.rhs.evaluate(state, ctx_size)?;
 
         Ok(match self.operator {
-            BinaryOperator::Eq => {
-                if lhs == rhs {
-                    Value::one(1)
-                } else {
-                    Value::zero(1)
-                }
-            }
-            BinaryOperator::Ne => {
-                if lhs != rhs {
-                    Value::one(1)
-                } else {
-                    Value::zero(1)
-                }
-            }
+            BinaryOperator::Eq => Value::from(Bit::from(lhs == rhs)),
+            BinaryOperator::Ne => Value::from(Bit::from(lhs != rhs)),
+            BinaryOperator::Le => Value::from(Bit::from(lhs <= rhs)),
+            BinaryOperator::Lt => Value::from(Bit::from(lhs < rhs)),
+            BinaryOperator::Ge => Value::from(Bit::from(lhs >= rhs)),
+            BinaryOperator::Gt => Value::from(Bit::from(lhs > rhs)),
             BinaryOperator::Add => lhs + rhs,
             BinaryOperator::Sub => lhs - rhs,
             BinaryOperator::And => lhs & rhs,
@@ -64,7 +56,6 @@ impl Evaluate for BinaryTerm {
             BinaryOperator::Or => lhs | rhs,
             BinaryOperator::Nor => !(lhs | rhs),
             BinaryOperator::Xor => lhs ^ rhs,
-            _ => todo!(),
         })
     }
 }

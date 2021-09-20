@@ -1,5 +1,5 @@
 use crate::mir::*;
-use rtcore::value::Value;
+use rtcore::value::{Bit, Value};
 
 pub trait Evaluate {
     fn evaluate(&self, ctx_size: usize) -> Option<Value>;
@@ -34,23 +34,19 @@ impl Evaluate for BinaryTerm<'_> {
         let rhs = self.rhs.evaluate(ctx_size)?;
 
         Some(match self.operator.node {
-            BinaryOperator::Eq => {
-                if lhs == rhs {
-                    Value::one(1)
-                } else {
-                    Value::zero(1)
-                }
-            }
-            BinaryOperator::Ne => {
-                if lhs != rhs {
-                    Value::one(1)
-                } else {
-                    Value::zero(1)
-                }
-            }
+            BinaryOperator::Eq => Value::from(Bit::from(lhs == rhs)),
+            BinaryOperator::Ne => Value::from(Bit::from(lhs != rhs)),
+            BinaryOperator::Le => Value::from(Bit::from(lhs <= rhs)),
+            BinaryOperator::Lt => Value::from(Bit::from(lhs < rhs)),
+            BinaryOperator::Ge => Value::from(Bit::from(lhs >= rhs)),
+            BinaryOperator::Gt => Value::from(Bit::from(lhs > rhs)),
             BinaryOperator::Add => lhs + rhs,
             BinaryOperator::Sub => lhs - rhs,
-            _ => todo!(),
+            BinaryOperator::And => lhs & rhs,
+            BinaryOperator::Nand => !(lhs & rhs),
+            BinaryOperator::Or => lhs | rhs,
+            BinaryOperator::Nor => !(lhs | rhs),
+            BinaryOperator::Xor => lhs ^ rhs,
         })
     }
 }

@@ -165,6 +165,12 @@ impl Value {
     }
 }
 
+impl From<Bit> for Value {
+    fn from(bit: Bit) -> Self {
+        Self { bits: vec![bit] }
+    }
+}
+
 impl AsRef<ValueSlice> for Value {
     fn as_ref(&self) -> &ValueSlice {
         unsafe { &*(self.bits.as_slice() as *const [Bit] as *const ValueSlice) }
