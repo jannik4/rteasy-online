@@ -7,20 +7,30 @@ pub ast -> Ast<'s>:
 // Declarations
 declaration -> Declaration<'s>:
       declare_register_array { Declaration::RegisterArray($1) }
+    | declare_output { Declaration::Register($1) }
     | declare_register { Declaration::Register($1) }
+    | declare_input { Declaration::Bus($1) }
     | declare_bus { Declaration::Bus($1) }
     | declare_memory { Declaration::Memory($1) };
+
 declare_register_array -> DeclareRegisterArray<'s>:
     "declare" "register" "array" sep1(declare_register_array_item, ",") { DeclareRegisterArray { register_arrays: $4, span: $span.into() } };
+declare_register_array_item -> DeclareRegisterArrayItem<'s>:
+    spanned(ident) opt(spanned(bit_range)) "[" number_usize "]" { DeclareRegisterArrayItem { ident: $1, range: $2, len: $4, span: $span.into() } };
+
+declare_output -> DeclareRegister<'s>:
+    "declare" "output" sep1(reg_bus, ",") { DeclareRegister { registers: $3, kind: RegisterKind::Output, span: $span.into() } };
 declare_register -> DeclareRegister<'s>:
-    "declare" "register" sep1(reg_bus, ",") { DeclareRegister { registers: $3, span: $span.into() } };
+    "declare" "register" sep1(reg_bus, ",") { DeclareRegister { registers: $3, kind: RegisterKind::Intern, span: $span.into() } };
+
+declare_input -> DeclareBus<'s>:
+    "declare" "input" sep1(reg_bus, ",") { DeclareBus { buses: $3, kind: BusKind::Input, span: $span.into() } };
 declare_bus -> DeclareBus<'s>:
-    "declare" "bus" sep1(reg_bus, ",") { DeclareBus { buses: $3, span: $span.into() } };
+    "declare" "bus" sep1(reg_bus, ",") { DeclareBus { buses: $3, kind: BusKind::Intern, span: $span.into() } };
+
 declare_memory -> DeclareMemory<'s>:
     "declare" "memory" sep1(memory, ",") { DeclareMemory { memories: $3, span: $span.into() } };
 
-declare_register_array_item -> DeclareRegisterArrayItem<'s>:
-    spanned(ident) opt(spanned(bit_range)) "[" number_usize "]" { DeclareRegisterArrayItem { ident: $1, range: $2, len: $4, span: $span.into() } };
 
 // Statement
 statement -> Statement<'s>:
@@ -195,6 +205,8 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 "quote" = Token::Quote
 
 "declare" = Token::KeywordDeclare
+"input" = Token::KeywordInput
+"output" = Token::KeywordOutput
 "register" = Token::KeywordRegister
 "bus" = Token::KeywordBus
 "memory" = Token::KeywordMemory

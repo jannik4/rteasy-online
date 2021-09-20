@@ -1,18 +1,22 @@
 use super::util::slice_idx;
 use crate::Error;
-use rtcore::{program::BitRange, value::Value};
+use rtcore::{
+    program::{BitRange, BusKind},
+    value::Value,
+};
 use std::cell::RefCell;
 
 #[derive(Debug)]
 pub struct BusState {
     range: BitRange,
     value: RefCell<Value>,
+    kind: BusKind,
 }
 
 impl BusState {
-    pub fn init(range: Option<BitRange>) -> Self {
+    pub fn init(range: Option<BitRange>, kind: BusKind) -> Self {
         let range = range.unwrap_or_default();
-        Self { range, value: RefCell::new(Value::zero(range.size())) }
+        Self { range, value: RefCell::new(Value::zero(range.size())), kind }
     }
 
     pub fn read(&self, idx: Option<BitRange>) -> Result<Value, Error> {
@@ -43,5 +47,9 @@ impl BusState {
 
     pub fn range(&self) -> BitRange {
         self.range
+    }
+
+    pub fn kind(&self) -> BusKind {
+        self.kind
     }
 }

@@ -19,7 +19,10 @@ impl<'s> Symbols<'s> {
                     for reg in &declare_register.registers {
                         if symbols
                             .symbols
-                            .insert(reg.ident.node, Symbol::Register(reg.range.map(|s| s.node)))
+                            .insert(
+                                reg.ident.node,
+                                Symbol::Register(reg.range.map(|s| s.node), declare_register.kind),
+                            )
                             .is_some()
                         {
                             error_sink(CompilerError::DuplicateSymbol(
@@ -38,7 +41,10 @@ impl<'s> Symbols<'s> {
                     for bus in &declare_bus.buses {
                         if symbols
                             .symbols
-                            .insert(bus.ident.node, Symbol::Bus(bus.range.map(|s| s.node)))
+                            .insert(
+                                bus.ident.node,
+                                Symbol::Bus(bus.range.map(|s| s.node), declare_bus.kind),
+                            )
                             .is_some()
                         {
                             error_sink(CompilerError::DuplicateSymbol(
@@ -69,7 +75,7 @@ impl<'s> Symbols<'s> {
                             &[&memory.range.address_register, &memory.range.data_register]
                         {
                             match symbols.symbol(mem_reg.node) {
-                                Some(Symbol::Register(_)) => (),
+                                Some(Symbol::Register(..)) => (),
                                 Some(symbol) => error_sink(CompilerError::WrongSymbolType {
                                     expected: &[SymbolType::Register],
                                     found: symbol.type_(),
@@ -144,8 +150,8 @@ impl<'s> Symbols<'s> {
 
 #[derive(Debug, Clone, Copy)]
 pub enum Symbol<'s> {
-    Register(Option<ast::BitRange>),
-    Bus(Option<ast::BitRange>),
+    Register(Option<ast::BitRange>, ast::RegisterKind),
+    Bus(Option<ast::BitRange>, ast::BusKind),
     Memory(ast::MemoryRange<'s>),
     RegisterArray { range: Option<ast::BitRange>, len: usize },
 }
@@ -153,8 +159,8 @@ pub enum Symbol<'s> {
 impl Symbol<'_> {
     pub fn type_(&self) -> SymbolType {
         match self {
-            Self::Register(_) => SymbolType::Register,
-            Self::Bus(_) => SymbolType::Bus,
+            Self::Register(_, _) => SymbolType::Register,
+            Self::Bus(_, _) => SymbolType::Bus,
             Self::Memory(_) => SymbolType::Memory,
             Self::RegisterArray { .. } => SymbolType::RegisterArray,
         }

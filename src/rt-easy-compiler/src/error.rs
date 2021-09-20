@@ -39,6 +39,7 @@ pub enum CompilerError {
     DuplicateCaseValue,
     AssignmentLhsContainsClockedAndUnclocked,
     AssignmentLhsContainsANonLvalue,
+    AssignmentLhsContainsInput,
     RangeMismatch,
     GotoBeforePipe,
     MutateAfterPipe,

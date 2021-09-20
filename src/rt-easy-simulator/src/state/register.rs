@@ -1,6 +1,9 @@
 use super::util::slice_idx;
 use crate::Error;
-use rtcore::{program::BitRange, value::Value};
+use rtcore::{
+    program::{BitRange, RegisterKind},
+    value::Value,
+};
 use std::cell::RefCell;
 
 #[derive(Debug)]
@@ -8,12 +11,13 @@ pub struct RegisterState {
     range: BitRange,
     value: Value,
     value_next: RefCell<Option<Value>>,
+    kind: RegisterKind,
 }
 
 impl RegisterState {
-    pub fn init(range: Option<BitRange>) -> Self {
+    pub fn init(range: Option<BitRange>, kind: RegisterKind) -> Self {
         let range = range.unwrap_or_default();
-        Self { range, value: Value::zero(range.size()), value_next: RefCell::new(None) }
+        Self { range, value: Value::zero(range.size()), value_next: RefCell::new(None), kind }
     }
 
     pub fn value_next(&self) -> Option<Value> {
@@ -55,5 +59,9 @@ impl RegisterState {
 
     pub fn range(&self) -> BitRange {
         self.range
+    }
+
+    pub fn kind(&self) -> RegisterKind {
+        self.kind
     }
 }

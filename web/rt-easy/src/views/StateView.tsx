@@ -28,11 +28,13 @@ const StateView: React.FC<Props> = () => {
   const layoutModel = useContext(LayoutModelContext);
 
   // Names
-  const [registers, buses, memories] = useMemo(() => {
-    if (globalModel.tag === "Edit") return [[], [], []];
+  const [inputs, outputs, registers, buses, memories] = useMemo(() => {
+    if (globalModel.tag === "Edit") return [[], [], [], [], []];
     return [
-      globalModel.registers(),
-      globalModel.buses(),
+      globalModel.buses("Input"),
+      globalModel.registers("Output"),
+      globalModel.registers("Intern"),
+      globalModel.buses("Intern"),
       globalModel.memories(),
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,6 +73,38 @@ const StateView: React.FC<Props> = () => {
       />
     );
   };
+
+  const registerRows = (names: string[]) =>
+    names.map((name) => (
+      <tr key={name}>
+        <td>{name}</td>
+        <td>
+          {inputValue({
+            key: name,
+            value: globalModel.registerValue(name, globalModel.base),
+            valueNext: globalModel.registerValueNext(name, globalModel.base),
+            onChanged: (value) =>
+              globalModel.writeIntoRegister(name, value, globalModel.base),
+          })}
+        </td>
+      </tr>
+    ));
+
+  const busRows = (names: string[]) =>
+    names.map((name) => (
+      <tr key={name}>
+        <td>{name}</td>
+        <td>
+          {inputValue({
+            key: name,
+            value: globalModel.busValue(name, globalModel.base),
+            valueNext: null,
+            onChanged: (value) =>
+              globalModel.writeIntoBus(name, value, globalModel.base),
+          })}
+        </td>
+      </tr>
+    ));
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
@@ -115,52 +149,44 @@ const StateView: React.FC<Props> = () => {
         <tbody>
           <tr>
             <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Registers ----
+              ---- Inputs ----
             </th>
           </tr>
-          {registers.map((register) => (
-            <tr key={register}>
-              <td>{register}</td>
-              <td>
-                {inputValue({
-                  key: register,
-                  value: globalModel.registerValue(register, globalModel.base),
-                  valueNext: globalModel.registerValueNext(
-                    register,
-                    globalModel.base
-                  ),
-                  onChanged: (value) =>
-                    globalModel.writeIntoRegister(
-                      register,
-                      value,
-                      globalModel.base
-                    ),
-                })}
-              </td>
-            </tr>
-          ))}
+          {busRows(inputs)}
           <tr>
             <td colSpan={2}></td>
           </tr>
+
+          <tr>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              ---- Outputs ----
+            </th>
+          </tr>
+          {registerRows(outputs)}
+          <tr>
+            <td colSpan={2}></td>
+          </tr>
+
+          <tr>
+            <th colSpan={2} style={{ textAlign: "center" }}>
+              ---- Registers ----
+            </th>
+          </tr>
+          {registerRows(registers)}
+          <tr>
+            <td colSpan={2}></td>
+          </tr>
+
           <tr>
             <th colSpan={2} style={{ textAlign: "center" }}>
               ---- Buses ----
             </th>
           </tr>
-          {buses.map((bus) => (
-            <tr key={bus}>
-              <td>{bus}</td>
-              <td>
-                {inputValue({
-                  key: bus,
-                  value: globalModel.busValue(bus, globalModel.base),
-                  valueNext: null,
-                  onChanged: (value) =>
-                    globalModel.writeIntoBus(bus, value, globalModel.base),
-                })}
-              </td>
-            </tr>
-          ))}
+          {busRows(buses)}
+          <tr>
+            <td colSpan={2}></td>
+          </tr>
+
           <tr>
             <th colSpan={2} style={{ textAlign: "center" }}>
               ---- Memories ----

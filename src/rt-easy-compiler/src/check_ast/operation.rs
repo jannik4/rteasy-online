@@ -171,27 +171,50 @@ impl<'s> CheckOp<'s> for Read<'s> {
 
 impl<'s> CheckOp<'s> for Assignment<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+        // Check lhs/rhs as expr and size
         let lhs = match &self.lhs {
             Lvalue::RegBus(reg_bus) => reg_bus.check_expr(symbols, error_sink),
             Lvalue::RegisterArray(reg_array) => reg_array.check_expr(symbols, error_sink),
-            Lvalue::Concat(concat) => {
-                let info = util::concat_info(concat, symbols);
-                if info.contains_clocked && info.contains_unclocked {
-                    error_sink(CompilerError::AssignmentLhsContainsClockedAndUnclocked);
-                }
-                if info.contains_non_lvalue {
-                    error_sink(CompilerError::AssignmentLhsContainsANonLvalue);
-                }
-
-                concat.check_expr(symbols, error_sink)
-            }
+            Lvalue::Concat(concat) => concat.check_expr(symbols, error_sink),
         };
-
         let rhs = self.rhs.check_expr(symbols, error_sink);
-
         if let (Some(lhs), Some(rhs)) = (lhs.size, rhs.size) {
             if lhs < rhs {
                 error_sink(CompilerError::AssignmentDoesNotFit(lhs, rhs))
+            }
+        }
+
+        // Check concat
+        if let Lvalue::Concat(concat) = &self.lhs {
+            let info = util::concat_info(concat, symbols);
+            if info.contains_clocked && info.contains_unclocked {
+                error_sink(CompilerError::AssignmentLhsContainsClockedAndUnclocked);
+            }
+            if info.contains_non_lvalue {
+                error_sink(CompilerError::AssignmentLhsContainsANonLvalue);
+            }
+        };
+
+        // Check assign to input
+        match &self.lhs {
+            Lvalue::RegBus(reg_bus) => {
+                if reg_bus_is_input(reg_bus, symbols) {
+                    error_sink(CompilerError::AssignmentLhsContainsInput);
+                }
+            }
+            Lvalue::RegisterArray(_reg_array) => (),
+            Lvalue::Concat(concat) => {
+                for part in &concat.parts {
+                    match part {
+                        ConcatPart::RegBus(reg_bus) => {
+                            if reg_bus_is_input(reg_bus, symbols) {
+                                error_sink(CompilerError::AssignmentLhsContainsInput);
+                            }
+                        }
+                        ConcatPart::RegisterArray(_) => (),
+                        ConcatPart::Number(_number) => (),
+                    }
+                }
             }
         }
 
@@ -221,5 +244,12 @@ where
             Self::Left(left) => left.check_op(symbols, error_sink),
             Self::Right(right) => right.check_op(symbols, error_sink),
         }
+    }
+}
+
+fn reg_bus_is_input(reg_bus: &RegBus<'_>, symbols: &Symbols<'_>) -> bool {
+    match symbols.symbol(reg_bus.ident.node) {
+        Some(Symbol::Bus(_, BusKind::Input)) => true,
+        _ => false,
     }
 }

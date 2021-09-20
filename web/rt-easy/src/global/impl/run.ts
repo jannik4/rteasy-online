@@ -89,7 +89,7 @@ export function model(
     isRunning: () => state.timerId !== null,
 
     cycleCount: () => state.simulator.cycle_count(),
-    registers: () => state.simulator.registers(),
+    registers: (kind: "Intern" | "Output") => state.simulator.registers(kind),
     registerValue: (name: string, base: string) =>
       state.simulator.register_value(name, base),
     registerValueNext: (name: string, base: string) =>
@@ -102,7 +102,7 @@ export function model(
         console.log(e); // TODO: ???
       }
     },
-    buses: () => state.simulator.buses(),
+    buses: (kind: "Intern" | "Input") => state.simulator.buses(kind),
     busValue: (name: string, base: string) =>
       state.simulator.bus_value(name, base),
     writeIntoBus: (name: string, value: string, base: string) => {

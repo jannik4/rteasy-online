@@ -42,11 +42,11 @@ export interface GlobalModelRun extends GlobalModelCommon {
   isRunning: () => boolean;
 
   cycleCount: () => number;
-  registers: () => string[];
+  registers: (kind: "Intern" | "Output") => string[];
   registerValue: (name: string, base: string) => string;
   registerValueNext: (name: string, base: string) => string | null;
   writeIntoRegister: (name: string, value: string, base: string) => void;
-  buses: () => string[];
+  buses: (kind: "Intern" | "Input") => string[];
   busValue: (name: string, base: string) => string;
   writeIntoBus: (name: string, value: string, base: string) => void;
   memories: () => string[];

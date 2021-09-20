@@ -113,7 +113,7 @@ impl<'s> CheckExpr<'s> for ConcatPart<'s> {
 impl<'s> CheckExpr<'s> for RegBus<'s> {
     fn check_expr(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         let size = match symbols.symbol(self.ident.node) {
-            Some(Symbol::Register(range)) => {
+            Some(Symbol::Register(range, _)) => {
                 match util::range_into(range, self.range.map(|s| s.node)) {
                     Ok(size) => Some(size),
                     Err(e) => {
@@ -122,13 +122,15 @@ impl<'s> CheckExpr<'s> for RegBus<'s> {
                     }
                 }
             }
-            Some(Symbol::Bus(range)) => match util::range_into(range, self.range.map(|s| s.node)) {
-                Ok(size) => Some(size),
-                Err(e) => {
-                    error_sink(e);
-                    None
+            Some(Symbol::Bus(range, _)) => {
+                match util::range_into(range, self.range.map(|s| s.node)) {
+                    Ok(size) => Some(size),
+                    Err(e) => {
+                        error_sink(e);
+                        None
+                    }
                 }
-            },
+            }
             Some(Symbol::RegisterArray { .. }) => {
                 error_sink(CompilerError::RegArrayMissingIndex(self.ident.node.0.to_string()));
                 None

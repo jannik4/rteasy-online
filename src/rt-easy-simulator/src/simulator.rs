@@ -4,7 +4,7 @@ use crate::{
     Error,
 };
 use rtcore::{
-    program::{Criterion, CriterionId, Ident, Label, Program, Span},
+    program::{BusKind, Criterion, CriterionId, Ident, Label, Program, RegisterKind, Span},
     value::Value,
 };
 use std::collections::HashSet;
@@ -83,9 +83,9 @@ impl Simulator {
                 }
             };
 
-            // Clear buses if cursor is at a new statement
+            // Clear intern buses if cursor is at a new statement
             if is_at_statement_start {
-                self.state.clear_buses(&mem::take(&mut self.buses_persist));
+                self.state.clear_intern_buses(&mem::take(&mut self.buses_persist));
             }
 
             // Execute step
@@ -212,8 +212,8 @@ impl Simulator {
     // Registers
     // ------------------------------------------------------------
 
-    pub fn registers(&self) -> impl Iterator<Item = &Ident> {
-        self.state.register_names()
+    pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Ident> {
+        self.state.register_names(kind)
     }
     pub fn register_value(&self, name: &Ident) -> Result<Value, Error> {
         self.state.register(name)?.read(None)
@@ -231,8 +231,8 @@ impl Simulator {
     // Buses
     // ------------------------------------------------------------
 
-    pub fn buses(&self) -> impl Iterator<Item = &Ident> {
-        self.state.bus_names()
+    pub fn buses(&self, kind: BusKind) -> impl Iterator<Item = &Ident> {
+        self.state.bus_names(kind)
     }
     pub fn bus_value(&self, name: &Ident) -> Result<Value, Error> {
         self.state.bus(name)?.read(None)

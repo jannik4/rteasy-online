@@ -37,6 +37,18 @@ pub enum NumberKind {
     Other,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RegisterKind {
+    Intern,
+    Output,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum BusKind {
+    Intern,
+    Input,
+}
+
 #[derive(Debug, Default, Clone, Copy)]
 pub struct BitRange {
     pub msb: usize,

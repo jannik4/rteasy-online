@@ -44,13 +44,17 @@ impl Generate<mir::Atom<'_>> for Atom {
 
 impl Generate<mir::Register<'_>> for Register {
     fn generate(reg: mir::Register<'_>) -> Result<Self> {
-        Ok(Register { ident: reg.ident.node.into(), range: reg.range.map(|s| s.node) })
+        Ok(Register {
+            ident: reg.ident.node.into(),
+            range: reg.range.map(|s| s.node),
+            kind: reg.kind,
+        })
     }
 }
 
 impl Generate<mir::Bus<'_>> for Bus {
     fn generate(bus: mir::Bus<'_>) -> Result<Self> {
-        Ok(Bus { ident: bus.ident.node.into(), range: bus.range.map(|s| s.node) })
+        Ok(Bus { ident: bus.ident.node.into(), range: bus.range.map(|s| s.node), kind: bus.kind })
     }
 }
 

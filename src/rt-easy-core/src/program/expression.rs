@@ -41,12 +41,14 @@ pub struct UnaryTerm {
 pub struct Register {
     pub ident: Ident,
     pub range: Option<BitRange>,
+    pub kind: RegisterKind,
 }
 
 #[derive(Debug)]
 pub struct Bus {
     pub ident: Ident,
     pub range: Option<BitRange>,
+    pub kind: BusKind,
 }
 
 #[derive(Debug)]

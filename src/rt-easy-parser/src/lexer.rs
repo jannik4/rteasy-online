@@ -38,6 +38,10 @@ pub enum Token {
 
     #[token("declare")]
     KeywordDeclare,
+    #[token("input")]
+    KeywordInput,
+    #[token("output")]
+    KeywordOutput,
     #[token("register")]
     KeywordRegister,
     #[token("bus")]

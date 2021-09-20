@@ -75,11 +75,17 @@ impl Simulator {
         }
     }
 
-    pub fn registers(&self) -> Vec<JsValue> {
-        let mut registers = self.0.registers().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+    pub fn registers(&self, kind: &str) -> Result<Vec<JsValue>, JsValue> {
+        let kind = match kind {
+            "Intern" => rt_easy::rtcore::program::RegisterKind::Intern,
+            "Output" => rt_easy::rtcore::program::RegisterKind::Output,
+            _ => return Err(JsValue::from_str(&format!("invalid register kind: {:?}", kind))),
+        };
+        let mut registers =
+            self.0.registers(kind).map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         registers.sort();
 
-        registers.into_iter().map(Into::into).collect()
+        Ok(registers.into_iter().map(Into::into).collect())
     }
 
     pub fn register_value(&self, name: &str, base: &str) -> Result<String, JsValue> {
@@ -140,11 +146,16 @@ impl Simulator {
         Ok(())
     }
 
-    pub fn buses(&self) -> Vec<JsValue> {
-        let mut buses = self.0.buses().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+    pub fn buses(&self, kind: &str) -> Result<Vec<JsValue>, JsValue> {
+        let kind = match kind {
+            "Intern" => rt_easy::rtcore::program::BusKind::Intern,
+            "Input" => rt_easy::rtcore::program::BusKind::Input,
+            _ => return Err(JsValue::from_str(&format!("invalid bus kind: {:?}", kind))),
+        };
+        let mut buses = self.0.buses(kind).map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         buses.sort();
 
-        buses.into_iter().map(Into::into).collect()
+        Ok(buses.into_iter().map(Into::into).collect())
     }
 
     pub fn bus_value(&self, name: &str, base: &str) -> Result<String, JsValue> {

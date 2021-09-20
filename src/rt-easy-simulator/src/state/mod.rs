@@ -9,7 +9,7 @@ use self::{
 };
 use crate::{Error, Result};
 use rtcore::{
-    program::{Declaration, Ident, Program},
+    program::{BusKind, Declaration, Ident, Program, RegisterKind},
     value::Value,
 };
 use std::collections::{HashMap, HashSet};
@@ -35,12 +35,13 @@ impl State {
             match declaration {
                 Declaration::Register(declare_register) => {
                     for reg in &declare_register.registers {
-                        registers.insert(reg.ident.clone(), RegisterState::init(reg.range));
+                        registers
+                            .insert(reg.ident.clone(), RegisterState::init(reg.range, reg.kind));
                     }
                 }
                 Declaration::Bus(declare_bus) => {
                     for bus in &declare_bus.buses {
-                        buses.insert(bus.ident.clone(), BusState::init(bus.range));
+                        buses.insert(bus.ident.clone(), BusState::init(bus.range, bus.kind));
                     }
                 }
                 Declaration::RegisterArray(declare_register_array) => {
@@ -87,16 +88,18 @@ impl State {
         }
     }
 
-    pub fn clear_buses(&self, buses_persist: &HashSet<Ident>) {
+    pub fn clear_intern_buses(&self, buses_persist: &HashSet<Ident>) {
         for (ident, bus) in &self.buses {
-            if !buses_persist.contains(ident) {
+            if !buses_persist.contains(ident) && bus.kind() == BusKind::Intern {
                 bus.write(None, Value::zero(bus.range().size())).unwrap();
             }
         }
     }
 
-    pub fn register_names(&self) -> impl Iterator<Item = &Ident> {
-        self.registers.keys()
+    pub fn register_names(&self, kind: RegisterKind) -> impl Iterator<Item = &Ident> {
+        self.registers
+            .iter()
+            .filter_map(move |(name, state)| if state.kind() == kind { Some(name) } else { None })
     }
     pub fn register(&self, name: &Ident) -> Result<&RegisterState> {
         self.registers.get(name).ok_or(Error::Other)
@@ -105,8 +108,10 @@ impl State {
         self.registers.get_mut(name).ok_or(Error::Other)
     }
 
-    pub fn bus_names(&self) -> impl Iterator<Item = &Ident> {
-        self.buses.keys()
+    pub fn bus_names(&self, kind: BusKind) -> impl Iterator<Item = &Ident> {
+        self.buses
+            .iter()
+            .filter_map(move |(name, state)| if state.kind() == kind { Some(name) } else { None })
     }
     pub fn bus(&self, name: &Ident) -> Result<&BusState> {
         self.buses.get(name).ok_or(Error::Other)
@@ -138,9 +143,39 @@ impl State {
 
 impl fmt::Display for State {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Inputs
+        write!(f, "--- Inputs ---\n")?;
+        let mut inputs = self.bus_names(BusKind::Input).collect::<Vec<_>>();
+        inputs.sort();
+        for (idx, bus) in inputs.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                bus.0,
+                self.bus(bus).unwrap().read(None).unwrap().as_dec()
+            )?;
+        }
+        write!(f, "\n\n")?;
+
+        // Outputs
+        write!(f, "--- Outputs ---\n")?;
+        let mut outputs = self.register_names(RegisterKind::Output).collect::<Vec<_>>();
+        outputs.sort();
+        for (idx, reg) in outputs.into_iter().enumerate() {
+            write!(
+                f,
+                "{}{} = {}",
+                if idx != 0 { "\n" } else { "" },
+                reg.0,
+                self.register(reg).unwrap().read(None).unwrap().as_dec()
+            )?;
+        }
+        write!(f, "\n\n")?;
+
         // Registers
         write!(f, "--- Registers ---\n")?;
-        let mut registers = self.register_names().collect::<Vec<_>>();
+        let mut registers = self.register_names(RegisterKind::Intern).collect::<Vec<_>>();
         registers.sort();
         for (idx, reg) in registers.into_iter().enumerate() {
             write!(
@@ -155,7 +190,7 @@ impl fmt::Display for State {
 
         // Buses
         write!(f, "--- Buses ---\n")?;
-        let mut buses = self.bus_names().collect::<Vec<_>>();
+        let mut buses = self.bus_names(BusKind::Intern).collect::<Vec<_>>();
         buses.sort();
         for (idx, bus) in buses.into_iter().enumerate() {
             write!(

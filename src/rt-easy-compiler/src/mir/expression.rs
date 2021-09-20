@@ -59,6 +59,7 @@ pub struct UnaryTerm<'s> {
 pub struct Register<'s> {
     pub ident: Spanned<Ident<'s>>,
     pub range: Option<Spanned<BitRange>>,
+    pub kind: RegisterKind,
     pub span: Span,
 }
 
@@ -66,6 +67,7 @@ pub struct Register<'s> {
 pub struct Bus<'s> {
     pub ident: Spanned<Ident<'s>>,
     pub range: Option<Spanned<BitRange>>,
+    pub kind: BusKind,
     pub span: Span,
 }
 

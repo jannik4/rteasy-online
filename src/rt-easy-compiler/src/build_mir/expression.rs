@@ -103,23 +103,25 @@ impl<'s> BuildExpr<ast::UnaryTerm<'s>> for UnaryTerm<'s> {
 impl<'s> BuildExpr<ast::RegBus<'s>> for Either<Register<'s>, Bus<'s>> {
     fn build(item: ast::RegBus<'s>, symbols: &Symbols<'_>) -> Result<Expr<Self>> {
         match symbols.symbol(item.ident.node) {
-            Some(Symbol::Register(range)) => {
+            Some(Symbol::Register(range, kind)) => {
                 let size = util::range_into(range, item.range.map(|s| s.node))?;
                 Ok(Expr {
                     inner: Either::Left(Register {
                         ident: item.ident,
                         range: item.range,
+                        kind,
                         span: item.span,
                     }),
                     size,
                 })
             }
-            Some(Symbol::Bus(range)) => {
+            Some(Symbol::Bus(range, kind)) => {
                 let size = util::range_into(range, item.range.map(|s| s.node))?;
                 Ok(Expr {
                     inner: Either::Right(Bus {
                         ident: item.ident,
                         range: item.range,
+                        kind,
                         span: item.span,
                     }),
                     size,
@@ -133,10 +135,10 @@ impl<'s> BuildExpr<ast::RegBus<'s>> for Either<Register<'s>, Bus<'s>> {
 impl<'s> BuildExpr<ast::RegBus<'s>> for Register<'s> {
     fn build(item: ast::RegBus<'s>, symbols: &Symbols<'_>) -> Result<Expr<Self>> {
         match symbols.symbol(item.ident.node) {
-            Some(Symbol::Register(range)) => {
+            Some(Symbol::Register(range, kind)) => {
                 let size = util::range_into(range, item.range.map(|s| s.node))?;
                 Ok(Expr {
-                    inner: Register { ident: item.ident, range: item.range, span: item.span },
+                    inner: Register { ident: item.ident, range: item.range, kind, span: item.span },
                     size,
                 })
             }
@@ -148,10 +150,10 @@ impl<'s> BuildExpr<ast::RegBus<'s>> for Register<'s> {
 impl<'s> BuildExpr<ast::RegBus<'s>> for Bus<'s> {
     fn build(item: ast::RegBus<'s>, symbols: &Symbols<'_>) -> Result<Expr<Self>> {
         match symbols.symbol(item.ident.node) {
-            Some(Symbol::Bus(range)) => {
+            Some(Symbol::Bus(range, kind)) => {
                 let size = util::range_into(range, item.range.map(|s| s.node))?;
                 Ok(Expr {
-                    inner: Bus { ident: item.ident, range: item.range, span: item.span },
+                    inner: Bus { ident: item.ident, range: item.range, kind, span: item.span },
                     size,
                 })
             }

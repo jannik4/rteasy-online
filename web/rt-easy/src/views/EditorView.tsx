@@ -98,7 +98,7 @@ function setUpLang(monaco: Monaco) {
       "default",
       "assert",
     ],
-    typeKeywords: ["register", "bus", "memory", "array"],
+    typeKeywords: ["input", "output", "register", "bus", "memory", "array"],
     operators: ["=", "<>", "+", "-", "xor", "not", "sxt"],
 
     // C# style strings

@@ -30,12 +30,14 @@ impl Declaration<'_> {
 #[derive(Debug, Clone)]
 pub struct DeclareRegister<'s> {
     pub registers: Vec<RegBus<'s>>,
+    pub kind: RegisterKind,
     pub span: Span,
 }
 
 #[derive(Debug, Clone)]
 pub struct DeclareBus<'s> {
     pub buses: Vec<RegBus<'s>>,
+    pub kind: BusKind,
     pub span: Span,
 }
 
