@@ -13,7 +13,7 @@ pub trait SimState<'s> {
     fn assignment(&mut self, assignment: &Assignment<'s>) -> Result;
     fn assert(&mut self, assert: &Assert<'s>) -> Result;
 
-    fn finish(self, error_sink: &mut impl FnMut(CompilerError));
+    fn finish(self, statement: &Statement<'s>, error_sink: &mut impl FnMut(CompilerError));
 }
 
 pub fn sim<'s, S>(
@@ -24,10 +24,11 @@ pub fn sim<'s, S>(
 where
     S: SimState<'s> + Clone,
 {
-    sim_(&statement.steps.node, &HashSet::new(), state, error_sink)
+    sim_(statement, &statement.steps.node, &HashSet::new(), state, error_sink)
 }
 
 fn sim_<'s, S>(
+    statement: &Statement<'s>,
     steps: &[Step<'s>],
     criteria_set: &HashSet<CriterionId>,
     mut state: S,
@@ -49,7 +50,7 @@ where
                             let mut criteria_set = criteria_set.clone();
                             criteria_set.insert(eval_criterion.criterion_id);
                             let state = state.clone();
-                            sim_(steps, &criteria_set, state, error_sink)?;
+                            sim_(statement, steps, &criteria_set, state, error_sink)?;
                         }
                     }
                     Operation::EvalCriterionSwitchGroup(eval_criterion_group) => {
@@ -62,7 +63,7 @@ where
                             let mut criteria_set = criteria_set.clone();
                             criteria_set.insert(eval_criterion.criterion_id);
                             let state = state.clone();
-                            sim_(steps, &criteria_set, state, error_sink)?;
+                            sim_(statement, steps, &criteria_set, state, error_sink)?;
                         }
                     }
                     Operation::Nop(nop) => state.nop(nop)?,
@@ -75,11 +76,11 @@ where
             }
 
             // Sim remaining steps
-            sim_(steps, criteria_set, state, error_sink)?;
+            sim_(statement, steps, criteria_set, state, error_sink)?;
         }
         None => {
             // Finish state
-            state.finish(error_sink);
+            state.finish(statement, error_sink);
         }
     }
 

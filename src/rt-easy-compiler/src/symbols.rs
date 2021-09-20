@@ -1,4 +1,4 @@
-use crate::CompilerError;
+use crate::{CompilerError, CompilerErrorKind};
 use rtcore::ast;
 use std::collections::{HashMap, HashSet};
 
@@ -25,15 +25,21 @@ impl<'s> Symbols<'s> {
                             )
                             .is_some()
                         {
-                            error_sink(CompilerError::DuplicateSymbol(
-                                reg.ident.node.0.to_string(),
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::DuplicateSymbol(reg.ident.node.0.to_string()),
+                                reg.ident.span,
                             ));
                         }
 
                         // TODO: Instead of this check use u16 in BitRange ???
-                        let size = reg.range.map(|r| r.node.size()).unwrap_or(1);
-                        if size > u16::MAX as usize {
-                            error_sink(CompilerError::BitRangeToWide(size));
+                        if let Some(range) = reg.range {
+                            let size = range.node.size();
+                            if size > u16::MAX as usize {
+                                error_sink(CompilerError::new(
+                                    CompilerErrorKind::BitRangeToWide(size),
+                                    range.span,
+                                ));
+                            }
                         }
                     }
                 }
@@ -47,15 +53,21 @@ impl<'s> Symbols<'s> {
                             )
                             .is_some()
                         {
-                            error_sink(CompilerError::DuplicateSymbol(
-                                bus.ident.node.0.to_string(),
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::DuplicateSymbol(bus.ident.node.0.to_string()),
+                                bus.ident.span,
                             ));
                         }
 
                         // TODO: Instead of this check use u16 in BitRange ???
-                        let size = bus.range.map(|r| r.node.size()).unwrap_or(1);
-                        if size > u16::MAX as usize {
-                            error_sink(CompilerError::BitRangeToWide(size));
+                        if let Some(range) = bus.range {
+                            let size = range.node.size();
+                            if size > u16::MAX as usize {
+                                error_sink(CompilerError::new(
+                                    CompilerErrorKind::BitRangeToWide(size),
+                                    range.span,
+                                ));
+                            }
                         }
                     }
                 }
@@ -66,8 +78,9 @@ impl<'s> Symbols<'s> {
                             .insert(memory.ident.node, Symbol::Memory(memory.range))
                             .is_some()
                         {
-                            error_sink(CompilerError::DuplicateSymbol(
-                                memory.ident.node.0.to_string(),
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::DuplicateSymbol(memory.ident.node.0.to_string()),
+                                memory.ident.span,
                             ));
                         }
 
@@ -76,13 +89,19 @@ impl<'s> Symbols<'s> {
                         {
                             match symbols.symbol(mem_reg.node) {
                                 Some(Symbol::Register(..)) => (),
-                                Some(symbol) => error_sink(CompilerError::WrongSymbolType {
-                                    expected: &[SymbolType::Register],
-                                    found: symbol.type_(),
-                                }),
-                                None => error_sink(CompilerError::SymbolNotFound(
-                                    &[SymbolType::Register],
-                                    mem_reg.node.0.to_string(),
+                                Some(symbol) => error_sink(CompilerError::new(
+                                    CompilerErrorKind::WrongSymbolType {
+                                        expected: &[SymbolType::Register],
+                                        found: symbol.type_(),
+                                    },
+                                    mem_reg.span,
+                                )),
+                                None => error_sink(CompilerError::new(
+                                    CompilerErrorKind::SymbolNotFound(
+                                        &[SymbolType::Register],
+                                        mem_reg.node.0.to_string(),
+                                    ),
+                                    mem_reg.span,
                                 )),
                             }
                         }
@@ -91,8 +110,11 @@ impl<'s> Symbols<'s> {
                 ast::Declaration::RegisterArray(declare_register_array) => {
                     for reg_array in &declare_register_array.register_arrays {
                         if !reg_array.len.is_power_of_two() {
-                            error_sink(CompilerError::RegArrayLenNotPowerOfTwo(
-                                reg_array.ident.node.0.to_string(),
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::RegArrayLenNotPowerOfTwo(
+                                    reg_array.ident.node.0.to_string(),
+                                ),
+                                reg_array.span,
                             ));
                         }
 
@@ -107,15 +129,23 @@ impl<'s> Symbols<'s> {
                             )
                             .is_some()
                         {
-                            error_sink(CompilerError::DuplicateSymbol(
-                                reg_array.ident.node.0.to_string(),
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::DuplicateSymbol(
+                                    reg_array.ident.node.0.to_string(),
+                                ),
+                                reg_array.ident.span,
                             ));
                         }
 
                         // TODO: Instead of this check use u16 in BitRange ???
-                        let size = reg_array.range.map(|r| r.node.size()).unwrap_or(1);
-                        if size > u16::MAX as usize {
-                            error_sink(CompilerError::BitRangeToWide(size));
+                        if let Some(range) = reg_array.range {
+                            let size = range.node.size();
+                            if size > u16::MAX as usize {
+                                error_sink(CompilerError::new(
+                                    CompilerErrorKind::BitRangeToWide(size),
+                                    range.span,
+                                ));
+                            }
                         }
                     }
                 }
@@ -126,13 +156,19 @@ impl<'s> Symbols<'s> {
         for statement in &ast.statements {
             if let Some(label) = statement.label {
                 if !symbols.labels.insert(label.node) {
-                    error_sink(CompilerError::DuplicateLabel(label.node.0.to_string()));
+                    error_sink(CompilerError::new(
+                        CompilerErrorKind::DuplicateLabel(label.node.0.to_string()),
+                        label.span,
+                    ));
                 }
             }
         }
         if let Some(label) = ast.trailing_label {
             if !symbols.labels.insert(label.node) {
-                error_sink(CompilerError::DuplicateLabel(label.node.0.to_string()));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::DuplicateLabel(label.node.0.to_string()),
+                    label.span,
+                ));
             }
         }
 

@@ -1,7 +1,7 @@
 use super::sim::{sim, Result, SimState};
 use crate::mir::*;
 use crate::symbols::{Symbol, Symbols};
-use crate::{CompilerError, InternalError, SymbolType};
+use crate::{CompilerError, CompilerErrorKind, InternalError, SymbolType};
 use std::collections::{HashMap, HashSet};
 
 pub fn check(
@@ -138,10 +138,13 @@ impl<'s> SimState<'s> for State<'s> {
         Ok(())
     }
 
-    fn finish(self, error_sink: &mut impl FnMut(CompilerError)) {
+    fn finish(self, statement: &Statement<'s>, error_sink: &mut impl FnMut(CompilerError)) {
         for (target, infos) in self.assigned {
             if has_conflict(infos) {
-                error_sink(CompilerError::DoubleAssign(target.type_, target.name.0.to_string()));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::DoubleAssign(target.type_, target.name.0.to_string()),
+                    statement.steps.span,
+                ));
             }
         }
     }

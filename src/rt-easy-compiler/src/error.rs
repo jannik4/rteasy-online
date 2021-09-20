@@ -1,4 +1,5 @@
 use crate::SymbolType;
+use rtcore::program::Span;
 
 #[derive(Debug)]
 pub enum Error {
@@ -20,7 +21,13 @@ impl From<InternalError> for Error {
 }
 
 #[derive(Debug)]
-pub enum CompilerError {
+pub struct CompilerError {
+    pub kind: CompilerErrorKind,
+    pub span: Span,
+}
+
+#[derive(Debug)]
+pub enum CompilerErrorKind {
     DuplicateSymbol(String),
     RegArrayLenNotPowerOfTwo(String),
     RegArrayMissingIndex(String),
@@ -48,6 +55,12 @@ pub enum CompilerError {
     DoubleAssign(SymbolType, String),
     RegisterArrayTooManyReads(String),
     FeedbackLoop,
+}
+
+impl CompilerError {
+    pub fn new(kind: CompilerErrorKind, span: Span) -> Self {
+        Self { kind, span }
+    }
 }
 
 #[derive(Debug)]

@@ -1,6 +1,6 @@
 use super::const_eval::Evaluate;
 use crate::mir::*;
-use crate::{CompilerError, InternalError};
+use crate::{CompilerError, CompilerErrorKind, InternalError};
 use std::collections::HashSet;
 
 pub type Result = std::result::Result<(), InternalError>;
@@ -25,7 +25,10 @@ pub fn check(mir: &Mir<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Resul
 
                     let inserted = values.insert(case_value);
                     if !inserted {
-                        error_sink(CompilerError::DuplicateCaseValue);
+                        error_sink(CompilerError::new(
+                            CompilerErrorKind::DuplicateCaseValue,
+                            eval_criterion.span(),
+                        ));
                     }
                 }
             }

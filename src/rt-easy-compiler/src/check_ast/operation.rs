@@ -1,7 +1,7 @@
 use super::expression::CheckExpr;
 use crate::{
     symbols::{Symbol, Symbols},
-    util, CompilerError, SymbolType,
+    util, CompilerError, CompilerErrorKind, SymbolType,
 };
 use rtcore::ast::*;
 
@@ -66,7 +66,10 @@ impl<'s> CheckOp<'s> for Nop {
 impl<'s> CheckOp<'s> for Goto<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         if !symbols.contains_label(self.label.node) {
-            error_sink(CompilerError::LabelNotFound(self.label.node.0.to_string()));
+            error_sink(CompilerError::new(
+                CompilerErrorKind::LabelNotFound(self.label.node.0.to_string()),
+                self.label.span,
+            ));
         }
 
         Res { contains_goto: true, contains_mutate: false }
@@ -77,7 +80,10 @@ impl<'s> CheckOp<'s> for If<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
-                error_sink(CompilerError::ConditionToWide(size));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::ConditionToWide(size),
+                    self.condition.span(),
+                ));
             }
         }
 
@@ -94,7 +100,10 @@ impl<'s> CheckOp<'s> for Switch<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         let expr_res = self.expression.check_expr(symbols, error_sink);
         if !expr_res.fixed_size {
-            error_sink(CompilerError::ExpectedFixedSize);
+            error_sink(CompilerError::new(
+                CompilerErrorKind::ExpectedFixedSize,
+                self.expression.span(),
+            ));
         }
 
         let mut res = Res { contains_goto: false, contains_mutate: false };
@@ -106,12 +115,18 @@ impl<'s> CheckOp<'s> for Switch<'s> {
                     let value_res = case.value.check_expr(symbols, error_sink);
 
                     if !value_res.constant {
-                        error_sink(CompilerError::ExpectedConstantExpression);
+                        error_sink(CompilerError::new(
+                            CompilerErrorKind::ExpectedConstantExpression,
+                            case.value.span(),
+                        ));
                     }
 
                     match (expr_res.size, value_res.size) {
                         (Some(expr_size), Some(value_size)) if value_size > expr_size => {
-                            error_sink(CompilerError::CaseValueTooWide);
+                            error_sink(CompilerError::new(
+                                CompilerErrorKind::CaseValueTooWide,
+                                case.value.span(),
+                            ));
                         }
                         _ => (),
                     }
@@ -126,7 +141,10 @@ impl<'s> CheckOp<'s> for Switch<'s> {
         }
 
         if default_clauses_count != 1 {
-            error_sink(CompilerError::ExpectedExactlyOneDefaultClause);
+            error_sink(CompilerError::new(
+                CompilerErrorKind::ExpectedExactlyOneDefaultClause,
+                self.span,
+            ));
         }
 
         res
@@ -137,13 +155,19 @@ impl<'s> CheckOp<'s> for Write<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
-            Some(symbol) => error_sink(CompilerError::WrongSymbolType {
-                expected: &[SymbolType::Memory],
-                found: symbol.type_(),
-            }),
-            _ => error_sink(CompilerError::SymbolNotFound(
-                &[SymbolType::Memory],
-                self.ident.node.0.to_string(),
+            Some(symbol) => error_sink(CompilerError::new(
+                CompilerErrorKind::WrongSymbolType {
+                    expected: &[SymbolType::Memory],
+                    found: symbol.type_(),
+                },
+                self.ident.span,
+            )),
+            _ => error_sink(CompilerError::new(
+                CompilerErrorKind::SymbolNotFound(
+                    &[SymbolType::Memory],
+                    self.ident.node.0.to_string(),
+                ),
+                self.ident.span,
             )),
         }
 
@@ -155,13 +179,19 @@ impl<'s> CheckOp<'s> for Read<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
-            Some(symbol) => error_sink(CompilerError::WrongSymbolType {
-                expected: &[SymbolType::Memory],
-                found: symbol.type_(),
-            }),
-            _ => error_sink(CompilerError::SymbolNotFound(
-                &[SymbolType::Memory],
-                self.ident.node.0.to_string(),
+            Some(symbol) => error_sink(CompilerError::new(
+                CompilerErrorKind::WrongSymbolType {
+                    expected: &[SymbolType::Memory],
+                    found: symbol.type_(),
+                },
+                self.ident.span,
+            )),
+            _ => error_sink(CompilerError::new(
+                CompilerErrorKind::SymbolNotFound(
+                    &[SymbolType::Memory],
+                    self.ident.node.0.to_string(),
+                ),
+                self.ident.span,
             )),
         }
 
@@ -180,7 +210,10 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
         let rhs = self.rhs.check_expr(symbols, error_sink);
         if let (Some(lhs), Some(rhs)) = (lhs.size, rhs.size) {
             if lhs < rhs {
-                error_sink(CompilerError::AssignmentDoesNotFit(lhs, rhs))
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::AssignmentDoesNotFit(lhs, rhs),
+                    self.span,
+                ))
             }
         }
 
@@ -188,10 +221,16 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
         if let Lvalue::Concat(concat) = &self.lhs {
             let info = util::concat_info(concat, symbols);
             if info.contains_clocked && info.contains_unclocked {
-                error_sink(CompilerError::AssignmentLhsContainsClockedAndUnclocked);
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::AssignmentLhsContainsClockedAndUnclocked,
+                    self.lhs.span(),
+                ));
             }
             if info.contains_non_lvalue {
-                error_sink(CompilerError::AssignmentLhsContainsANonLvalue);
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::AssignmentLhsContainsANonLvalue,
+                    self.lhs.span(),
+                ));
             }
         };
 
@@ -199,7 +238,10 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
         match &self.lhs {
             Lvalue::RegBus(reg_bus) => {
                 if reg_bus_is_input(reg_bus, symbols) {
-                    error_sink(CompilerError::AssignmentLhsContainsInput);
+                    error_sink(CompilerError::new(
+                        CompilerErrorKind::AssignmentLhsContainsInput,
+                        self.lhs.span(),
+                    ));
                 }
             }
             Lvalue::RegisterArray(_reg_array) => (),
@@ -208,7 +250,10 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
                     match part {
                         ConcatPart::RegBus(reg_bus) => {
                             if reg_bus_is_input(reg_bus, symbols) {
-                                error_sink(CompilerError::AssignmentLhsContainsInput);
+                                error_sink(CompilerError::new(
+                                    CompilerErrorKind::AssignmentLhsContainsInput,
+                                    self.lhs.span(),
+                                ));
                             }
                         }
                         ConcatPart::RegisterArray(_) => (),
@@ -226,7 +271,10 @@ impl<'s> CheckOp<'s> for Assert<'s> {
     fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
-                error_sink(CompilerError::ConditionToWide(size));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::ConditionToWide(size),
+                    self.condition.span(),
+                ));
             }
         }
 

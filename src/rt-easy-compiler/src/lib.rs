@@ -8,7 +8,7 @@ mod symbols;
 mod util;
 
 pub mod mir;
-pub use self::error::{CompilerError, Error, InternalError};
+pub use self::error::{CompilerError, CompilerErrorKind, Error, InternalError};
 pub use self::symbols::SymbolType;
 
 pub trait Backend {

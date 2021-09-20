@@ -1,7 +1,7 @@
 use super::sim::{sim, Result, SimState};
 use crate::mir::*;
 use crate::symbols::Symbols;
-use crate::CompilerError;
+use crate::{CompilerError, CompilerErrorKind};
 use std::collections::HashMap;
 
 pub fn check(
@@ -61,10 +61,13 @@ impl<'s> SimState<'s> for State<'s> {
         Ok(())
     }
 
-    fn finish(self, error_sink: &mut impl FnMut(CompilerError)) {
+    fn finish(self, statement: &Statement<'s>, error_sink: &mut impl FnMut(CompilerError)) {
         for (name, reads) in self.reads {
             if reads > 2 {
-                error_sink(CompilerError::RegisterArrayTooManyReads(name.0.to_string()));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::RegisterArrayTooManyReads(name.0.to_string()),
+                    statement.steps.span,
+                ));
             }
         }
     }

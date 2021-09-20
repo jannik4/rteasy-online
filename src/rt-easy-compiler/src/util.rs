@@ -1,9 +1,9 @@
 use crate::{
     symbols::{Symbol, Symbols},
-    CompilerError,
+    CompilerError, CompilerErrorKind,
 };
 use rtcore::ast::{BinaryOperator, BitRange, Concat, ConcatPart, NumberKind, UnaryOperator};
-use rtcore::common::CtxSize;
+use rtcore::common::{CtxSize, Spanned};
 use std::cmp;
 
 pub fn size_binary_op(lhs: usize, rhs: usize, op: BinaryOperator) -> usize {
@@ -85,7 +85,7 @@ pub fn is_fixed_size_unary_op(op: UnaryOperator) -> bool {
 
 pub fn range_into(
     range: Option<BitRange>,
-    range_idx: Option<BitRange>,
+    range_idx: Option<Spanned<BitRange>>,
 ) -> Result<usize, CompilerError> {
     let range = range.unwrap_or_default();
     let range_idx = match range_idx {
@@ -93,27 +93,11 @@ pub fn range_into(
         None => return Ok(range.size()),
     };
 
-    let size = match range_idx {
-        BitRange { msb, lsb: Some(lsb) } => {
-            if !range.contains(msb) || !range.contains(lsb) {
-                return Err(CompilerError::RangeMismatch);
-            }
-            if (msb >= lsb) != (range.msb >= range.lsb.unwrap_or(range.msb)) {
-                return Err(CompilerError::RangeMismatch);
-            }
-
-            range_idx.size()
-        }
-        BitRange { msb, lsb: None } => {
-            if !range.contains(msb) {
-                return Err(CompilerError::RangeMismatch);
-            }
-
-            1
-        }
-    };
-
-    Ok(size)
+    if range.contains_range(range_idx.node) {
+        Ok(range_idx.node.size())
+    } else {
+        Err(CompilerError::new(CompilerErrorKind::RangeMismatch, range_idx.span))
+    }
 }
 
 #[derive(Debug)]

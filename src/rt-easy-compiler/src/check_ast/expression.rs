@@ -1,6 +1,6 @@
 use crate::{
     symbols::{Symbol, Symbols},
-    util, CompilerError, SymbolType,
+    util, CompilerError, CompilerErrorKind, SymbolType,
 };
 use rtcore::ast::*;
 
@@ -59,7 +59,7 @@ impl<'s> CheckExpr<'s> for UnaryTerm<'s> {
             match self.expression {
                 Expression::Atom(_) => (),
                 Expression::BinaryTerm(_) | Expression::UnaryTerm(_) => {
-                    error_sink(CompilerError::SxtTerm);
+                    error_sink(CompilerError::new(CompilerErrorKind::SxtTerm, self.span));
                 }
             }
         }
@@ -81,7 +81,10 @@ impl<'s> CheckExpr<'s> for Concat<'s> {
     fn check_expr(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         let info = util::concat_info(self, symbols);
         if info.contains_number_non_bit_string {
-            error_sink(CompilerError::ConcatContainsNumberNonBitString);
+            error_sink(CompilerError::new(
+                CompilerErrorKind::ConcatContainsNumberNonBitString,
+                self.span,
+            ));
         }
 
         let mut size = Some(0);
@@ -113,39 +116,44 @@ impl<'s> CheckExpr<'s> for ConcatPart<'s> {
 impl<'s> CheckExpr<'s> for RegBus<'s> {
     fn check_expr(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
         let size = match symbols.symbol(self.ident.node) {
-            Some(Symbol::Register(range, _)) => {
-                match util::range_into(range, self.range.map(|s| s.node)) {
-                    Ok(size) => Some(size),
-                    Err(e) => {
-                        error_sink(e);
-                        None
-                    }
+            Some(Symbol::Register(range, _)) => match util::range_into(range, self.range) {
+                Ok(size) => Some(size),
+                Err(e) => {
+                    error_sink(e);
+                    None
                 }
-            }
-            Some(Symbol::Bus(range, _)) => {
-                match util::range_into(range, self.range.map(|s| s.node)) {
-                    Ok(size) => Some(size),
-                    Err(e) => {
-                        error_sink(e);
-                        None
-                    }
+            },
+            Some(Symbol::Bus(range, _)) => match util::range_into(range, self.range) {
+                Ok(size) => Some(size),
+                Err(e) => {
+                    error_sink(e);
+                    None
                 }
-            }
+            },
             Some(Symbol::RegisterArray { .. }) => {
-                error_sink(CompilerError::RegArrayMissingIndex(self.ident.node.0.to_string()));
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::RegArrayMissingIndex(self.ident.node.0.to_string()),
+                    self.ident.span,
+                ));
                 None
             }
             Some(symbol) => {
-                error_sink(CompilerError::WrongSymbolType {
-                    expected: &[SymbolType::Register, SymbolType::Bus],
-                    found: symbol.type_(),
-                });
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::WrongSymbolType {
+                        expected: &[SymbolType::Register, SymbolType::Bus],
+                        found: symbol.type_(),
+                    },
+                    self.ident.span,
+                ));
                 None
             }
             _ => {
-                error_sink(CompilerError::SymbolNotFound(
-                    &[SymbolType::Register, SymbolType::Bus],
-                    self.ident.node.0.to_string(),
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::SymbolNotFound(
+                        &[SymbolType::Register, SymbolType::Bus],
+                        self.ident.node.0.to_string(),
+                    ),
+                    self.ident.span,
                 ));
                 None
             }
@@ -164,9 +172,9 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
                 let index_size = util::log_2(len);
                 if let Some(index_expr_size) = index_expr.size {
                     if index_size < index_expr_size {
-                        error_sink(CompilerError::RegArrayIndexDoesNotFit(
-                            index_size,
-                            index_expr_size,
+                        error_sink(CompilerError::new(
+                            CompilerErrorKind::RegArrayIndexDoesNotFit(index_size, index_expr_size),
+                            self.index.span(),
                         ))
                     }
                 }
@@ -174,16 +182,22 @@ impl<'s> CheckExpr<'s> for RegisterArray<'s> {
                 Some(range.map(|range| range.size()).unwrap_or(1))
             }
             Some(symbol) => {
-                error_sink(CompilerError::WrongSymbolType {
-                    expected: &[SymbolType::RegisterArray],
-                    found: symbol.type_(),
-                });
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::WrongSymbolType {
+                        expected: &[SymbolType::RegisterArray],
+                        found: symbol.type_(),
+                    },
+                    self.ident.span,
+                ));
                 None
             }
             _ => {
-                error_sink(CompilerError::SymbolNotFound(
-                    &[SymbolType::RegisterArray],
-                    self.ident.node.0.to_string(),
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::SymbolNotFound(
+                        &[SymbolType::RegisterArray],
+                        self.ident.node.0.to_string(),
+                    ),
+                    self.ident.span,
                 ));
                 None
             }

@@ -1,5 +1,5 @@
 use super::operation::CheckOp;
-use crate::{symbols::Symbols, CompilerError};
+use crate::{symbols::Symbols, CompilerError, CompilerErrorKind};
 use rtcore::ast;
 
 pub fn check(
@@ -23,10 +23,16 @@ fn check_statement(
         let res_post = operations_post.check_op(symbols, error_sink);
 
         if res.contains_goto {
-            error_sink(CompilerError::GotoBeforePipe);
+            error_sink(CompilerError::new(
+                CompilerErrorKind::GotoBeforePipe,
+                statement.operations.span,
+            ));
         }
         if res_post.contains_mutate {
-            error_sink(CompilerError::MutateAfterPipe);
+            error_sink(CompilerError::new(
+                CompilerErrorKind::MutateAfterPipe,
+                statement.operations.span,
+            ));
         }
     }
 }

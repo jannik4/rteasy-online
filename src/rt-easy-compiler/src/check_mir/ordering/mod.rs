@@ -2,7 +2,7 @@ mod deps_absolute;
 mod deps_direct;
 
 use crate::mir::*;
-use crate::{CompilerError, InternalError};
+use crate::{CompilerError, CompilerErrorKind, InternalError};
 
 pub fn check_and_order(
     mir: &mut Mir<'_>,
@@ -36,7 +36,10 @@ fn check_and_order_(
             Err(_feedback_loop) => {
                 // Set has_feedback_loop
                 has_feedback_loop = true;
-                error_sink(CompilerError::FeedbackLoop);
+                error_sink(CompilerError::new(
+                    CompilerErrorKind::FeedbackLoop,
+                    statement.steps.span,
+                ));
 
                 // Continue with next step to get all errors
                 continue;
