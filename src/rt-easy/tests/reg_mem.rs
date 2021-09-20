@@ -1,3 +1,5 @@
+mod util;
+
 use rt_easy::{
     rtcore::{program::Ident, value::Value},
     simulator::Simulator,
@@ -14,7 +16,7 @@ fn dr_then_write() {
     read MEM; # This should read 17
     "#;
 
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
         simulator.step().unwrap();
     }
@@ -38,7 +40,7 @@ fn ar_then_read() {
     AR <- 1, read MEM; # This should read at address 0 not 1 => DR should be 17
     "#;
 
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
         simulator.step().unwrap();
     }
@@ -72,7 +74,7 @@ fn read_then_read() {
     read MEM_R; # After tact: AR <- 5
     "#;
 
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
         simulator.step().unwrap();
     }
@@ -85,17 +87,4 @@ fn read_then_read() {
         simulator.register_value(&Ident("DR".to_string())).unwrap(),
         Value::parse_dec("1").unwrap()
     );
-}
-
-fn compile(source: &str) -> Simulator {
-    let ast = match rt_easy::parser::parse(source) {
-        Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
-    };
-
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
-        Ok(program) => Simulator::init(program),
-        Err(e) => panic!("{:#?}", e),
-    }
 }

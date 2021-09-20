@@ -1,3 +1,5 @@
+mod util;
+
 use rt_easy::{
     rtcore::{program::Ident, value::Value},
     simulator::Simulator,
@@ -29,7 +31,7 @@ A <- sxt 0b111 + 0b1; # -------- 13 --------
 
 #[test]
 fn misc() {
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // -------- 1 --------
     simulator.step().unwrap();
@@ -120,17 +122,4 @@ fn misc() {
 
     simulator.step().unwrap();
     assert!(simulator.is_finished());
-}
-
-fn compile(source: &str) -> Simulator {
-    let ast = match rt_easy::parser::parse(source) {
-        Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
-    };
-
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
-        Ok(program) => Simulator::init(program),
-        Err(e) => panic!("{:#?}", e),
-    }
 }

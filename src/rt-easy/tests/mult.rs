@@ -1,3 +1,5 @@
+mod util;
+
 use rt_easy::{
     rtcore::{program::Ident, value::Value},
     simulator::Simulator,
@@ -20,7 +22,7 @@ LOOP:
 
 #[test]
 fn mult() {
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // A
     simulator.write_bus(&Ident("INBUS".to_string()), Value::parse_dec("3").unwrap()).unwrap();
@@ -39,17 +41,4 @@ fn mult() {
         simulator.register_value(&Ident("RES".to_string())).unwrap(),
         Value::parse_dec("21").unwrap()
     );
-}
-
-fn compile(source: &str) -> Simulator {
-    let ast = match rt_easy::parser::parse(source) {
-        Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
-    };
-
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
-        Ok(program) => Simulator::init(program),
-        Err(e) => panic!("{:#?}", e),
-    }
 }

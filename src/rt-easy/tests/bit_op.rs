@@ -1,3 +1,5 @@
+mod util;
+
 use rt_easy::{
     rtcore::{program::Ident, value::Value},
     simulator::Simulator,
@@ -15,7 +17,7 @@ A <- 0b1110 nand 0b0101;
 
 #[test]
 fn bit_op() {
-    let mut simulator = compile(SOURCE);
+    let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // xor
     simulator.step().unwrap();
@@ -51,17 +53,4 @@ fn bit_op() {
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("11111111111111111111111111111011").unwrap()
     );
-}
-
-fn compile(source: &str) -> Simulator {
-    let ast = match rt_easy::parser::parse(source) {
-        Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
-    };
-
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
-        Ok(program) => Simulator::init(program),
-        Err(e) => panic!("{:#?}", e),
-    }
 }
