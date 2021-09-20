@@ -1,12 +1,10 @@
-mod util;
-
 const SOURCE: &'static str = r#"
 declare input IN(2:17)
 declare output OUT
 
 declare register A(7:0), B
 declare register AR(7:0), DR(31:0)
-declare bus BUS(7)
+declare bus BUS(7), BUS2(31:0)
 
 declare memory MEM(AR,DR)
 declare register array ARRAY(2:0)[32]
@@ -14,6 +12,8 @@ declare register array ARRAY(2:0)[32]
 START:
     A <- B + B, read MEM;
     write MEM, ARRAY[IN(2:6) + 1] <- B and BUS;
+    A <- B.B."0".BUS(7).IN(6);
+    BUS(7).BUS2 <- 0xF, A.ARRAY[2].OUT <- sxt 0b1001;
     goto MAIN;
 
 MAIN:
@@ -39,6 +39,13 @@ const EXPECTED: &'static str = r#"START:
 _:
     write MEM
     ARRAY[(IN(2:6) + 1)] = (B and BUS)
+
+_:
+    A = B.B.0.BUS(7).IN(6)
+
+_:
+    BUS(7).BUS2 = 15
+    A.ARRAY[2].OUT = (sxt 9)
 
 _:
     goto MAIN
@@ -70,6 +77,23 @@ _:
 
 #[test]
 fn program_display() {
-    let program = util::compile(SOURCE);
+    let program = compile(SOURCE);
     assert_eq!(format!("{}", program), EXPECTED);
+}
+
+fn compile(source: &str) -> rt_easy::rtcore::program::Program {
+    let ast = match rt_easy::parser::parse(source) {
+        Ok(ast) => ast,
+        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source)),
+    };
+
+    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
+    match rt_easy::compiler::compile(
+        &backend,
+        ast,
+        &rt_easy::compiler::Options { print_mir: true, print_mir_unordered: true },
+    ) {
+        Ok(program) => program,
+        Err(e) => panic!("{:#?}", e),
+    }
 }
