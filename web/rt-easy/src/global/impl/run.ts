@@ -17,7 +17,6 @@ export function model(
       tag: "Edit",
       sourceCode: sourceCode ?? state.sourceCode,
       base: state.base,
-      log: "",
     });
   };
 

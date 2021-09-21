@@ -20,8 +20,8 @@ export function model(
         simState: null,
         timerId: null,
       });
-    } catch (e) {
-      alert(e);
+    } catch (_e) {
+      alert("Code has errors");
     }
   };
 
@@ -31,18 +31,9 @@ export function model(
     toggleMode: () => build(),
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
-    log: state.log,
     setSourceCode: (sourceCode) => {
-      let log: string;
-      try {
-        rtEasy.check(sourceCode);
-        log = "--- ok ---";
-      } catch (e) {
-        log = e as string;
-      }
-
       localStorage.setItem("source-code", sourceCode);
-      setState({ ...state, sourceCode, log });
+      setState({ ...state, sourceCode });
     },
     build,
   };

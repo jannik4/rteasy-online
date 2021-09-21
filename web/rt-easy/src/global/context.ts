@@ -7,7 +7,6 @@ export const GlobalContext = React.createContext<GlobalModel>({
   toggleMode: () => {},
   base: "DEC",
   setBase: () => {},
-  log: "",
   setSourceCode: () => {},
   build: () => {},
 });
@@ -24,7 +23,6 @@ export interface GlobalModelCommon {
 
 export interface GlobalModelEdit extends GlobalModelCommon {
   tag: "Edit";
-  log: string;
   setSourceCode: (sourceCode: string) => void;
   build: () => void;
 }

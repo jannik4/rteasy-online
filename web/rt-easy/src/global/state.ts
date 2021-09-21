@@ -10,7 +10,6 @@ export interface StateCommon {
 
 export interface StateEdit extends StateCommon {
   tag: "Edit";
-  log: string;
 }
 
 export interface StateRun extends StateCommon {
@@ -25,6 +24,5 @@ export function initialState(): State {
     tag: "Edit",
     sourceCode: localStorage.getItem("source-code") || "",
     base: "DEC",
-    log: "--- ok ---",
   };
 }
