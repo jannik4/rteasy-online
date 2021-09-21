@@ -27,20 +27,76 @@ pub fn pretty_print_error(error: &toktok::Error<Token>, source: &str, ansi_color
         source: Some(source),
         file_name: None,
         ansi_colors,
-        rename_token: Some(Box::new(|token: &Token| {
+        rename_token: Some(Box::new(|token: &toktok::TokenOrEoi<Token>| {
             use Token::*;
-            match token {
-                Semicolon => "\";\"".to_string(),
-                Colon => "\":\"".to_string(),
-                Comma => "\",\"".to_string(),
-                Pipe => "\"|\"".to_string(),
-                Dot => "\".\"".to_string(),
-                ParenOpen => "\"(\"".to_string(),
-                ParenClose => "\")\"".to_string(),
-                Assign => "\"<-\"".to_string(),
 
-                _ => format!("{:?}", token), // TODO: ...
+            let token = match token {
+                toktok::TokenOrEoi::Eoi => return "<EOI>".to_string(),
+                toktok::TokenOrEoi::Token(token) => token,
+            };
+
+            match token {
+                Semicolon => "\";\"",
+                Colon => "\":\"",
+                Comma => "\",\"",
+                Pipe => "\"|\"",
+                Dot => "\".\"",
+                ParenOpen => "\"(\"",
+                ParenClose => "\")\"",
+                BracketOpen => "\"[\"",
+                BracketClose => "\"]\"",
+                BraceOpen => "\"{\"",
+                BraceClose => "\"}\"",
+                Assign => "\"<-\"",
+
+                LiteralNumberBin => "<NUM_BIN>",
+                LiteralNumberHex => "<NUM_HEX>",
+                LiteralNumberDec => "<NUM_DEC>",
+                LiteralNumberBitString => "<NUM_BIT_STRING>",
+
+                KeywordDeclare => "\"declare\"",
+                KeywordInput => "\"input\"",
+                KeywordOutput => "\"output\"",
+                KeywordRegister => "\"register\"",
+                KeywordBus => "\"bus\"",
+                KeywordMemory => "\"memory\"",
+                KeywordArray => "\"array\"",
+                KeywordNop => "\"nop\"",
+                KeywordGoto => "\"goto\"",
+                KeywordRead => "\"read\"",
+                KeywordWrite => "\"write\"",
+                KeywordIf => "\"if\"",
+                KeywordThen => "\"then\"",
+                KeywordElse => "\"else\"",
+                KeywordFi => "\"fi\"",
+                KeywordSwitch => "\"switch\"",
+                KeywordCase => "\"case\"",
+                KeywordDefault => "\"default\"",
+                KeywordAssert => "\"assert\"",
+
+                OperatorEquality => "\"=\"",
+                OperatorInequality => "\"<>\"",
+                OperatorLessEquals => "\"<=\"",
+                OperatorLess => "\"<\"",
+                OperatorGreaterEquals => "\">=\"",
+                OperatorGreater => "\">\"",
+                OperatorAddition => "\"+\"",
+                OperatorSubtraction => "\"-\"",
+                OperatorAnd => "\"and\"",
+                OperatorNand => "\"nand\"",
+                OperatorOr => "\"or\"",
+                OperatorNor => "\"nor\"",
+                OperatorXor => "\"xor\"",
+
+                OperatorNeg => "\"neg\"",
+                OperatorNot => "\"not\"",
+                OperatorSxt => "\"sxt\"",
+
+                Identifier => "<ID>",
+
+                Error => "<ERROR>",
             }
+            .to_string()
         })),
     };
     error.pretty_print(&options)

@@ -253,7 +253,7 @@ pub struct PrettyPrintOptions<'a, T> {
     pub source: Option<&'a str>,
     pub file_name: Option<&'a str>,
     pub ansi_colors: bool,
-    pub rename_token: Option<Box<dyn Fn(&T) -> String>>,
+    pub rename_token: Option<Box<dyn Fn(&TokenOrEoi<T>) -> String>>,
 }
 
 impl<T> Default for PrettyPrintOptions<'_, T> {
@@ -262,15 +262,18 @@ impl<T> Default for PrettyPrintOptions<'_, T> {
     }
 }
 
-fn token_str<T>(token: &TokenOrEoi<T>, rename_token: Option<&dyn Fn(&T) -> String>) -> String
+fn token_str<T>(
+    token: &TokenOrEoi<T>,
+    rename_token: Option<&dyn Fn(&TokenOrEoi<T>) -> String>,
+) -> String
 where
     T: fmt::Debug,
 {
-    match token {
-        TokenOrEoi::Eoi => "EOI".to_string(),
-        TokenOrEoi::Token(token) => match rename_token {
-            Some(rename_token) => rename_token(token),
-            None => format!("{:?}", token),
+    match rename_token {
+        Some(rename_token) => rename_token(token),
+        None => match token {
+            TokenOrEoi::Eoi => "<EOI>".to_string(),
+            TokenOrEoi::Token(token) => format!("{:?}", token),
         },
     }
 }
