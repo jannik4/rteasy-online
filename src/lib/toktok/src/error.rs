@@ -136,12 +136,12 @@ impl<T> Error<T> {
                 let mut message = String::new();
                 message += "found: ";
                 message += &token_str(found, options.rename_token.as_deref());
-                message += ", expected one of: ";
-                for (idx, token) in expected.iter().enumerate() {
-                    message += &token_str(token, options.rename_token.as_deref());
-                    if idx != expected.len() - 1 {
-                        message += ", ";
-                    }
+                message += ", expected one of:";
+                for token in expected.iter() {
+                    message += &format!(
+                        "\n       {} ...",
+                        token_str(token, options.rename_token.as_deref())
+                    );
                 }
                 message
             }
