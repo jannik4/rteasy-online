@@ -31,7 +31,9 @@ const LogView: React.FC<Props> = () => {
       }}
     >
       <pre
-        dangerouslySetInnerHTML={{ __html: Anser.ansiToHtml(log) }}
+        dangerouslySetInnerHTML={{
+          __html: Anser.ansiToHtml(Anser.escapeForHtml(log)),
+        }}
         style={{ margin: 0 }}
       ></pre>
     </div>
