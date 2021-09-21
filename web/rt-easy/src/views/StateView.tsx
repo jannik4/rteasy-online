@@ -74,37 +74,55 @@ const StateView: React.FC<Props> = () => {
     );
   };
 
+  const headerRow = (title: string) => (
+    <tr style={{ backgroundColor: "#f2f2f2" }}>
+      <td colSpan={2}>{title}:</td>
+    </tr>
+  );
+  const dividerRow = (
+    <tr>
+      <td colSpan={2}>&nbsp;</td>
+    </tr>
+  );
+
   const registerRows = (names: string[]) =>
-    names.map((name) => (
-      <tr key={name}>
-        <td>{name}</td>
-        <td>
-          {inputValue({
-            key: name,
-            value: globalModel.registerValue(name, globalModel.base),
-            valueNext: globalModel.registerValueNext(name, globalModel.base),
-            onChanged: (value) =>
-              globalModel.writeIntoRegister(name, value, globalModel.base),
-          })}
-        </td>
-      </tr>
-    ));
+    names.length !== 0
+      ? names.map((name) => (
+          <tr key={name}>
+            <td>{name}</td>
+            <td>
+              {inputValue({
+                key: name,
+                value: globalModel.registerValue(name, globalModel.base),
+                valueNext: globalModel.registerValueNext(
+                  name,
+                  globalModel.base
+                ),
+                onChanged: (value) =>
+                  globalModel.writeIntoRegister(name, value, globalModel.base),
+              })}
+            </td>
+          </tr>
+        ))
+      : [dividerRow];
 
   const busRows = (names: string[]) =>
-    names.map((name) => (
-      <tr key={name}>
-        <td>{name}</td>
-        <td>
-          {inputValue({
-            key: name,
-            value: globalModel.busValue(name, globalModel.base),
-            valueNext: null,
-            onChanged: (value) =>
-              globalModel.writeIntoBus(name, value, globalModel.base),
-          })}
-        </td>
-      </tr>
-    ));
+    names.length !== 0
+      ? names.map((name) => (
+          <tr key={name}>
+            <td>{name}</td>
+            <td>
+              {inputValue({
+                key: name,
+                value: globalModel.busValue(name, globalModel.base),
+                valueNext: null,
+                onChanged: (value) =>
+                  globalModel.writeIntoBus(name, value, globalModel.base),
+              })}
+            </td>
+          </tr>
+        ))
+      : [dividerRow];
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
@@ -147,83 +165,54 @@ const StateView: React.FC<Props> = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Inputs ----
-            </th>
-          </tr>
+          {headerRow("Inputs")}
           {busRows(inputs)}
-          <tr>
-            <td colSpan={2}></td>
-          </tr>
 
-          <tr>
-            <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Outputs ----
-            </th>
-          </tr>
+          {headerRow("Outputs")}
           {registerRows(outputs)}
-          <tr>
-            <td colSpan={2}></td>
-          </tr>
 
-          <tr>
-            <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Registers ----
-            </th>
-          </tr>
+          {headerRow("Registers")}
           {registerRows(registers)}
-          <tr>
-            <td colSpan={2}></td>
-          </tr>
 
-          <tr>
-            <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Buses ----
-            </th>
-          </tr>
+          {headerRow("Buses")}
           {busRows(buses)}
-          <tr>
-            <td colSpan={2}></td>
-          </tr>
 
-          <tr>
-            <th colSpan={2} style={{ textAlign: "center" }}>
-              ---- Memories ----
-            </th>
-          </tr>
-          {memories.map((memory) => (
-            <tr key={memory}>
-              <td>{memory}</td>
-              <td>
-                <Button
-                  small
-                  onClick={() => {
-                    // Select if exists
-                    const memoryStateId = consts.ID_TAB_STATE_MEMORY(memory);
-                    if (layoutModel.selectTab(memoryStateId)) {
-                      return;
-                    }
+          {headerRow("Memories")}
+          {memories.length !== 0
+            ? memories.map((memory) => (
+                <tr key={memory}>
+                  <td>{memory}</td>
+                  <td>
+                    <Button
+                      small
+                      onClick={() => {
+                        // Select if exists
+                        const memoryStateId =
+                          consts.ID_TAB_STATE_MEMORY(memory);
+                        if (layoutModel.selectTab(memoryStateId)) {
+                          return;
+                        }
 
-                    // Find position
-                    const position = findPosition(layoutModel);
-                    if (position === null) return;
+                        // Find position
+                        const position = findPosition(layoutModel);
+                        if (position === null) return;
 
-                    // Create tab
-                    layoutModel.createTab(
-                      memoryStateId,
-                      `Memory (${memory})`,
-                      `memory-${memory}`,
-                      position.toNodeId,
-                      position.location
-                    );
-                  }}
-                >
-                  Content
-                </Button>
-              </td>
-            </tr>
-          ))}
+                        // Create tab
+                        layoutModel.createTab(
+                          memoryStateId,
+                          `Memory (${memory})`,
+                          `memory-${memory}`,
+                          position.toNodeId,
+                          position.location
+                        );
+                      }}
+                    >
+                      Content
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            : [dividerRow]}
         </tbody>
       </HTMLTable>
     </div>
