@@ -112,7 +112,6 @@ pub enum Token {
     #[token("sxt")]
     OperatorSxt,
 
-    // TODO: Dont allow only "_" underscore ???
     #[regex("[a-zA-Z_][a-zA-Z0-9_]*", is_valid_ident)]
     Identifier,
 
@@ -124,6 +123,7 @@ pub enum Token {
 
 fn is_valid_ident(lex: &mut Lexer<'_, Token>) -> bool {
     lex.slice().chars().all(|c| c.is_uppercase() || c.is_numeric() || c == '_')
+        && lex.slice().chars().any(|c| c != '_')
 }
 
 #[cfg(test)]
