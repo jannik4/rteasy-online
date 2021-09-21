@@ -101,9 +101,9 @@ impl fmt::Display for Error<'_> {
             write!(f, " ")?;
         }
         if self.ansi_colors {
-            write!(f, "= {}", Red.paint(self.message))?;
+            write!(f, "= {}", Red.paint(indent_str(self.message, indent + 2)))?;
         } else {
-            write!(f, "= {}", self.message)?;
+            write!(f, "= {}", indent_str(self.message, indent + 2))?;
         }
 
         Ok(())
@@ -137,6 +137,24 @@ fn digits(mut num: usize) -> usize {
             break digits;
         }
     }
+}
+
+fn indent_str(s: &str, indent: usize) -> String {
+    let mut result = String::with_capacity(s.len() * 2);
+
+    let ident_string = (0..indent).map(|_| ' ').collect::<String>();
+
+    let mut lines = s.lines();
+    if let Some(line) = lines.next() {
+        result += line;
+    }
+    for line in lines {
+        result.push('\n');
+        result += &ident_string;
+        result += line;
+    }
+
+    result
 }
 
 #[derive(Debug)]
