@@ -1,5 +1,6 @@
 import { Base, SimState } from "./context";
 import { Simulator } from "../wasm";
+import { Storage } from "../storage";
 
 export type State = StateEdit | StateRun;
 
@@ -22,7 +23,7 @@ export interface StateRun extends StateCommon {
 export function initialState(): State {
   return {
     tag: "Edit",
-    sourceCode: localStorage.getItem("source-code") || "",
+    sourceCode: Storage.getSourceCode() || "",
     base: "DEC",
   };
 }

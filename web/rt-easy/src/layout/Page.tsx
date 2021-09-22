@@ -4,6 +4,7 @@ import FlexLayout, { TabNode, Model, IJsonModel, Node } from "flexlayout-react";
 import { LayoutModelContext, LayoutModel } from "./context";
 import { EditorView, LogView, StateView, MemoryStateView } from "../views";
 import * as consts from "./consts";
+import { Storage } from "../storage";
 
 interface Props {
   id: string;
@@ -47,7 +48,7 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
 export default Page;
 
 function loadModel(id: string, defaultModel: IJsonModel): Model {
-  const saved = localStorage.getItem("layout-model-" + id);
+  const saved = Storage.getLayoutModel(id);
   if (saved !== null) {
     try {
       const json = JSON.parse(saved);
@@ -73,5 +74,5 @@ function loadModel(id: string, defaultModel: IJsonModel): Model {
 
 // TODO: debounce?
 function saveModel(id: string, model: Model) {
-  localStorage.setItem("layout-model-" + id, model.toString());
+  Storage.setLayoutModel(id, model.toString());
 }

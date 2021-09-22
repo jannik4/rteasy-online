@@ -3,6 +3,7 @@ import React from "react";
 import { RtEasy } from "../../wasm";
 import { GlobalModelEdit } from "../context";
 import { State, StateEdit } from "../state";
+import { Storage } from "../../storage";
 
 export function model(
   rtEasy: RtEasy,
@@ -32,7 +33,7 @@ export function model(
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
     setSourceCode: (sourceCode) => {
-      localStorage.setItem("source-code", sourceCode);
+      Storage.setSourceCode(sourceCode);
       setState({ ...state, sourceCode });
     },
     build,
