@@ -2,7 +2,13 @@ import React, { useRef } from "react";
 import FlexLayout, { TabNode, Model, IJsonModel, Node } from "flexlayout-react";
 
 import { LayoutModelContext, LayoutModel } from "./context";
-import { EditorView, LogView, StateView, MemoryStateView } from "../views";
+import {
+  EditorView,
+  LogView,
+  StateView,
+  MemoryStateView,
+  RegisterArrayStateView,
+} from "../views";
 import * as consts from "./consts";
 import { Storage } from "../storage";
 
@@ -25,8 +31,20 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
       case "state":
         return <StateView />;
       default:
-        if (component?.startsWith("memory-")) {
-          return <MemoryStateView memory={component.slice(7)} />;
+        const memory_prefix = "memory-";
+        if (component?.startsWith(memory_prefix)) {
+          return (
+            <MemoryStateView memory={component.slice(memory_prefix.length)} />
+          );
+        }
+
+        const register_array_prefix = "register-array-";
+        if (component?.startsWith(register_array_prefix)) {
+          return (
+            <RegisterArrayStateView
+              registerArray={component.slice(register_array_prefix.length)}
+            />
+          );
         }
 
         console.log("Missing component: " + component);

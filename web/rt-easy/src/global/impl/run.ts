@@ -139,6 +139,35 @@ export function model(
         console.log(e); // TODO: ???
       }
     },
+    registerArrays: () => state.simulator.register_arrays(),
+    registerArrayPageCount: (name: string) =>
+      state.simulator.register_array_page_count(name),
+    registerArrayPage: (name: string, pageNr: number, base: string) => {
+      // Page returned from wasm is in the form:
+      // [idx, value, idx, value, ...]
+      const pageRaw = state.simulator.register_array_page(name, pageNr, base);
+
+      // Map to [{idx, value}, ...] form
+      let page: { idx: number; value: string }[] = [];
+      for (let i = 0; i < pageRaw.length; i += 2) {
+        page.push({ idx: pageRaw[i], value: pageRaw[i + 1] });
+      }
+
+      return page;
+    },
+    writeIntoRegisterArray: (
+      name: string,
+      idx: number,
+      value: string,
+      base: string
+    ) => {
+      try {
+        state.simulator.write_into_register_array(name, idx, value, base);
+        setState({ ...state }); // Force state update
+      } catch (e) {
+        console.log(e); // TODO: ???
+      }
+    },
     memories: () => state.simulator.memories(),
     memoryPageCount: (name: string) => state.simulator.memory_page_count(name),
     memoryPagePrev: (name: string, pageNr: string) =>

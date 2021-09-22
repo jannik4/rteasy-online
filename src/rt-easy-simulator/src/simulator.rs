@@ -249,6 +249,36 @@ impl Simulator {
     }
 
     // ------------------------------------------------------------
+    // Register arrays
+    // ------------------------------------------------------------
+
+    pub fn register_arrays(&self) -> impl Iterator<Item = &Ident> {
+        self.state.register_array_names()
+    }
+    pub fn register_array_page_count(&self, name: &Ident) -> Result<usize, Error> {
+        Ok(self.state.register_array(name)?.page_count())
+    }
+    pub fn register_array_page(
+        &self,
+        name: &Ident,
+        page_nr: usize,
+    ) -> Result<Vec<(usize, Value)>, Error> {
+        Ok(self.state.register_array(name)?.page(page_nr))
+    }
+    pub fn write_register_array(
+        &mut self,
+        name: &Ident,
+        idx: usize,
+        value: Value,
+    ) -> Result<(), Error> {
+        let reg_array_state = self.state.register_array_mut(name)?;
+        let idx = Value::parse_bin(&format!("{:b}", idx)).unwrap();
+        reg_array_state.write(idx, value)?;
+        reg_array_state.clock();
+        Ok(())
+    }
+
+    // ------------------------------------------------------------
     // Memories
     // ------------------------------------------------------------
 

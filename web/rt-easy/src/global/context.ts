@@ -59,6 +59,19 @@ export interface GlobalModelRun extends GlobalModelCommon {
   buses: (kind: "Intern" | "Input") => string[];
   busValue: (name: string, base: string) => string;
   writeIntoBus: (name: string, value: string, base: string) => void;
+  registerArrays: () => string[];
+  registerArrayPageCount: (name: string) => number;
+  registerArrayPage: (
+    name: string,
+    pageNr: number,
+    base: string
+  ) => { idx: number; value: string }[];
+  writeIntoRegisterArray: (
+    name: string,
+    idx: number,
+    value: string,
+    base: string
+  ) => void;
   memories: () => string[];
   memoryPageCount: (name: string) => string;
   memoryPagePrev: (name: string, pageNr: string) => string | null;

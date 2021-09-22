@@ -194,6 +194,70 @@ impl Simulator {
         Ok(())
     }
 
+    pub fn register_arrays(&self) -> Vec<JsValue> {
+        let mut register_arrays =
+            self.0.register_arrays().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
+        register_arrays.sort();
+        register_arrays.into_iter().map(Into::into).collect()
+    }
+
+    pub fn register_array_page_count(&self, name: &str) -> Result<usize, JsValue> {
+        match self.0.register_array_page_count(&rt_easy::rtcore::program::Ident(name.to_string())) {
+            Ok(value) => Ok(value),
+            Err(e) => Err(JsValue::from_str(&format!("{:#?}", e))),
+        }
+    }
+
+    pub fn register_array_page(
+        &self,
+        name: &str,
+        page_nr: usize,
+        base: &str,
+    ) -> Result<Vec<JsValue>, JsValue> {
+        let page = match self
+            .0
+            .register_array_page(&rt_easy::rtcore::program::Ident(name.to_string()), page_nr)
+        {
+            Ok(page) => page,
+            Err(e) => return Err(JsValue::from_str(&format!("{:#?}", e))),
+        };
+
+        let mut res = Vec::with_capacity(page.len() * 2);
+        for (idx, value) in page {
+            res.push(JsValue::from_f64(idx as f64));
+            res.push(JsValue::from_str(&match base {
+                "BIN" => value.as_bin(),
+                "DEC" => value.as_dec(),
+                "HEX" => value.as_hex(),
+                _ => return Err(JsValue::from_str("invalid base")),
+            }));
+        }
+
+        Ok(res)
+    }
+
+    pub fn write_into_register_array(
+        &mut self,
+        name: &str,
+        idx: usize,
+        value: &str,
+        base: &str,
+    ) -> Result<(), JsValue> {
+        let value = match base {
+            "BIN" => rt_easy::rtcore::value::Value::parse_bin(value),
+            "DEC" => rt_easy::rtcore::value::Value::parse_dec(value),
+            "HEX" => rt_easy::rtcore::value::Value::parse_hex(value),
+            _ => return Err(JsValue::from_str("invalid base")),
+        };
+        let value = value.map_err(|()| JsValue::from_str("invalid value"))?;
+
+        self.0
+            .write_register_array(&rt_easy::rtcore::program::Ident(name.to_string()), idx, value)
+            .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
+
+        Ok(())
+    }
+
     pub fn memories(&self) -> Vec<JsValue> {
         let mut memories = self.0.memories().map(|ident| ident.0.to_owned()).collect::<Vec<_>>();
         memories.sort();

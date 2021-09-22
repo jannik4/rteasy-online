@@ -28,17 +28,19 @@ const StateView: React.FC<Props> = () => {
   const layoutModel = useContext(LayoutModelContext);
 
   // Names
-  const [inputs, outputs, registers, buses, memories] = useMemo(() => {
-    if (globalModel.tag === "Edit") return [[], [], [], [], []];
-    return [
-      globalModel.buses("Input"),
-      globalModel.registers("Output"),
-      globalModel.registers("Intern"),
-      globalModel.buses("Intern"),
-      globalModel.memories(),
-    ];
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalModel.tag]);
+  const [inputs, outputs, registers, buses, registerArrays, memories] =
+    useMemo(() => {
+      if (globalModel.tag === "Edit") return [[], [], [], [], [], []];
+      return [
+        globalModel.buses("Input"),
+        globalModel.registers("Output"),
+        globalModel.registers("Intern"),
+        globalModel.buses("Intern"),
+        globalModel.registerArrays(),
+        globalModel.memories(),
+      ];
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [globalModel.tag]);
 
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
@@ -173,6 +175,43 @@ const StateView: React.FC<Props> = () => {
 
           {headerRow("Buses")}
           {busRows(buses)}
+
+          {headerRow("Register arrays")}
+          {registerArrays.length !== 0
+            ? registerArrays.map((registerArray) => (
+                <tr key={registerArray}>
+                  <td>{registerArray}</td>
+                  <td>
+                    <Button
+                      small
+                      onClick={() => {
+                        // Select if exists
+                        const registerArrayStateId =
+                          consts.ID_TAB_STATE_REGISTER_ARRAY(registerArray);
+                        if (layoutModel.selectTab(registerArrayStateId)) {
+                          return;
+                        }
+
+                        // Find position
+                        const position = findPosition(layoutModel);
+                        if (position === null) return;
+
+                        // Create tab
+                        layoutModel.createTab(
+                          registerArrayStateId,
+                          `Register array (${registerArray})`,
+                          `register-array-${registerArray}`,
+                          position.toNodeId,
+                          position.location
+                        );
+                      }}
+                    >
+                      Content
+                    </Button>
+                  </td>
+                </tr>
+              ))
+            : [dividerRow]}
 
           {headerRow("Memories")}
           {memories.length !== 0

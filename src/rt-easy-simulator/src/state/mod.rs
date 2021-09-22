@@ -46,11 +46,10 @@ impl State {
                 }
                 Declaration::RegisterArray(declare_register_array) => {
                     for reg_array in &declare_register_array.register_arrays {
-                        let index_size = log_2(reg_array.len);
                         let data_size = reg_array.range.unwrap_or_default().size();
                         register_arrays.insert(
                             reg_array.ident.clone(),
-                            RegisterArrayState::init(index_size, data_size),
+                            RegisterArrayState::init(reg_array.len, data_size),
                         );
                     }
                 }
@@ -233,17 +232,5 @@ impl fmt::Display for State {
         }
 
         Ok(())
-    }
-}
-
-fn log_2(x: usize) -> usize {
-    const fn num_bits<T>() -> usize {
-        std::mem::size_of::<T>() * 8
-    }
-
-    if x == 0 {
-        0
-    } else {
-        num_bits::<usize>() - x.leading_zeros() as usize - 1
     }
 }
