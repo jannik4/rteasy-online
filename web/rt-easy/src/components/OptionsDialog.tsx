@@ -1,7 +1,8 @@
-import React, { useContext } from "react";
-import { Classes, Slider, Dialog } from "@blueprintjs/core";
+import React, { useContext, useState } from "react";
+import { Classes, Slider, Dialog, Button } from "@blueprintjs/core";
 
 import { GlobalContext, clockRateValues } from "../global/context";
+import { Storage } from "../storage";
 
 interface Props {
   isOpen: boolean;
@@ -10,13 +11,15 @@ interface Props {
 
 const OptionsDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   const globalModel = useContext(GlobalContext);
+  const [reloadRequired, setReloadRequired] = useState(false);
 
   return (
     <Dialog title="Options" onClose={onClose} isOpen={isOpen}>
       <div className={Classes.DIALOG_BODY}>
-        <div style={{ height: 16 }} />
-        <div style={{ display: "flex" }}>
+        <div style={{ marginBottom: 16 }}>
           <strong>Clock rate</strong>
+        </div>
+        <div style={{ maxWidth: 300 }}>
           <Slider
             min={0}
             max={clockRateValues.length - 1}
@@ -26,6 +29,30 @@ const OptionsDialog: React.FC<Props> = ({ isOpen, onClose }) => {
             value={clockRateValues.indexOf(globalModel.clockRate)}
           />
         </div>
+        <div style={{ margin: "16px 0" }}>
+          <strong>Layout</strong>
+        </div>
+        <Button
+          small
+          onClick={() => {
+            Storage.removeAllLayoutModels();
+            setReloadRequired(true);
+          }}
+        >
+          Reset Layout
+        </Button>
+        {reloadRequired ? (
+          <span
+            style={{
+              marginLeft: 8,
+              textDecorationLine: "underline",
+              cursor: "pointer",
+            }}
+            onClick={() => window.location.reload()}
+          >
+            (reload required)
+          </span>
+        ) : null}
       </div>
     </Dialog>
   );

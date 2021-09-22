@@ -26,6 +26,14 @@ export const Storage = {
   getLayoutModel: (id: string) => localStorage.getItem("layout-model-" + id),
   setLayoutModel: (id: string, layoutModel: string) =>
     localStorage.setItem("layout-model-" + id, layoutModel),
+  removeAllLayoutModels: () => {
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)!;
+      if (key.startsWith("layout-model-")) {
+        localStorage.removeItem(key);
+      }
+    }
+  },
 };
 
 function isNumeric(val: string) {
