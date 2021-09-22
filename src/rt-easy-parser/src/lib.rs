@@ -98,6 +98,18 @@ pub fn pretty_print_error(error: &toktok::Error<Token>, source: &str, ansi_color
             }
             .to_string()
         })),
+        filter_expected: Some(Box::new(|expected: &[toktok::TokenOrEoi<Token>]| {
+            use std::collections::HashSet;
+
+            // Filter duplicates
+            let expected = expected.into_iter().copied().collect::<HashSet<_>>();
+
+            // Sort
+            let mut expected = expected.into_iter().collect::<Vec<_>>();
+            expected.sort();
+
+            expected
+        })),
     };
     error.pretty_print(&options)
 }

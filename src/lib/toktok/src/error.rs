@@ -83,7 +83,7 @@ pub enum ErrorKind<T> {
     Custom(Box<dyn StdError>),
 }
 
-#[derive(Debug, PartialOrd, Ord, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, Copy, PartialOrd, Ord, PartialEq, Eq, Hash)]
 pub enum TokenOrEoi<T> {
     Token(T),
     Eoi,
@@ -133,6 +133,15 @@ impl<T> Error<T> {
     {
         let message = match &self.kind {
             ErrorKind::Expected(expected, found) => {
+                let expected_filtered;
+                let expected = match &options.filter_expected {
+                    Some(filter_expected) => {
+                        expected_filtered = filter_expected(expected);
+                        &expected_filtered
+                    }
+                    None => expected,
+                };
+
                 let mut message = String::new();
                 message += "found: ";
                 message += &token_str(found, options.rename_token.as_deref());
@@ -186,7 +195,6 @@ impl<T> Error<T> {
                             ErrorKind::Expected(expected1, found1),
                             ErrorKind::Expected(expected2, _found2),
                         ) => ErrorKind::Expected(
-                            // TODO: Filter duplicates
                             vec![expected1.into_iter(), expected2.into_iter()]
                                 .into_iter()
                                 .flatten()
@@ -254,11 +262,18 @@ pub struct PrettyPrintOptions<'a, T> {
     pub file_name: Option<&'a str>,
     pub ansi_colors: bool,
     pub rename_token: Option<Box<dyn Fn(&TokenOrEoi<T>) -> String>>,
+    pub filter_expected: Option<Box<dyn Fn(&[TokenOrEoi<T>]) -> Vec<TokenOrEoi<T>>>>,
 }
 
 impl<T> Default for PrettyPrintOptions<'_, T> {
     fn default() -> Self {
-        Self { source: None, ansi_colors: false, file_name: None, rename_token: None }
+        Self {
+            source: None,
+            ansi_colors: false,
+            file_name: None,
+            rename_token: None,
+            filter_expected: None,
+        }
     }
 }
 
