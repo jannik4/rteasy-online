@@ -5,15 +5,15 @@
     "static/js/1.b640dd68.chunk.js": "/rteasy-online/static/js/1.b640dd68.chunk.js",
     "static/js/1.b640dd68.chunk.js.map": "/rteasy-online/static/js/1.b640dd68.chunk.js.map",
     "main.css": "/rteasy-online/static/css/main.e7511de1.chunk.css",
-    "main.js": "/rteasy-online/static/js/main.81c32e00.chunk.js",
-    "main.js.map": "/rteasy-online/static/js/main.81c32e00.chunk.js.map",
+    "main.js": "/rteasy-online/static/js/main.751a6607.chunk.js",
+    "main.js.map": "/rteasy-online/static/js/main.751a6607.chunk.js.map",
     "runtime-main.js": "/rteasy-online/static/js/runtime-main.63429b15.js",
     "runtime-main.js.map": "/rteasy-online/static/js/runtime-main.63429b15.js.map",
     "static/js/4.ba839bd5.chunk.js": "/rteasy-online/static/js/4.ba839bd5.chunk.js",
     "static/js/4.ba839bd5.chunk.js.map": "/rteasy-online/static/js/4.ba839bd5.chunk.js.map",
     "static/css/5.582b9d24.chunk.css": "/rteasy-online/static/css/5.582b9d24.chunk.css",
-    "static/js/5.b1975a9f.chunk.js": "/rteasy-online/static/js/5.b1975a9f.chunk.js",
-    "static/js/5.b1975a9f.chunk.js.map": "/rteasy-online/static/js/5.b1975a9f.chunk.js.map",
+    "static/js/5.859078fc.chunk.js": "/rteasy-online/static/js/5.859078fc.chunk.js",
+    "static/js/5.859078fc.chunk.js.map": "/rteasy-online/static/js/5.859078fc.chunk.js.map",
     "static/js/6.63c80685.chunk.js": "/rteasy-online/static/js/6.63c80685.chunk.js",
     "ff25a78e8a2edfbc6adb.module.wasm": "/rteasy-online/ff25a78e8a2edfbc6adb.module.wasm",
     "static/js/6.63c80685.chunk.js.map": "/rteasy-online/static/js/6.63c80685.chunk.js.map",
@@ -160,7 +160,7 @@
     "index.html": "/rteasy-online/index.html",
     "static/css/5.582b9d24.chunk.css.map": "/rteasy-online/static/css/5.582b9d24.chunk.css.map",
     "static/css/main.e7511de1.chunk.css.map": "/rteasy-online/static/css/main.e7511de1.chunk.css.map",
-    "static/js/5.b1975a9f.chunk.js.LICENSE.txt": "/rteasy-online/static/js/5.b1975a9f.chunk.js.LICENSE.txt",
+    "static/js/5.859078fc.chunk.js.LICENSE.txt": "/rteasy-online/static/js/5.859078fc.chunk.js.LICENSE.txt",
     "static/js/69.c81d1239.chunk.js.LICENSE.txt": "/rteasy-online/static/js/69.c81d1239.chunk.js.LICENSE.txt",
     "static/media/index.css": "/rteasy-online/static/media/blueprint-icons-20.d6311e6a.woff",
     "static/media/codicon.css": "/rteasy-online/static/media/codicon.74d8acf8.ttf"
@@ -168,8 +168,8 @@
   "entrypoints": [
     "static/js/runtime-main.63429b15.js",
     "static/css/5.582b9d24.chunk.css",
-    "static/js/5.b1975a9f.chunk.js",
+    "static/js/5.859078fc.chunk.js",
     "static/css/main.e7511de1.chunk.css",
-    "static/js/main.81c32e00.chunk.js"
+    "static/js/main.751a6607.chunk.js"
   ]
 }
