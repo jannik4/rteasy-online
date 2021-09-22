@@ -80,7 +80,7 @@ const StateView: React.FC<Props> = () => {
     </tr>
   );
   const dividerRow = (
-    <tr>
+    <tr key="dividerRow">
       <td colSpan={2}>&nbsp;</td>
     </tr>
   );
