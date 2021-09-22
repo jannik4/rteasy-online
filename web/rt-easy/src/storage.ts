@@ -14,8 +14,9 @@ export const Storage = {
   setBase: (base: Base) => localStorage.setItem("value-base", base.toString()),
 
   getClockRate: () => {
-    const clockRate = localStorage.getItem("clock-rate");
+    let clockRate: string | number | null = localStorage.getItem("clock-rate");
     if (clockRate === null) return null;
+    clockRate = isNumeric(clockRate) ? parseInt(clockRate) : clockRate;
     if (isClockRate(clockRate)) return clockRate;
     return null;
   },
@@ -26,3 +27,7 @@ export const Storage = {
   setLayoutModel: (id: string, layoutModel: string) =>
     localStorage.setItem("layout-model-" + id, layoutModel),
 };
+
+function isNumeric(val: string) {
+  return /^-?\d+$/.test(val);
+}
