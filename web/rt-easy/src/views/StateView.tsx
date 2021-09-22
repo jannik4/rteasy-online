@@ -8,7 +8,7 @@ import {
 } from "@blueprintjs/core";
 import { DockLocation, Orientation } from "flexlayout-react";
 
-import { GlobalContext } from "../global/context";
+import { GlobalContext, baseValues, isBase } from "../global/context";
 import { LayoutModelContext, LayoutModel } from "../layout/context";
 import * as consts from "../layout/consts";
 
@@ -138,19 +138,16 @@ const StateView: React.FC<Props> = () => {
         <HTMLSelect
           value={globalModel.base}
           onChange={(e) => {
-            if (
-              e.target.value !== "BIN" &&
-              e.target.value !== "DEC" &&
-              e.target.value !== "HEX"
-            )
-              throw new Error("invalid value");
+            if (!isBase(e.target.value)) throw new Error("invalid value");
             globalModel.setBase(e.target.value);
           }}
           minimal
         >
-          <option value="BIN">BIN</option>
-          <option value="DEC">DEC</option>
-          <option value="HEX">HEX</option>
+          {baseValues.map((base) => (
+            <option key={base} value={base}>
+              {base}
+            </option>
+          ))}
         </HTMLSelect>
         <Text>Cycle count: {globalModel.cycleCount()}</Text>
       </div>
