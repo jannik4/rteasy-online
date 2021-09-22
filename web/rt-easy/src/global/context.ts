@@ -7,6 +7,8 @@ export const GlobalContext = React.createContext<GlobalModel>({
   toggleMode: () => {},
   base: "DEC",
   setBase: () => {},
+  clockRate: "Max",
+  setClockRate: () => {},
   setSourceCode: () => {},
   build: () => {},
 });
@@ -14,11 +16,14 @@ export const GlobalContext = React.createContext<GlobalModel>({
 export type GlobalModel = GlobalModelEdit | GlobalModelRun;
 
 export type Base = "BIN" | "DEC" | "HEX";
+export type ClockRate = 1 | 2 | 4 | 8 | 100 | "Max";
 export interface GlobalModelCommon {
   sourceCode: string;
   toggleMode: () => void;
   base: Base;
   setBase: (base: Base) => void;
+  clockRate: ClockRate;
+  setClockRate: (clockRate: ClockRate) => void;
 }
 
 export interface GlobalModelEdit extends GlobalModelCommon {

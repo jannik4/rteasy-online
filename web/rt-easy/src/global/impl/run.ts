@@ -17,6 +17,7 @@ export function model(
       tag: "Edit",
       sourceCode: sourceCode ?? state.sourceCode,
       base: state.base,
+      clockRate: state.clockRate,
     });
   };
 
@@ -26,6 +27,8 @@ export function model(
     toggleMode: () => goToEditMode(),
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
+    clockRate: state.clockRate,
+    setClockRate: (clockRate) => setState({ ...state, clockRate }),
     goToEditMode,
     reset: () => {
       if (state.timerId !== null) clearInterval(state.timerId);
@@ -55,7 +58,10 @@ export function model(
 
     runStop: () => {
       if (state.timerId === null) {
+        const intervalSleep =
+          state.clockRate === "Max" ? 10 : 1000 / state.clockRate;
         const timerId = setInterval(() => {
+          // Stop if finished
           if (state.simulator.is_finished()) {
             clearInterval(timerId);
             setState((prev) => {
@@ -64,21 +70,35 @@ export function model(
             return;
           }
 
-          // Run for x ms
+          // Next sim state
           let simState = state.simState;
-          let start = performance.now();
-          const MS = 5;
-          while (true) {
+
+          // Run
+          if (state.clockRate === "Max") {
+            // Run for _ ms
+            let start = performance.now();
+            const MS = 5;
+            while (true) {
+              const stepResult = state.simulator.step() ?? null;
+              simState = calcNextSimState(
+                state.sourceCode,
+                simState,
+                stepResult
+              );
+
+              if (performance.now() - start > MS) break;
+            }
+          } else {
+            // Run one step
             const stepResult = state.simulator.step() ?? null;
             simState = calcNextSimState(state.sourceCode, simState, stepResult);
-
-            if (performance.now() - start > MS) break;
           }
 
+          // Update state
           setState((prev) => {
             return { ...prev, simState };
           });
-        }, 10);
+        }, intervalSleep);
         setState({ ...state, timerId });
       } else {
         clearInterval(state.timerId);

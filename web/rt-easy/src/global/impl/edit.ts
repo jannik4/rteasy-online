@@ -17,6 +17,7 @@ export function model(
         tag: "Run",
         sourceCode: state.sourceCode,
         base: state.base,
+        clockRate: state.clockRate,
         simulator,
         simState: null,
         timerId: null,
@@ -32,6 +33,8 @@ export function model(
     toggleMode: () => build(),
     base: state.base,
     setBase: (base) => setState({ ...state, base }),
+    clockRate: state.clockRate,
+    setClockRate: (clockRate) => setState({ ...state, clockRate }),
     setSourceCode: (sourceCode) => {
       Storage.setSourceCode(sourceCode);
       setState({ ...state, sourceCode });

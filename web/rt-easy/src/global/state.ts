@@ -1,4 +1,4 @@
-import { Base, SimState } from "./context";
+import { Base, ClockRate, SimState } from "./context";
 import { Simulator } from "../wasm";
 import { Storage } from "../storage";
 
@@ -7,6 +7,7 @@ export type State = StateEdit | StateRun;
 export interface StateCommon {
   sourceCode: string;
   base: Base;
+  clockRate: ClockRate;
 }
 
 export interface StateEdit extends StateCommon {
@@ -25,5 +26,6 @@ export function initialState(): State {
     tag: "Edit",
     sourceCode: Storage.getSourceCode() || "",
     base: "DEC",
+    clockRate: "Max",
   };
 }
