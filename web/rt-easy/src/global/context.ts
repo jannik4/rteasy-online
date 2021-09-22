@@ -15,8 +15,14 @@ export const GlobalContext = React.createContext<GlobalModel>({
 
 export type GlobalModel = GlobalModelEdit | GlobalModelRun;
 
-export type Base = "BIN" | "DEC" | "HEX";
-export type ClockRate = 1 | 2 | 4 | 8 | 100 | "Max";
+const base = ["BIN", "DEC", "HEX"] as const;
+export type Base = typeof base[number];
+export const isBase = (x: any): x is Base => base.includes(x);
+
+const clockRate = [1, 2, 4, 8, 100, "Max"] as const;
+export type ClockRate = typeof clockRate[number];
+export const isClockRate = (x: any): x is ClockRate => clockRate.includes(x);
+
 export interface GlobalModelCommon {
   sourceCode: string;
   toggleMode: () => void;

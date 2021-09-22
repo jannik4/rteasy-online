@@ -32,9 +32,15 @@ export function model(
     sourceCode: state.sourceCode,
     toggleMode: () => build(),
     base: state.base,
-    setBase: (base) => setState({ ...state, base }),
+    setBase: (base) => {
+      Storage.setBase(base);
+      setState({ ...state, base });
+    },
     clockRate: state.clockRate,
-    setClockRate: (clockRate) => setState({ ...state, clockRate }),
+    setClockRate: (clockRate) => {
+      Storage.setClockRate(clockRate);
+      setState({ ...state, clockRate });
+    },
     setSourceCode: (sourceCode) => {
       Storage.setSourceCode(sourceCode);
       setState({ ...state, sourceCode });

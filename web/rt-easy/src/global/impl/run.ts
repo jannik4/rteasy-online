@@ -4,6 +4,7 @@ import { Range } from "monaco-editor";
 import { RtEasy, Span, StepResult } from "../../wasm";
 import { GlobalModelRun, SimState } from "../context";
 import { State, StateRun } from "../state";
+import { Storage } from "../../storage";
 
 export function model(
   _rtEasy: RtEasy,
@@ -26,9 +27,15 @@ export function model(
     sourceCode: state.sourceCode,
     toggleMode: () => goToEditMode(),
     base: state.base,
-    setBase: (base) => setState({ ...state, base }),
+    setBase: (base) => {
+      Storage.setBase(base);
+      setState({ ...state, base });
+    },
     clockRate: state.clockRate,
-    setClockRate: (clockRate) => setState({ ...state, clockRate }),
+    setClockRate: (clockRate) => {
+      Storage.setClockRate(clockRate);
+      setState({ ...state, clockRate });
+    },
     goToEditMode,
     reset: () => {
       if (state.timerId !== null) clearInterval(state.timerId);
