@@ -1,4 +1,4 @@
-import React, { useContext, useCallback, useEffect } from "react";
+import React, { useState, useContext, useCallback, useEffect } from "react";
 import {
   Button,
   Classes,
@@ -10,6 +10,8 @@ import {
   Text,
 } from "@blueprintjs/core";
 
+import { OptionsDialog } from "./";
+
 import { useFilePicker } from "../hooks/useFilePicker";
 import { downloadFile } from "../util/downloadFile";
 import { GlobalContext, GlobalModel } from "../global/context";
@@ -20,6 +22,7 @@ interface Props {}
 
 const Toolbar: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
+  const [showOptionsDialog, setShowOptionsDialog] = useState(false);
   const openFilePicker = useFilePicker({
     accept: [".rt", ".txt"],
     onChange: (_name, content) => {
@@ -35,8 +38,13 @@ const Toolbar: React.FC<Props> = () => {
   });
   const handleUserKeyPressCallback = useCallback(
     (event: KeyboardEvent) =>
-      handleUserKeyPress(event, globalModel, openFilePicker),
-    [globalModel, openFilePicker]
+      handleUserKeyPress(
+        event,
+        globalModel,
+        setShowOptionsDialog,
+        openFilePicker
+      ),
+    [globalModel, setShowOptionsDialog, openFilePicker]
   );
   useEffect(() => {
     window.addEventListener("keydown", handleUserKeyPressCallback);
@@ -58,6 +66,12 @@ const Toolbar: React.FC<Props> = () => {
         text="Save File..."
         label={ctrlKeyShortCut("S")}
         onClick={() => downloadFile(FILENAME, globalModel.sourceCode)}
+      />
+      <MenuItem
+        icon="cog"
+        text="Options..."
+        label={ctrlKeyShortCut(",")}
+        onClick={() => setShowOptionsDialog(true)}
       />
     </Menu>
   );
@@ -151,6 +165,10 @@ const Toolbar: React.FC<Props> = () => {
         flexDirection: "column",
       }}
     >
+      <OptionsDialog
+        isOpen={showOptionsDialog}
+        onClose={() => setShowOptionsDialog(false)}
+      />
       <div
         style={{
           display: "flex",
@@ -254,6 +272,7 @@ export default Toolbar;
 function handleUserKeyPress(
   event: KeyboardEvent,
   globalModel: GlobalModel,
+  setShowOptionsDialog: (value: boolean) => void,
   openFilePicker: () => void
 ) {
   switch (event.key) {
@@ -269,6 +288,13 @@ function handleUserKeyPress(
         event.preventDefault();
         if (event.repeat) return;
         downloadFile(FILENAME, globalModel.sourceCode);
+      }
+      break;
+    case ",":
+      if (ctrlKeyPressed(event)) {
+        event.preventDefault();
+        if (event.repeat) return;
+        setShowOptionsDialog(true);
       }
       break;
     case "F5":

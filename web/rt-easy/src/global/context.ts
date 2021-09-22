@@ -19,9 +19,10 @@ const base = ["BIN", "DEC", "HEX"] as const;
 export type Base = typeof base[number];
 export const isBase = (x: any): x is Base => base.includes(x);
 
-const clockRate = [1, 2, 4, 8, 100, "Max"] as const;
-export type ClockRate = typeof clockRate[number];
-export const isClockRate = (x: any): x is ClockRate => clockRate.includes(x);
+export const clockRateValues = [1, 2, 4, 8, 100, "Max"] as const;
+export type ClockRate = typeof clockRateValues[number];
+export const isClockRate = (x: any): x is ClockRate =>
+  clockRateValues.includes(x);
 
 export interface GlobalModelCommon {
   sourceCode: string;
