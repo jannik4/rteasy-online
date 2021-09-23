@@ -3,8 +3,8 @@ import { editor, Range } from "monaco-editor";
 
 import { RtEasy, Span, StepResult } from "../../wasm";
 import { GlobalModelRun, SimState } from "../context";
+import { model as modelCommon } from "./common";
 import { State, StateRun } from "../state";
-import { Storage } from "../../storage";
 
 export function model(
   _rtEasy: RtEasy,
@@ -24,20 +24,8 @@ export function model(
   };
 
   return {
+    ...modelCommon(state, setState, editorRef, editorModel, goToEditMode),
     tag: "Run",
-    editorRef,
-    editorModel,
-    toggleMode: () => goToEditMode(),
-    base: state.base,
-    setBase: (base) => {
-      Storage.setBase(base);
-      setState({ ...state, base });
-    },
-    clockRate: state.clockRate,
-    setClockRate: (clockRate) => {
-      Storage.setClockRate(clockRate);
-      setState({ ...state, clockRate });
-    },
     goToEditMode,
     reset: () => {
       if (state.timerId !== null) clearInterval(state.timerId);

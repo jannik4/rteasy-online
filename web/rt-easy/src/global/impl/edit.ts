@@ -3,8 +3,8 @@ import { editor } from "monaco-editor";
 
 import { RtEasy } from "../../wasm";
 import { GlobalModelEdit } from "../context";
+import { model as modelCommon } from "./common";
 import { State, StateEdit } from "../state";
-import { Storage } from "../../storage";
 
 export function model(
   rtEasy: RtEasy,
@@ -30,20 +30,8 @@ export function model(
   };
 
   return {
+    ...modelCommon(state, setState, editorRef, editorModel, build),
     tag: "Edit",
-    editorRef,
-    editorModel,
-    toggleMode: () => build(),
-    base: state.base,
-    setBase: (base) => {
-      Storage.setBase(base);
-      setState({ ...state, base });
-    },
-    clockRate: state.clockRate,
-    setClockRate: (clockRate) => {
-      Storage.setClockRate(clockRate);
-      setState({ ...state, clockRate });
-    },
     build,
   };
 }

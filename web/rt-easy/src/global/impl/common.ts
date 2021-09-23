@@ -1,0 +1,34 @@
+import React from "react";
+import { editor } from "monaco-editor";
+
+import { GlobalModelCommon } from "../context";
+import { State, StateEdit, StateRun } from "../state";
+import { Storage } from "../../storage";
+
+export function model(
+  state: StateEdit | StateRun,
+  setState: React.Dispatch<React.SetStateAction<State>>,
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
+  editorModel: editor.IModel,
+  toggleMode: () => void
+): GlobalModelCommon {
+  return {
+    editorRef,
+    editorModel,
+    toggleMode,
+    base: state.base,
+    setBase: (base) => {
+      Storage.setBase(base);
+      setState((prev) => {
+        return { ...prev, base };
+      });
+    },
+    clockRate: state.clockRate,
+    setClockRate: (clockRate) => {
+      Storage.setClockRate(clockRate);
+      setState((prev) => {
+        return { ...prev, clockRate };
+      });
+    },
+  };
+}
