@@ -11,12 +11,12 @@ export function model(
   state: StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>
 ): GlobalModelRun {
-  const goToEditMode = (sourceCode?: string) => {
+  const goToEditMode = () => {
     if (state.timerId !== null) clearInterval(state.timerId);
     state.simulator.free();
     setState({
       tag: "Edit",
-      sourceCode: sourceCode ?? state.sourceCode,
+      editorModel: state.editorModel,
       base: state.base,
       clockRate: state.clockRate,
     });
@@ -24,7 +24,7 @@ export function model(
 
   return {
     tag: "Run",
-    sourceCode: state.sourceCode,
+    editorModel: state.editorModel,
     toggleMode: () => goToEditMode(),
     base: state.base,
     setBase: (base) => {
@@ -46,7 +46,7 @@ export function model(
     microStep: () => {
       const stepResult = state.simulator.micro_step() ?? null;
       const simState = calcNextSimState(
-        state.sourceCode,
+        state.editorModel.getValue(),
         state.simState,
         stepResult
       );
@@ -55,7 +55,7 @@ export function model(
     step: () => {
       const stepResult = state.simulator.step() ?? null;
       const simState = calcNextSimState(
-        state.sourceCode,
+        state.editorModel.getValue(),
         state.simState,
         stepResult
       );
@@ -88,7 +88,7 @@ export function model(
             while (true) {
               const stepResult = state.simulator.step() ?? null;
               simState = calcNextSimState(
-                state.sourceCode,
+                state.editorModel.getValue(),
                 simState,
                 stepResult
               );
@@ -98,7 +98,11 @@ export function model(
           } else {
             // Run one step
             const stepResult = state.simulator.step() ?? null;
-            simState = calcNextSimState(state.sourceCode, simState, stepResult);
+            simState = calcNextSimState(
+              state.editorModel.getValue(),
+              simState,
+              stepResult
+            );
           }
 
           // Update state

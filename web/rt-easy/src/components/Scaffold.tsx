@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { Monaco } from "@monaco-editor/react";
 
 import { Toolbar } from "./";
 import { EditPage, RunPage } from "../layout";
@@ -8,12 +9,25 @@ import { GlobalContext, GlobalModel } from "../global/context";
 import { State, initialState } from "../global/state";
 import { model as modelEdit } from "../global/impl/edit";
 import { model as modelRun } from "../global/impl/run";
+import { Storage } from "../storage";
 
-interface Props {}
+interface Props {
+  monaco: Monaco;
+}
 
-const Scaffold: React.FC<Props> = () => {
+const Scaffold: React.FC<Props> = ({ monaco }) => {
   const rtEasy = useContext(RtEasyContext);
-  const [state, setState] = useState<State>(() => initialState());
+  const [state, setState] = useState<State>(() => initialState(monaco));
+
+  // Update storage and call setState if model content changed
+  useEffect(() => {
+    state.editorModel.onDidChangeContent(() => {
+      Storage.setSourceCode(state.editorModel.getValue());
+      setState({ ...state });
+    });
+    // Run effect only once! (We only need one listener)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   let globalModel: GlobalModel;
   let page: React.ReactNode;

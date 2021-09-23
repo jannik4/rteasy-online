@@ -12,10 +12,10 @@ export function model(
 ): GlobalModelEdit {
   const build = () => {
     try {
-      const simulator = rtEasy.build(state.sourceCode);
+      const simulator = rtEasy.build(state.editorModel.getValue());
       setState({
         tag: "Run",
-        sourceCode: state.sourceCode,
+        editorModel: state.editorModel,
         base: state.base,
         clockRate: state.clockRate,
         simulator,
@@ -29,7 +29,7 @@ export function model(
 
   return {
     tag: "Edit",
-    sourceCode: state.sourceCode,
+    editorModel: state.editorModel,
     toggleMode: () => build(),
     base: state.base,
     setBase: (base) => {
@@ -40,10 +40,6 @@ export function model(
     setClockRate: (clockRate) => {
       Storage.setClockRate(clockRate);
       setState({ ...state, clockRate });
-    },
-    setSourceCode: (sourceCode) => {
-      Storage.setSourceCode(sourceCode);
-      setState({ ...state, sourceCode });
     },
     build,
   };

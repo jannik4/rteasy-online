@@ -26,14 +26,18 @@ const Toolbar: React.FC<Props> = () => {
   const openFilePicker = useFilePicker({
     accept: [".rt", ".txt"],
     onChange: (_name, content) => {
-      switch (globalModel.tag) {
-        case "Edit":
-          globalModel.setSourceCode(content);
-          break;
-        case "Run":
-          globalModel.goToEditMode(content);
-          break;
-      }
+      // Use pushEditOperations instead of setValue to preserve undo/redo stack
+      globalModel.editorModel.pushEditOperations(
+        [],
+        [
+          {
+            range: globalModel.editorModel.getFullModelRange(),
+            text: content,
+          },
+        ],
+        () => null
+      );
+      if (globalModel.tag === "Run") globalModel.goToEditMode();
     },
   });
   const handleUserKeyPressCallback = useCallback(
@@ -65,7 +69,9 @@ const Toolbar: React.FC<Props> = () => {
         icon="download"
         text="Save File..."
         label={ctrlKeyShortCut("S")}
-        onClick={() => downloadFile(FILENAME, globalModel.sourceCode)}
+        onClick={() =>
+          downloadFile(FILENAME, globalModel.editorModel.getValue())
+        }
       />
       <MenuItem
         icon="cog"
@@ -287,7 +293,7 @@ function handleUserKeyPress(
       if (ctrlKeyPressed(event)) {
         event.preventDefault();
         if (event.repeat) return;
-        downloadFile(FILENAME, globalModel.sourceCode);
+        downloadFile(FILENAME, globalModel.editorModel.getValue());
       }
       break;
     case ",":

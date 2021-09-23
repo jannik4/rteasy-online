@@ -10,7 +10,10 @@ interface Props {}
 const LogView: React.FC<Props> = () => {
   const rtEasy = useContext(RtEasyContext);
   const globalModel = useContext(GlobalContext);
-  const debouncedSourceCode = useDebounce(globalModel.sourceCode, 100);
+  const debouncedSourceCode = useDebounce(
+    globalModel.editorModel.getValue(),
+    100
+  );
   const log = useMemo(() => {
     try {
       rtEasy.check(debouncedSourceCode);

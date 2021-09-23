@@ -1,15 +1,14 @@
 import React from "react";
-import { Range } from "monaco-editor";
+import { editor, Range } from "monaco-editor";
 
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
-  sourceCode: "",
+  editorModel: null as any,
   toggleMode: () => {},
   base: "DEC",
   setBase: () => {},
   clockRate: "Max",
   setClockRate: () => {},
-  setSourceCode: () => {},
   build: () => {},
 });
 
@@ -25,7 +24,7 @@ export const isClockRate = (x: any): x is ClockRate =>
   clockRateValues.includes(x);
 
 export interface GlobalModelCommon {
-  sourceCode: string;
+  editorModel: editor.IModel;
   toggleMode: () => void;
   base: Base;
   setBase: (base: Base) => void;
@@ -35,7 +34,6 @@ export interface GlobalModelCommon {
 
 export interface GlobalModelEdit extends GlobalModelCommon {
   tag: "Edit";
-  setSourceCode: (sourceCode: string) => void;
   build: () => void;
 }
 
