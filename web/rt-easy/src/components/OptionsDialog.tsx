@@ -24,7 +24,11 @@ const OptionsDialog: React.FC<Props> = ({ isOpen, onClose }) => {
             min={0}
             max={clockRateValues.length - 1}
             onChange={(idx) => globalModel.setClockRate(clockRateValues[idx])}
-            labelRenderer={(idx) => clockRateValues[idx].toString()}
+            labelRenderer={(idx) => {
+              const value = clockRateValues[idx];
+              if (value === "Max") return value;
+              return value + "Hz";
+            }}
             showTrackFill={false}
             value={clockRateValues.indexOf(globalModel.clockRate)}
           />
