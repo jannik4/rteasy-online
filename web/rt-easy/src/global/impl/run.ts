@@ -65,6 +65,7 @@ export function model(
 
     runStop: () => {
       if (state.timerId === null) {
+        if (state.simulator.is_finished()) return;
         const intervalSleep =
           state.clockRate === "Max" ? 10 : 1000 / state.clockRate;
         const timerId = setInterval(() => {
