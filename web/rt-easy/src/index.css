@@ -35,3 +35,7 @@ body,
 .noFocus:focus {
   outline: none !important;
 }
+
+.bp4-overlay-content {
+  z-index: 100 !important;
+}
