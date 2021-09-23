@@ -1,4 +1,5 @@
 import React from "react";
+import { Spinner } from "@blueprintjs/core";
 
 interface Props {}
 
@@ -12,7 +13,7 @@ const Loading: React.FC<Props> = () => {
         alignItems: "center",
       }}
     >
-      loading...
+      <Spinner />
     </div>
   );
 };
