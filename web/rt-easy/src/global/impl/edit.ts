@@ -1,4 +1,5 @@
 import React from "react";
+import { editor } from "monaco-editor";
 
 import { RtEasy } from "../../wasm";
 import { GlobalModelEdit } from "../context";
@@ -8,7 +9,8 @@ import { Storage } from "../../storage";
 export function model(
   rtEasy: RtEasy,
   state: StateEdit,
-  setState: React.Dispatch<React.SetStateAction<State>>
+  setState: React.Dispatch<React.SetStateAction<State>>,
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>
 ): GlobalModelEdit {
   const build = () => {
     try {
@@ -30,6 +32,7 @@ export function model(
   return {
     tag: "Edit",
     editorModel: state.editorModel,
+    editorRef,
     toggleMode: () => build(),
     base: state.base,
     setBase: (base) => {

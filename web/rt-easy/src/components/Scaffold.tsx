@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import { Monaco } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
 
 import { Toolbar } from "./";
 import { EditPage, RunPage } from "../layout";
@@ -18,6 +19,7 @@ interface Props {
 const Scaffold: React.FC<Props> = ({ monaco }) => {
   const rtEasy = useContext(RtEasyContext);
   const [state, setState] = useState<State>(() => initialState(monaco));
+  const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
 
   // Update storage and call setState if model content changed
   useEffect(() => {
@@ -33,11 +35,11 @@ const Scaffold: React.FC<Props> = ({ monaco }) => {
   let page: React.ReactNode;
   switch (state.tag) {
     case "Edit":
-      globalModel = modelEdit(rtEasy, state, setState);
+      globalModel = modelEdit(rtEasy, state, setState, editorRef);
       page = <EditPage />;
       break;
     case "Run":
-      globalModel = modelRun(rtEasy, state, setState);
+      globalModel = modelRun(rtEasy, state, setState, editorRef);
       page = <RunPage />;
       break;
   }

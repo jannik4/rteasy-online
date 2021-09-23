@@ -1,6 +1,5 @@
 import React, { useContext, useRef } from "react";
 import MonacoEditor from "@monaco-editor/react";
-import * as monaco from "monaco-editor";
 
 import { GlobalContext } from "../global/context";
 
@@ -8,10 +7,9 @@ interface Props {}
 
 const EditorView: React.FC<Props> = () => {
   const oldDecorations = useRef<string[]>([]);
-  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const globalModel = useContext(GlobalContext);
 
-  if (editorRef.current !== null && globalModel.tag === "Run") {
+  if (globalModel.editorRef.current !== null && globalModel.tag === "Run") {
     const simState = globalModel.simState;
     if (simState) {
       let decorations = [];
@@ -42,12 +40,12 @@ const EditorView: React.FC<Props> = () => {
         });
       }
 
-      oldDecorations.current = editorRef.current.deltaDecorations(
+      oldDecorations.current = globalModel.editorRef.current.deltaDecorations(
         oldDecorations.current,
         decorations
       );
     } else {
-      oldDecorations.current = editorRef.current.deltaDecorations(
+      oldDecorations.current = globalModel.editorRef.current.deltaDecorations(
         oldDecorations.current,
         []
       );
@@ -63,8 +61,12 @@ const EditorView: React.FC<Props> = () => {
         }}
         keepCurrentModel
         onMount={(editor, _monaco) => {
-          editorRef.current = editor;
-          editorRef.current.setModel(globalModel.editorModel);
+          // Set model
+          editor.setModel(globalModel.editorModel);
+
+          // Set ref (and unset on dispose)
+          globalModel.editorRef.current = editor;
+          editor.onDidDispose(() => (globalModel.editorRef.current = null));
         }}
       />
     </div>

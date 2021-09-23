@@ -4,6 +4,7 @@ import { editor, Range } from "monaco-editor";
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
   editorModel: null as any,
+  editorRef: null as any,
   toggleMode: () => {},
   base: "DEC",
   setBase: () => {},
@@ -25,6 +26,7 @@ export const isClockRate = (x: any): x is ClockRate =>
 
 export interface GlobalModelCommon {
   editorModel: editor.IModel;
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>;
   toggleMode: () => void;
   base: Base;
   setBase: (base: Base) => void;

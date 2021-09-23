@@ -1,5 +1,5 @@
 import React from "react";
-import { Range } from "monaco-editor";
+import { editor, Range } from "monaco-editor";
 
 import { RtEasy, Span, StepResult } from "../../wasm";
 import { GlobalModelRun, SimState } from "../context";
@@ -9,7 +9,8 @@ import { Storage } from "../../storage";
 export function model(
   _rtEasy: RtEasy,
   state: StateRun,
-  setState: React.Dispatch<React.SetStateAction<State>>
+  setState: React.Dispatch<React.SetStateAction<State>>,
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>
 ): GlobalModelRun {
   const goToEditMode = () => {
     if (state.timerId !== null) clearInterval(state.timerId);
@@ -25,6 +26,7 @@ export function model(
   return {
     tag: "Run",
     editorModel: state.editorModel,
+    editorRef,
     toggleMode: () => goToEditMode(),
     base: state.base,
     setBase: (base) => {
