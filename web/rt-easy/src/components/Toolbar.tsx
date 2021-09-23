@@ -84,20 +84,92 @@ const Toolbar: React.FC<Props> = () => {
 
   const editMenu = (
     <Menu>
-      <MenuItem icon="undo" text="Undo" label={ctrlKeyShortCut("Z")} />
-      <MenuItem icon="redo" text="Redo" label={ctrlKeyShortCut("Y")} />
+      <MenuItem
+        icon="undo"
+        text="Undo"
+        label={ctrlKeyShortCut("Z")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger("source", "undo", null);
+        }}
+      />
+      <MenuItem
+        icon="redo"
+        text="Redo"
+        label={ctrlKeyShortCut("Y")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger("source", "redo", null);
+        }}
+      />
 
       <MenuDivider />
-      <MenuItem icon="cut" text="Cut" label={ctrlKeyShortCut("X")} />
-      <MenuItem icon="duplicate" text="Copy" label={ctrlKeyShortCut("C")} />
-      <MenuItem icon="clipboard" text="Paste" label={ctrlKeyShortCut("V")} />
+      <MenuItem
+        icon="cut"
+        text="Cut"
+        label={ctrlKeyShortCut("X")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger(
+            "source",
+            "editor.action.clipboardCutAction",
+            null
+          );
+        }}
+      />
+      <MenuItem
+        icon="duplicate"
+        text="Copy"
+        label={ctrlKeyShortCut("C")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger(
+            "source",
+            "editor.action.clipboardCopyWithSyntaxHighlightingAction",
+            null
+          );
+        }}
+      />
+      <MenuItem
+        icon="clipboard"
+        text="Paste"
+        label={ctrlKeyShortCut("V")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          navigator.clipboard.readText().then((text) => {
+            globalModel.editorRef.current?.trigger("keyboard", "type", {
+              text,
+            });
+          });
+        }}
+      />
 
       <MenuDivider />
-      <MenuItem icon="search" text="Find" label={ctrlKeyShortCut("F")} />
+      <MenuItem
+        icon="search"
+        text="Find"
+        label={ctrlKeyShortCut("F")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger(
+            "source",
+            "actions.find",
+            null
+          );
+        }}
+      />
       <MenuItem
         icon="multi-select"
         text="Replace"
         label={ctrlKeyShortCut("H")}
+        onClick={() => {
+          globalModel.editorRef.current?.focus();
+          globalModel.editorRef.current?.trigger(
+            "source",
+            "editor.action.startFindReplaceAction",
+            null
+          );
+        }}
       />
     </Menu>
   );
