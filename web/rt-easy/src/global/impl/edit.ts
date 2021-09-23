@@ -10,14 +10,14 @@ export function model(
   rtEasy: RtEasy,
   state: StateEdit,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
+  editorModel: editor.IModel
 ): GlobalModelEdit {
   const build = () => {
     try {
-      const simulator = rtEasy.build(state.editorModel.getValue());
+      const simulator = rtEasy.build(editorModel.getValue());
       setState({
         tag: "Run",
-        editorModel: state.editorModel,
         base: state.base,
         clockRate: state.clockRate,
         simulator,
@@ -31,8 +31,8 @@ export function model(
 
   return {
     tag: "Edit",
-    editorModel: state.editorModel,
     editorRef,
+    editorModel,
     toggleMode: () => build(),
     base: state.base,
     setBase: (base) => {

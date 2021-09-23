@@ -1,6 +1,3 @@
-import { Monaco } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
-
 import { Base, ClockRate, SimState } from "./context";
 import { Simulator } from "../wasm";
 import { Storage } from "../storage";
@@ -8,7 +5,6 @@ import { Storage } from "../storage";
 export type State = StateEdit | StateRun;
 
 export interface StateCommon {
-  editorModel: editor.IModel;
   base: Base;
   clockRate: ClockRate;
 }
@@ -24,12 +20,9 @@ export interface StateRun extends StateCommon {
   timerId: NodeJS.Timeout | null;
 }
 
-export function initialState(monaco: Monaco): State {
-  const sourceCode = Storage.getSourceCode() || "";
-
+export function initialState(): State {
   return {
     tag: "Edit",
-    editorModel: monaco.editor.createModel(sourceCode, "rt-easy"),
     base: Storage.getBase() || "DEC",
     clockRate: Storage.getClockRate() || "Max",
   };

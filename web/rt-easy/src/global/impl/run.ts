@@ -10,14 +10,14 @@ export function model(
   _rtEasy: RtEasy,
   state: StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>
+  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
+  editorModel: editor.IModel
 ): GlobalModelRun {
   const goToEditMode = () => {
     if (state.timerId !== null) clearInterval(state.timerId);
     state.simulator.free();
     setState({
       tag: "Edit",
-      editorModel: state.editorModel,
       base: state.base,
       clockRate: state.clockRate,
     });
@@ -25,8 +25,8 @@ export function model(
 
   return {
     tag: "Run",
-    editorModel: state.editorModel,
     editorRef,
+    editorModel,
     toggleMode: () => goToEditMode(),
     base: state.base,
     setBase: (base) => {
@@ -48,7 +48,7 @@ export function model(
     microStep: () => {
       const stepResult = state.simulator.micro_step() ?? null;
       const simState = calcNextSimState(
-        state.editorModel.getValue(),
+        editorModel.getValue(),
         state.simState,
         stepResult
       );
@@ -57,7 +57,7 @@ export function model(
     step: () => {
       const stepResult = state.simulator.step() ?? null;
       const simState = calcNextSimState(
-        state.editorModel.getValue(),
+        editorModel.getValue(),
         state.simState,
         stepResult
       );
@@ -91,7 +91,7 @@ export function model(
             while (true) {
               const stepResult = state.simulator.step() ?? null;
               simState = calcNextSimState(
-                state.editorModel.getValue(),
+                editorModel.getValue(),
                 simState,
                 stepResult
               );
@@ -102,7 +102,7 @@ export function model(
             // Run one step
             const stepResult = state.simulator.step() ?? null;
             simState = calcNextSimState(
-              state.editorModel.getValue(),
+              editorModel.getValue(),
               simState,
               stepResult
             );

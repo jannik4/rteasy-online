@@ -1,10 +1,11 @@
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { Monaco } from "@monaco-editor/react";
 import { editor } from "monaco-editor";
 
 import { Toolbar } from "./";
 import { EditPage, RunPage } from "../layout";
 
+import { useLazyRef } from "../hooks/useLazyRef";
 import { RtEasyContext } from "../wasm/context";
 import { GlobalContext, GlobalModel } from "../global/context";
 import { State, initialState } from "../global/state";
@@ -18,28 +19,45 @@ interface Props {
 
 const Scaffold: React.FC<Props> = ({ monaco }) => {
   const rtEasy = useContext(RtEasyContext);
-  const [state, setState] = useState<State>(() => initialState(monaco));
+  const [state, setState] = useState<State>(() => initialState());
   const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null);
+  const editorModelRef = useLazyRef(() => {
+    // Load source code and create model
+    const sourceCode = Storage.getSourceCode() || "";
+    const editorModel = monaco.editor.createModel(sourceCode, "rt-easy");
 
-  // Update storage and call setState if model content changed
-  useEffect(() => {
-    state.editorModel.onDidChangeContent(() => {
-      Storage.setSourceCode(state.editorModel.getValue());
-      setState({ ...state });
+    // Update storage and call setState if model content changed
+    editorModel.onDidChangeContent(() => {
+      Storage.setSourceCode(editorModel.getValue());
+      setState((prev) => {
+        return { ...prev };
+      });
     });
-    // Run effect only once! (We only need one listener)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+
+    return editorModel;
+  });
 
   let globalModel: GlobalModel;
   let page: React.ReactNode;
   switch (state.tag) {
     case "Edit":
-      globalModel = modelEdit(rtEasy, state, setState, editorRef);
+      globalModel = modelEdit(
+        rtEasy,
+        state,
+        setState,
+        editorRef,
+        editorModelRef.current
+      );
       page = <EditPage />;
       break;
     case "Run":
-      globalModel = modelRun(rtEasy, state, setState, editorRef);
+      globalModel = modelRun(
+        rtEasy,
+        state,
+        setState,
+        editorRef,
+        editorModelRef.current
+      );
       page = <RunPage />;
       break;
   }
