@@ -20,7 +20,24 @@ export function setUpRtEasyLang(monaco: Monaco) {
       "assert",
     ],
     typeKeywords: ["input", "output", "register", "bus", "memory", "array"],
-    operators: ["=", "<>", "+", "-", "xor", "not", "sxt"],
+    operators: [
+      "=",
+      "<>",
+      "<=",
+      "<",
+      ">=",
+      ">",
+      "+",
+      "-",
+      "and",
+      "nand",
+      "or",
+      "nor",
+      "xor",
+      "neg",
+      "not",
+      "sxt",
+    ],
 
     // C# style strings
     escapes:
@@ -88,23 +105,77 @@ export function setUpRtEasyLang(monaco: Monaco) {
         endColumn: word.endColumn,
       };
 
+      const completionKeyWord = (
+        keyword: string,
+        more?: boolean
+      ): languages.CompletionItem => {
+        return {
+          label: keyword,
+          kind: monaco.languages.CompletionItemKind.Keyword,
+          insertText: keyword + (more ? " " : ""),
+          range,
+          command: more
+            ? {
+                id: "editor.action.triggerSuggest",
+                title: "lol",
+              }
+            : undefined,
+        };
+      };
+      const completionOperator = (
+        operator: string
+      ): languages.CompletionItem => {
+        return {
+          label: operator,
+          kind: monaco.languages.CompletionItemKind.Operator,
+          insertText: operator,
+          range,
+        };
+      };
+
       const suggestions: languages.CompletionItem[] = [
+        // Declare
+        completionKeyWord("declare", true),
+        completionKeyWord("input"),
+        completionKeyWord("output"),
+        completionKeyWord("register"),
+        completionKeyWord("bus"),
+        completionKeyWord("memory"),
+        completionKeyWord("register array"),
+
+        // Other keywords
+        completionKeyWord("goto"),
+        completionKeyWord("nop"),
+        completionKeyWord("read"),
+        completionKeyWord("write"),
+        completionKeyWord("if"),
+        completionKeyWord("then"),
+        completionKeyWord("else"),
+        completionKeyWord("fi"),
+        completionKeyWord("switch"),
+        completionKeyWord("case"),
+        completionKeyWord("default"),
+        completionKeyWord("assert"),
+
+        // Operators
+        completionOperator("and"),
+        completionOperator("nand"),
+        completionOperator("or"),
+        completionOperator("nor"),
+        completionOperator("xor"),
+        completionOperator("neg"),
+        completionOperator("not"),
+        completionOperator("sxt"),
+
+        // Snippets
         {
-          label: "declare register",
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: "declare register ",
-          range,
-        },
-        {
-          label: "declare bus",
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: "declare bus ",
-          range,
-        },
-        {
-          label: "declare memory",
-          kind: monaco.languages.CompletionItemKind.Keyword,
-          insertText: "declare memory ",
+          label: "if",
+          kind: monaco.languages.CompletionItemKind.Snippet,
+          // eslint-disable-next-line
+          insertText: "if ${1:condition} then $0 fi",
+          insertTextRules:
+            monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+          documentation: "If Statement",
           range,
         },
         {
@@ -121,6 +192,23 @@ export function setUpRtEasyLang(monaco: Monaco) {
           insertTextRules:
             monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
           documentation: "If-Else Statement",
+          range,
+        },
+        {
+          label: "switch",
+          kind: monaco.languages.CompletionItemKind.Snippet,
+          insertText: [
+            // eslint-disable-next-line
+            "switch ${1:key} {",
+            // eslint-disable-next-line
+            "\tcase ${2:value}: $3",
+            // eslint-disable-next-line
+            "\tdefault: ${4:nop}",
+            "}",
+          ].join("\n"),
+          insertTextRules:
+            monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+          documentation: "Switch Statement",
           range,
         },
       ];
