@@ -34,7 +34,6 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
     accept: [".rtmem"],
     onChange: (_name, content) => {
       if (globalModel.tag === "Edit") return;
-      console.log("ccc");
       globalModel.memoryLoadFromSave(memory, content);
     },
   });
