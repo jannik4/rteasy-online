@@ -17,7 +17,7 @@ const LogView: React.FC<Props> = () => {
   const log = useMemo(() => {
     try {
       rtEasy.check(debouncedSourceCode);
-      return "--- ok ---";
+      return "\u001b[32mCode is syntactically valid.\u001b[0m";
     } catch (e) {
       return e as string;
     }
