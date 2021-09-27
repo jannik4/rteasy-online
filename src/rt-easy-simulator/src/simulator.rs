@@ -7,7 +7,7 @@ use rtcore::{
     program::{BusKind, Criterion, CriterionId, Ident, Label, Program, RegisterKind, Span},
     value::Value,
 };
-use std::collections::HashSet;
+use std::collections::{BTreeSet, HashSet};
 use std::mem;
 
 pub struct Simulator {
@@ -17,6 +17,8 @@ pub struct Simulator {
 
     program: Program,
     cursor: Option<Cursor>,
+
+    breakpoints: BTreeSet<usize>,
 }
 
 impl Simulator {
@@ -28,6 +30,8 @@ impl Simulator {
 
             program,
             cursor: Some(Cursor::new(0)),
+
+            breakpoints: BTreeSet::new(),
         }
     }
 
@@ -45,6 +49,24 @@ impl Simulator {
 
     pub fn is_finished(&self) -> bool {
         self.cursor.is_none()
+    }
+
+    pub fn statement_span(&self, statement: usize) -> Option<Span> {
+        self.program.statements().get(statement).map(|s| s.steps.span)
+    }
+
+    pub fn add_breakpoint(&mut self, statement: usize) {
+        if statement < self.program.statements().len() {
+            self.breakpoints.insert(statement);
+        }
+    }
+
+    pub fn remove_breakpoint(&mut self, statement: usize) {
+        self.breakpoints.remove(&statement);
+    }
+
+    pub fn breakpoints(&self) -> impl Iterator<Item = usize> + '_ {
+        self.breakpoints.iter().copied()
     }
 
     pub fn step(&mut self) -> Result<Option<StepResult>, Error> {

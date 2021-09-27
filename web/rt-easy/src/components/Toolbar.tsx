@@ -89,8 +89,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Undo"
         label={ctrlKeyShortCut("Z")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger("source", "undo", null);
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger("source", "undo", null);
         }}
       />
       <MenuItem
@@ -98,8 +98,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Redo"
         label={ctrlKeyShortCut("Y")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger("source", "redo", null);
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger("source", "redo", null);
         }}
       />
 
@@ -109,8 +109,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Cut"
         label={ctrlKeyShortCut("X")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger(
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger(
             "source",
             "editor.action.clipboardCutAction",
             null
@@ -122,8 +122,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Copy"
         label={ctrlKeyShortCut("C")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger(
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger(
             "source",
             "editor.action.clipboardCopyWithSyntaxHighlightingAction",
             null
@@ -135,9 +135,9 @@ const Toolbar: React.FC<Props> = () => {
         text="Paste"
         label={ctrlKeyShortCut("V")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
+          globalModel.editor?.focus();
           navigator.clipboard.readText().then((text) => {
-            globalModel.editorRef.current?.trigger("keyboard", "type", {
+            globalModel.editor?.trigger("keyboard", "type", {
               text,
             });
           });
@@ -150,12 +150,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Find"
         label={ctrlKeyShortCut("F")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger(
-            "source",
-            "actions.find",
-            null
-          );
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger("source", "actions.find", null);
         }}
       />
       <MenuItem
@@ -163,8 +159,8 @@ const Toolbar: React.FC<Props> = () => {
         text="Replace"
         label={ctrlKeyShortCut("H")}
         onClick={() => {
-          globalModel.editorRef.current?.focus();
-          globalModel.editorRef.current?.trigger(
+          globalModel.editor?.focus();
+          globalModel.editor?.trigger(
             "source",
             "editor.action.startFindReplaceAction",
             null

@@ -8,12 +8,15 @@ import { Storage } from "../../storage";
 export function model(
   state: StateEdit | StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
   editorModel: editor.IModel,
   toggleMode: () => void
 ): GlobalModelCommon {
   return {
-    editorRef,
+    editor: state.editor,
+    setEditor: (editor) => {
+      editor?.setModel(editorModel);
+      setState({ ...state, editor });
+    },
     editorModel,
     toggleMode,
     base: state.base,

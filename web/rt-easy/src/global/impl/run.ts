@@ -11,7 +11,6 @@ export function model(
   _rtEasy: RtEasy,
   state: StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
   editorModel: editor.IModel
 ): GlobalModelRun {
   const goToEditMode = () => {
@@ -19,13 +18,14 @@ export function model(
     state.simulator.free();
     setState({
       tag: "Edit",
+      editor: state.editor,
       base: state.base,
       clockRate: state.clockRate,
     });
   };
 
   return {
-    ...modelCommon(state, setState, editorRef, editorModel, goToEditMode),
+    ...modelCommon(state, setState, editorModel, goToEditMode),
     tag: "Run",
     goToEditMode,
     reset: () => {
@@ -54,6 +54,22 @@ export function model(
     },
     simState: state.simState,
 
+    statementRange: (statement: number) => {
+      const span = state.simulator.statement_span(statement);
+      if (span === undefined) return null;
+      const range = calcRange(editorModel.getValue(), span);
+      span.free();
+      return range;
+    },
+    addBreakpoint: (statement: number) => {
+      state.simulator.add_breakpoint(statement);
+      setState({ ...state });
+    },
+    removeBreakpoint: (statement: number) => {
+      state.simulator.remove_breakpoint(statement);
+      setState({ ...state });
+    },
+    breakpoints: () => Array.from(state.simulator.breakpoints()),
     runStop: () => {
       if (state.timerId === null) {
         if (state.simulator.is_finished()) return;

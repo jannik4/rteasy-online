@@ -1,3 +1,4 @@
+import { editor } from "monaco-editor";
 import { Base, ClockRate, SimState } from "./context";
 import { Simulator } from "../wasm";
 import { Storage } from "../storage";
@@ -5,6 +6,7 @@ import { Storage } from "../storage";
 export type State = StateEdit | StateRun;
 
 export interface StateCommon {
+  editor: editor.IStandaloneCodeEditor | null;
   base: Base;
   clockRate: ClockRate;
 }
@@ -23,6 +25,7 @@ export interface StateRun extends StateCommon {
 export function initialState(): State {
   return {
     tag: "Edit",
+    editor: null,
     base: Storage.getBase() || "DEC",
     clockRate: Storage.getClockRate() || "Max",
   };

@@ -3,7 +3,8 @@ import { editor, Range } from "monaco-editor";
 
 export const GlobalContext = React.createContext<GlobalModel>({
   tag: "Edit",
-  editorRef: null as any,
+  editor: null,
+  setEditor: () => {},
   editorModel: null as any,
   toggleMode: () => {},
   base: "DEC",
@@ -25,7 +26,8 @@ export const isClockRate = (x: any): x is ClockRate =>
   clockRateValues.includes(x);
 
 export interface GlobalModelCommon {
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>;
+  editor: editor.IStandaloneCodeEditor | null;
+  setEditor: (editor: editor.IStandaloneCodeEditor | null) => void;
   editorModel: editor.IModel;
   toggleMode: () => void;
   base: Base;
@@ -47,6 +49,11 @@ export interface GlobalModelRun extends GlobalModelCommon {
   microStep: () => void;
   step: () => void;
   simState: SimState | null;
+
+  statementRange: (statement: number) => Range | null;
+  addBreakpoint: (statement: number) => void;
+  removeBreakpoint: (statement: number) => void;
+  breakpoints: () => number[];
 
   runStop: () => void;
   isRunning: () => boolean;

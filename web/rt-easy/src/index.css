@@ -39,3 +39,14 @@ body,
 .bp4-overlay-content {
   z-index: 100 !important;
 }
+
+.myGlyphMarginClass {
+  background: red;
+  border-radius: 50%;
+
+  /* TODO: Dont use fixed pixels here */
+  width: 8px !important;
+  height: 8px !important;
+  left: 5.5px !important;
+  top: 5.5px;
+}

@@ -65,6 +65,22 @@ impl Simulator {
         self.0.cycle_count()
     }
 
+    pub fn statement_span(&self, statement: usize) -> Option<Span> {
+        self.0.statement_span(statement).map(Into::into)
+    }
+
+    pub fn add_breakpoint(&mut self, statement: usize) {
+        self.0.add_breakpoint(statement);
+    }
+
+    pub fn remove_breakpoint(&mut self, statement: usize) {
+        self.0.remove_breakpoint(statement);
+    }
+
+    pub fn breakpoints(&self) -> Vec<usize> {
+        self.0.breakpoints().collect()
+    }
+
     pub fn micro_step(&mut self) -> Result<Option<StepResult>, JsValue> {
         match self.0.micro_step() {
             Ok(step_result) => Ok(step_result.map(Into::into)),

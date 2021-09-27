@@ -10,7 +10,6 @@ export function model(
   rtEasy: RtEasy,
   state: StateEdit,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorRef: React.MutableRefObject<editor.IStandaloneCodeEditor | null>,
   editorModel: editor.IModel
 ): GlobalModelEdit {
   const build = () => {
@@ -18,6 +17,7 @@ export function model(
       const simulator = rtEasy.build(editorModel.getValue());
       setState({
         tag: "Run",
+        editor: state.editor,
         base: state.base,
         clockRate: state.clockRate,
         simulator,
@@ -30,7 +30,7 @@ export function model(
   };
 
   return {
-    ...modelCommon(state, setState, editorRef, editorModel, build),
+    ...modelCommon(state, setState, editorModel, build),
     tag: "Edit",
     build,
   };
