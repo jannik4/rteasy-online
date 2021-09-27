@@ -114,7 +114,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
                   <InputValue
                     focused={focused}
                     setFocused={setFocused}
-                    name={row.address}
+                    inputKey={row.address}
                     value={row.value}
                     valueNext={null}
                     onChanged={(value) =>

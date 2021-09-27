@@ -54,7 +54,7 @@ const StateView: React.FC<Props> = () => {
               <InputValue
                 focused={focused}
                 setFocused={setFocused}
-                name={name}
+                inputKey={name}
                 value={globalModel.registerValue(name, globalModel.base)}
                 valueNext={globalModel.registerValueNext(
                   name,
@@ -78,7 +78,7 @@ const StateView: React.FC<Props> = () => {
               <InputValue
                 focused={focused}
                 setFocused={setFocused}
-                name={name}
+                inputKey={name}
                 value={globalModel.busValue(name, globalModel.base)}
                 valueNext={null}
                 onChanged={(value) =>

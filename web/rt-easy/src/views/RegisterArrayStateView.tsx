@@ -78,7 +78,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                   <InputValue
                     focused={focused}
                     setFocused={setFocused}
-                    name={row.idx.toString()}
+                    inputKey={row.idx.toString()}
                     value={row.value}
                     valueNext={null}
                     onChanged={(value) =>

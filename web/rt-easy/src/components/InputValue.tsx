@@ -4,28 +4,28 @@ import { InputGroup } from "@blueprintjs/core";
 interface Props {
   focused: Focused | null;
   setFocused: (focused: Focused | null) => void;
-  name: string;
+  inputKey: string;
   value: string;
   valueNext: string | null;
   onChanged: (value: string) => void;
 }
 
 export interface Focused {
-  name: string;
+  inputKey: string;
   value: string;
 }
 
 const InputValue: React.FC<Props> = ({
   focused,
   setFocused,
-  name,
+  inputKey,
   value,
   valueNext,
   onChanged,
 }) => {
   let valueDisplay: string;
 
-  if (focused?.name === name) {
+  if (focused?.inputKey === inputKey) {
     valueDisplay = focused.value;
   } else {
     valueDisplay = value;
@@ -38,8 +38,8 @@ const InputValue: React.FC<Props> = ({
     <InputGroup
       small
       value={valueDisplay}
-      onChange={(e) => setFocused({ name, value: e.target.value })}
-      onFocus={() => setFocused({ name, value })}
+      onChange={(e) => setFocused({ inputKey, value: e.target.value })}
+      onFocus={() => setFocused({ inputKey, value })}
       onBlur={() => {
         if (focused !== null) {
           if (focused.value !== value) onChanged(focused.value);
