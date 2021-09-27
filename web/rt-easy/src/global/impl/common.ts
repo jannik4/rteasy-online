@@ -22,16 +22,12 @@ export function model(
     base: state.base,
     setBase: (base) => {
       Storage.setBase(base);
-      setState((prev) => {
-        return { ...prev, base };
-      });
+      setState({ ...state, base });
     },
     clockRate: state.clockRate,
     setClockRate: (clockRate) => {
       Storage.setClockRate(clockRate);
-      setState((prev) => {
-        return { ...prev, clockRate };
-      });
+      setState({ ...state, clockRate });
     },
   };
 }
