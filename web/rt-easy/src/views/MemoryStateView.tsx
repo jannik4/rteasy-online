@@ -1,6 +1,7 @@
 import React, { useState, useContext, useMemo } from "react";
-import { HTMLTable, Text, InputGroup, Button } from "@blueprintjs/core";
+import { HTMLTable, Text, Button } from "@blueprintjs/core";
 
+import { InputValue, Focused } from "../components";
 import { useFilePicker } from "../hooks/useFilePicker";
 import { downloadFile } from "../util/downloadFile";
 import { GlobalContext } from "../global/context";
@@ -9,18 +10,11 @@ interface Props {
   memory: string;
 }
 
-interface InputValue {
-  key: string;
-  value: string;
-  valueNext: string | null;
-  onChanged: (value: string) => void;
-}
-
 const MemoryStateView: React.FC<Props> = ({ memory }) => {
   // Context and state
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState("1");
-  const [focused, setFocused] = useState<InputValue | null>(null);
+  const [focused, setFocused] = useState<Focused | null>(null);
 
   // Page count
   const pageCount = useMemo(() => {
@@ -41,36 +35,6 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
   }
-
-  const inputValue = (inputValue: InputValue) => {
-    let value: string;
-    if (focused?.key === inputValue.key) {
-      value = focused.value;
-    } else {
-      value = inputValue.value;
-      if (inputValue.valueNext !== null) {
-        value += ` \u2794 ${inputValue.valueNext}`;
-      }
-    }
-
-    return (
-      <InputGroup
-        small
-        value={value}
-        onChange={(e) => setFocused({ ...inputValue, value: e.target.value })}
-        onFocus={() => setFocused(inputValue)}
-        onBlur={() => {
-          if (focused?.value !== inputValue.value) {
-            focused?.onChanged(focused.value);
-          }
-          setFocused(null);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-        }}
-      />
-    );
-  };
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
@@ -147,18 +111,21 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
               <tr key={row.address}>
                 <td>{row.address}</td>
                 <td>
-                  {inputValue({
-                    key: row.address,
-                    value: row.value,
-                    valueNext: null,
-                    onChanged: (value) =>
+                  <InputValue
+                    focused={focused}
+                    setFocused={setFocused}
+                    name={row.address}
+                    value={row.value}
+                    valueNext={null}
+                    onChanged={(value) =>
                       globalModel.writeIntoMemory(
                         memory,
                         row.address,
                         value,
                         globalModel.base
-                      ),
-                  })}
+                      )
+                    }
+                  />
                 </td>
               </tr>
             ))}

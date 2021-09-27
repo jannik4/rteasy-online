@@ -1,24 +1,18 @@
 import React, { useState, useContext, useMemo } from "react";
-import { HTMLTable, Text, InputGroup, Button } from "@blueprintjs/core";
+import { HTMLTable, Text, Button } from "@blueprintjs/core";
 
+import { InputValue, Focused } from "../components";
 import { GlobalContext } from "../global/context";
 
 interface Props {
   registerArray: string;
 }
 
-interface InputValue {
-  key: string;
-  value: string;
-  valueNext: string | null;
-  onChanged: (value: string) => void;
-}
-
 const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   // Context and state
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState(1);
-  const [focused, setFocused] = useState<InputValue | null>(null);
+  const [focused, setFocused] = useState<Focused | null>(null);
 
   // Page count
   const pageCount = useMemo(() => {
@@ -30,36 +24,6 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   if (globalModel.tag === "Edit") {
     return <div>Err</div>;
   }
-
-  const inputValue = (inputValue: InputValue) => {
-    let value: string;
-    if (focused?.key === inputValue.key) {
-      value = focused.value;
-    } else {
-      value = inputValue.value;
-      if (inputValue.valueNext !== null) {
-        value += ` \u2794 ${inputValue.valueNext}`;
-      }
-    }
-
-    return (
-      <InputGroup
-        small
-        value={value}
-        onChange={(e) => setFocused({ ...inputValue, value: e.target.value })}
-        onFocus={() => setFocused(inputValue)}
-        onBlur={() => {
-          if (focused?.value !== inputValue.value) {
-            focused?.onChanged(focused.value);
-          }
-          setFocused(null);
-        }}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") e.currentTarget.blur();
-        }}
-      />
-    );
-  };
 
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
@@ -111,18 +75,21 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
               <tr key={row.idx}>
                 <td>{row.idx}</td>
                 <td>
-                  {inputValue({
-                    key: row.idx.toString(),
-                    value: row.value,
-                    valueNext: null,
-                    onChanged: (value) =>
+                  <InputValue
+                    focused={focused}
+                    setFocused={setFocused}
+                    name={row.idx.toString()}
+                    value={row.value}
+                    valueNext={null}
+                    onChanged={(value) =>
                       globalModel.writeIntoRegisterArray(
                         registerArray,
                         row.idx,
                         value,
                         globalModel.base
-                      ),
-                  })}
+                      )
+                    }
+                  />
                 </td>
               </tr>
             ))}
