@@ -247,6 +247,7 @@ const Toolbar: React.FC<Props> = () => {
         style={{
           display: "flex",
           borderBottom: "1px solid #ccc",
+          position: "relative",
         }}
       >
         <Popover content={fileMenu} position={Position.BOTTOM_RIGHT} minimal>
@@ -259,7 +260,25 @@ const Toolbar: React.FC<Props> = () => {
           <Button className={Classes.MINIMAL} text="Run" />
         </Popover>
         <Button className={Classes.MINIMAL} text="Help" />
-        <div style={{ margin: "auto" }}>
+        <div
+          className="displayOnlySmall"
+          style={{
+            margin: "auto",
+          }}
+        >
+          <Text>RTeasy-Online</Text>
+        </div>
+        <div
+          className="displayOnlyLarge"
+          style={{
+            position: "absolute",
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
           <Text>RTeasy-Online</Text>
         </div>
       </div>
