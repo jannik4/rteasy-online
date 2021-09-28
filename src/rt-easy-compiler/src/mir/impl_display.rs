@@ -41,6 +41,12 @@ impl Display for Step<'_> {
 
         write!(f, "{}", self.operation)?;
 
+        write!(f, "    # deps: [")?;
+        for dep in &self.annotation.dependencies {
+            write!(f, "{},", dep.0)?;
+        }
+        write!(f, "]")?;
+
         Ok(())
     }
 }
