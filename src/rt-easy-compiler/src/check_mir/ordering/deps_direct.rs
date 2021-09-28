@@ -118,7 +118,7 @@ impl IsDependentOn for Register<'_> {
 
 impl IsDependentOn for Bus<'_> {
     fn is_dependent_on(&self, bus: &Bus<'_>) -> bool {
-        self.ident == bus.ident
+        self.ident.node == bus.ident.node
             && BitRange::intersect(self.range.map(|s| s.node), bus.range.map(|s| s.node))
     }
 }
