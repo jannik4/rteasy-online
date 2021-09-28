@@ -277,6 +277,7 @@ const Toolbar: React.FC<Props> = () => {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
+            pointerEvents: "none",
           }}
         >
           <Text>RTeasy-Online</Text>
