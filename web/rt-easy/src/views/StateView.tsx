@@ -91,9 +91,7 @@ const StateView: React.FC<Props> = () => {
       : [dividerRow];
 
   return (
-    <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
-      <div style={{ height: 16 }} />
-
+    <div style={{ padding: "16px 8px" /*, overflow: "hidden"*/ }}>
       <div
         style={{
           display: "flex",
