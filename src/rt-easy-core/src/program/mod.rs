@@ -3,8 +3,9 @@ mod declaration;
 mod expression;
 mod impl_display;
 mod operation;
+mod signals;
 
-pub use self::{concat::*, declaration::*, expression::*, operation::*};
+pub use self::{concat::*, declaration::*, expression::*, operation::*, signals::*};
 pub use crate::common::*;
 pub use split_vec::SplitVec;
 

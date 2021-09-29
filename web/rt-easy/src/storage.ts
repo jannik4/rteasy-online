@@ -1,5 +1,7 @@
 import { Base, isBase, ClockRate, isClockRate } from "./global/context";
 
+const VERSION = "0.0.1";
+
 export const Storage = {
   getSourceCode: () => localStorage.getItem("source-code"),
   setSourceCode: (sourceCode: string) =>
@@ -23,9 +25,10 @@ export const Storage = {
   setClockRate: (clockRate: ClockRate) =>
     localStorage.setItem("clock-rate", clockRate.toString()),
 
-  getLayoutModel: (id: string) => localStorage.getItem("layout-model-" + id),
+  getLayoutModel: (id: string) =>
+    localStorage.getItem("layout-model-" + VERSION + "-" + id),
   setLayoutModel: (id: string, layoutModel: string) =>
-    localStorage.setItem("layout-model-" + id, layoutModel),
+    localStorage.setItem("layout-model-" + VERSION + "-" + id, layoutModel),
   removeAllLayoutModels: () => {
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)!;

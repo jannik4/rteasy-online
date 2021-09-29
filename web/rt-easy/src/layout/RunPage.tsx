@@ -46,6 +46,11 @@ const defaultModel: IJsonModel = {
             name: "State",
             component: "state",
           },
+          {
+            type: "tab",
+            name: "Signals",
+            component: "signals",
+          },
         ],
       },
     ],

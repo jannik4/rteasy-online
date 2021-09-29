@@ -8,6 +8,7 @@ import {
   StateView,
   MemoryStateView,
   RegisterArrayStateView,
+  SignalsView,
 } from "../views";
 import * as consts from "./consts";
 import { Storage } from "../storage";
@@ -30,6 +31,8 @@ const Page: React.FC<Props> = ({ id, defaultModel }) => {
         return <LogView />;
       case "state":
         return <StateView />;
+      case "signals":
+        return <SignalsView />;
       default:
         const memory_prefix = "memory-";
         if (component?.startsWith(memory_prefix)) {

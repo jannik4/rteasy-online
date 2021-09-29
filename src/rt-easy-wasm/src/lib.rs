@@ -65,6 +65,10 @@ impl Simulator {
         self.0.cycle_count()
     }
 
+    pub fn signals(&self) -> Signals {
+        Signals(self.0.signals())
+    }
+
     pub fn statement_span(&self, statement: usize) -> Option<Span> {
         self.0.statement_span(statement).map(Into::into)
     }
@@ -385,6 +389,21 @@ impl Simulator {
             )
             .map_err(|e| JsValue::from_str(&format!("{:#?}", e)))?;
         Ok(())
+    }
+}
+
+#[wasm_bindgen]
+#[derive(Debug)]
+pub struct Signals(rt_easy::rtcore::program::Signals);
+
+#[wasm_bindgen]
+impl Signals {
+    pub fn condition_signals(&self) -> Vec<JsValue> {
+        self.0.condition_signals.iter().map(Into::into).collect()
+    }
+
+    pub fn control_signals(&self) -> Vec<JsValue> {
+        self.0.control_signals.iter().map(Into::into).collect()
     }
 }
 

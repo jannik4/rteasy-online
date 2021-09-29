@@ -54,6 +54,15 @@ export function model(
     },
     simState: state.simState,
 
+    signals: () => {
+      const signalsWasm = state.simulator.signals();
+      const signals = {
+        conditionSignals: signalsWasm.condition_signals(),
+        controlSignals: signalsWasm.control_signals(),
+      };
+      signalsWasm.free();
+      return signals;
+    },
     statementRange: (statement: number) => {
       const span = state.simulator.statement_span(statement);
       if (span === undefined) return null;

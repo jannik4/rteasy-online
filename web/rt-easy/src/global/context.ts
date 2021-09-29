@@ -25,6 +25,11 @@ export type ClockRate = typeof clockRateValues[number];
 export const isClockRate = (x: any): x is ClockRate =>
   clockRateValues.includes(x);
 
+export interface Signals {
+  conditionSignals: String[];
+  controlSignals: String[];
+}
+
 export interface GlobalModelCommon {
   editor: editor.IStandaloneCodeEditor | null;
   setEditor: (editor: editor.IStandaloneCodeEditor | null) => void;
@@ -50,6 +55,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
   step: () => void;
   simState: SimState | null;
 
+  signals: () => Signals;
   statementRange: (statement: number) => Range | null;
   addBreakpoint: (statement: number) => void;
   removeBreakpoint: (statement: number) => void;

@@ -4,7 +4,9 @@ use crate::{
     Error,
 };
 use rtcore::{
-    program::{BusKind, Criterion, CriterionId, Ident, Label, Program, RegisterKind, Span},
+    program::{
+        BusKind, Criterion, CriterionId, Ident, Label, Program, RegisterKind, Signals, Span,
+    },
     value::Value,
 };
 use std::collections::{BTreeSet, HashSet};
@@ -49,6 +51,10 @@ impl Simulator {
 
     pub fn is_finished(&self) -> bool {
         self.cursor.is_none()
+    }
+
+    pub fn signals(&self) -> Signals {
+        self.program.signals()
     }
 
     pub fn statement_span(&self, statement: usize) -> Option<Span> {
