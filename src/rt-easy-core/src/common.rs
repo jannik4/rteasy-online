@@ -212,3 +212,12 @@ pub struct Spanned<T> {
     pub node: T,
     pub span: Span,
 }
+
+impl<T> Spanned<T> {
+    pub fn map<F, U>(self, f: F) -> Spanned<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        Spanned { node: f(self.node), span: self.span }
+    }
+}

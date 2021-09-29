@@ -136,13 +136,21 @@ expression_cmpo -> Expression<'s>:
     | expression_plus { $1 };
 
 expression_plus -> Expression<'s>:
-      expression_sxt spanned("+") expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Add, $2.span), span: $span.into() }.into()
+    expression_sxt many0(pair(spanned(either("+", "-")), expression_sxt)) {
+      let mut expr = $1;
+      for rhs in $2 {
+        expr = BinaryTerm {
+          span: Span { start: expr.span().start, end: rhs.1.span().end },
+          lhs: expr,
+          rhs: rhs.1,
+          operator: rhs.0.map(|op| match op {
+            Either::Left(_) => BinaryOperator::Add,
+            Either::Right(_) => BinaryOperator::Sub,
+          }),
+        }.into();
       }
-    | expression_sxt spanned("-") expression_plus {
-        BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Sub, $2.span), span: $span.into() }.into()
-      }
-    | expression_sxt { $1 };
+      expr
+    };
 
 expression_sxt -> Expression<'s>:
       spanned("sxt") expression_sxt {
@@ -260,7 +268,7 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 
 use rtcore::{ast::*, value::Value};
 use crate::lexer::Token;
-use toktok::combinator::{sep1, eoi, many0, many1, exact, opt, preceded, terminated, either, positioned};
+use toktok::combinator::{sep1, eoi, many0, many1, exact, opt, preceded, terminated, either, positioned, pair};
 use toktok::Error;
 use std::ops::Range;
 
