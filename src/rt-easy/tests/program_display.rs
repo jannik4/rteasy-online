@@ -62,7 +62,7 @@ _:
     nop
 
 LOOP:
-    k0 := AR = 0 + 1, k1 := AR = (2 and 2), k2 := AR = - 1
+    k0 := AR = 0 + 1, k1 := AR = (2 and 2), k2 := AR = -1
     !k0,!k1,!k2 => goto LOOP
     k0 => nop
     k0 => goto START
