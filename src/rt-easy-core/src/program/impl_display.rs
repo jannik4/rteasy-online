@@ -164,20 +164,20 @@ impl Display for Atom {
 
 impl Display for BinaryTerm {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {} {})", self.lhs, binary_op(self.operator), self.rhs)
+        write!(f, "({} {} {})", self.lhs, self.operator, self.rhs)
     }
 }
 
 impl Display for UnaryTerm {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {})", unary_op(self.operator), self.expression)
+        write!(f, "({} {})", self.operator, self.expression)
     }
 }
 
 impl Display for Register {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.range {
-            Some(range) => write!(f, "{}{}", self.ident.0, bit_range(range)),
+            Some(range) => write!(f, "{}{}", self.ident.0, range),
             None => write!(f, "{}", self.ident.0),
         }
     }
@@ -186,7 +186,7 @@ impl Display for Register {
 impl Display for Bus {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.range {
-            Some(range) => write!(f, "{}{}", self.ident.0, bit_range(range)),
+            Some(range) => write!(f, "{}{}", self.ident.0, range),
             None => write!(f, "{}", self.ident.0),
         }
     }
@@ -243,40 +243,5 @@ impl Display for ConcatPartExpr {
             RegisterArray(reg_array) => write!(f, "{}", reg_array),
             Number(number) => write!(f, "{}", number.value.as_dec()),
         }
-    }
-}
-
-fn binary_op(op: BinaryOperator) -> &'static str {
-    use BinaryOperator::*;
-    match op {
-        Eq => "=",
-        Ne => "<>",
-        Le => "<=",
-        Lt => "<",
-        Ge => ">=",
-        Gt => ">",
-        Add => "+",
-        Sub => "-",
-        And => "and",
-        Nand => "nand",
-        Or => "or",
-        Nor => "nor",
-        Xor => "xor",
-    }
-}
-
-fn unary_op(op: UnaryOperator) -> &'static str {
-    use UnaryOperator::*;
-    match op {
-        SignNeg => "-",
-        Not => "not",
-        Sxt => "sxt",
-    }
-}
-
-fn bit_range(bit_range: BitRange) -> String {
-    match bit_range.lsb {
-        Some(lsb) => format!("({}:{})", bit_range.msb, lsb),
-        None => format!("({})", bit_range.msb),
     }
 }

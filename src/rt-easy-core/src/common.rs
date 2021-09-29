@@ -20,11 +20,43 @@ pub enum BinaryOperator {
     Xor,
 }
 
+impl fmt::Display for BinaryOperator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use BinaryOperator::*;
+        match self {
+            Eq => write!(f, "="),
+            Ne => write!(f, "<>"),
+            Le => write!(f, "<="),
+            Lt => write!(f, "<"),
+            Ge => write!(f, ">="),
+            Gt => write!(f, ">"),
+            Add => write!(f, "+"),
+            Sub => write!(f, "-"),
+            And => write!(f, "and"),
+            Nand => write!(f, "nand"),
+            Or => write!(f, "or"),
+            Nor => write!(f, "nor"),
+            Xor => write!(f, "xor"),
+        }
+    }
+}
+
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum UnaryOperator {
     SignNeg,
     Not,
     Sxt,
+}
+
+impl fmt::Display for UnaryOperator {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        use UnaryOperator::*;
+        match self {
+            SignNeg => write!(f, "-"),
+            Not => write!(f, "not"),
+            Sxt => write!(f, "sxt"),
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
