@@ -123,7 +123,7 @@ impl Display for Read<'_> {
 
 impl Display for Assignment<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{} = {}", self.lhs, self.rhs)
+        write!(f, "{} <- {}", self.lhs, self.rhs)
     }
 }
 

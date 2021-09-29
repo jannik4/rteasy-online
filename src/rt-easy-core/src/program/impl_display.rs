@@ -115,7 +115,7 @@ impl Display for Read {
 
 impl Display for Assignment {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{} = {}", self.lhs, self.rhs)
+        write!(f, "{} <- {}", self.lhs, self.rhs)
     }
 }
 
