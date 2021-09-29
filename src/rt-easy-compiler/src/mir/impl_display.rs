@@ -201,10 +201,15 @@ impl Display for BinaryTerm<'_> {
 
 impl Display for UnaryTerm<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let ws = match self.operator.node {
+            UnaryOperator::Sign => "",
+            UnaryOperator::Neg | UnaryOperator::Not | UnaryOperator::Sxt => " ",
+        };
+
         if util::parentheses_unary(self.operator.node.precedence(), self.expression.precedence()) {
-            write!(f, "{} ({})", self.operator.node, self.expression)
+            write!(f, "{}{}({})", self.operator.node, ws, self.expression)
         } else {
-            write!(f, "{} {}", self.operator.node, self.expression)
+            write!(f, "{}{}{}", self.operator.node, ws, self.expression)
         }
     }
 }
