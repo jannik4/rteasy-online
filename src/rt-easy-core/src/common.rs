@@ -4,6 +4,12 @@ use std::ops::Range;
 use value::Value;
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
+pub enum OperatorAssociativity {
+    Left,
+    Right,
+}
+
+#[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum BinaryOperator {
     Eq,
     Ne,
@@ -18,6 +24,31 @@ pub enum BinaryOperator {
     Or,
     Nor,
     Xor,
+}
+
+impl BinaryOperator {
+    pub fn precedence(&self) -> u32 {
+        use BinaryOperator::*;
+        match self {
+            Add | Sub => 8,
+            Le | Lt | Ge | Gt => 7,
+            Eq | Ne => 6,
+            Nand => 4,
+            And => 3,
+            Nor => 2,
+            Or => 1,
+            Xor => 0,
+        }
+    }
+
+    pub fn associativity(&self) -> OperatorAssociativity {
+        use BinaryOperator::*;
+        match self {
+            Eq | Ne | Le | Lt | Ge | Gt | Add | Sub | And | Nand | Or | Nor | Xor => {
+                OperatorAssociativity::Left
+            }
+        }
+    }
 }
 
 impl fmt::Display for BinaryOperator {
@@ -46,6 +77,24 @@ pub enum UnaryOperator {
     SignNeg,
     Not,
     Sxt,
+}
+
+impl UnaryOperator {
+    pub fn precedence(&self) -> u32 {
+        use UnaryOperator::*;
+        match self {
+            SignNeg => 10,
+            Sxt => 9,
+            Not => 5,
+        }
+    }
+
+    pub fn associativity(&self) -> OperatorAssociativity {
+        use UnaryOperator::*;
+        match self {
+            SignNeg | Not | Sxt => OperatorAssociativity::Right,
+        }
+    }
 }
 
 impl fmt::Display for UnaryOperator {

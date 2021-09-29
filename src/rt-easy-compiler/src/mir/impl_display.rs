@@ -1,4 +1,5 @@
 use super::*;
+use rtcore::util;
 use std::fmt::{Display, Formatter, Result};
 
 impl Display for Mir<'_> {
@@ -172,13 +173,39 @@ impl Display for Atom<'_> {
 
 impl Display for BinaryTerm<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {} {})", self.lhs, self.operator.node, self.rhs)
+        if util::parentheses_binary_left(
+            self.operator.node.precedence(),
+            self.lhs.precedence(),
+            self.operator.node.associativity(),
+        ) {
+            write!(f, "({})", self.lhs)?;
+        } else {
+            write!(f, "{}", self.lhs)?;
+        }
+
+        write!(f, " {} ", self.operator.node)?;
+
+        if util::parentheses_binary_right(
+            self.operator.node.precedence(),
+            self.rhs.precedence(),
+            self.operator.node.associativity(),
+        ) {
+            write!(f, "({})", self.rhs)?;
+        } else {
+            write!(f, "{}", self.rhs)?;
+        }
+
+        Ok(())
     }
 }
 
 impl Display for UnaryTerm<'_> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {})", self.operator.node, self.expression)
+        if util::parentheses_unary(self.operator.node.precedence(), self.expression.precedence()) {
+            write!(f, "{} ({})", self.operator.node, self.expression)
+        } else {
+            write!(f, "{} {}", self.operator.node, self.expression)
+        }
     }
 }
 

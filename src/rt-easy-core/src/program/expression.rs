@@ -6,6 +6,16 @@ pub struct Expression {
     pub span: Span,
 }
 
+impl Expression {
+    pub fn precedence(&self) -> u32 {
+        match &self.kind {
+            ExpressionKind::Atom(_) => u32::MAX,
+            ExpressionKind::BinaryTerm(binary) => binary.operator.precedence(),
+            ExpressionKind::UnaryTerm(unary) => unary.operator.precedence(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub enum ExpressionKind {
     Atom(Atom),

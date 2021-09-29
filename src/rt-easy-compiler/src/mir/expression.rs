@@ -8,6 +8,14 @@ pub enum Expression<'s> {
 }
 
 impl Expression<'_> {
+    pub fn precedence(&self) -> u32 {
+        match self {
+            Self::Atom(_) => u32::MAX,
+            Self::BinaryTerm(binary) => binary.operator.node.precedence(),
+            Self::UnaryTerm(unary) => unary.operator.node.precedence(),
+        }
+    }
+
     pub fn span(&self) -> Span {
         match self {
             Self::Atom(n) => n.span(),

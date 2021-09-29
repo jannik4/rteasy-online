@@ -1,4 +1,5 @@
 use super::*;
+use crate::util;
 use std::fmt::{Display, Formatter, Result};
 
 impl Display for Program {
@@ -164,13 +165,39 @@ impl Display for Atom {
 
 impl Display for BinaryTerm {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {} {})", self.lhs, self.operator, self.rhs)
+        if util::parentheses_binary_left(
+            self.operator.precedence(),
+            self.lhs.precedence(),
+            self.operator.associativity(),
+        ) {
+            write!(f, "({})", self.lhs)?;
+        } else {
+            write!(f, "{}", self.lhs)?;
+        }
+
+        write!(f, " {} ", self.operator)?;
+
+        if util::parentheses_binary_right(
+            self.operator.precedence(),
+            self.rhs.precedence(),
+            self.operator.associativity(),
+        ) {
+            write!(f, "({})", self.rhs)?;
+        } else {
+            write!(f, "{}", self.rhs)?;
+        }
+
+        Ok(())
     }
 }
 
 impl Display for UnaryTerm {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "({} {})", self.operator, self.expression)
+        if util::parentheses_unary(self.operator.precedence(), self.expression.precedence()) {
+            write!(f, "{} ({})", self.operator, self.expression)
+        } else {
+            write!(f, "{} {}", self.operator, self.expression)
+        }
     }
 }
 

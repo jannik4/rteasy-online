@@ -33,41 +33,41 @@ LOOP:
 "#;
 
 const EXPECTED: &'static str = r#"START:
-    A <- (B + B)
+    A <- B + B
     read MEM
 
 _:
     write MEM
-    ARRAY[(IN(2:6) + 1)] <- (B and BUS)
+    ARRAY[IN(2:6) + 1] <- B and BUS
 
 _:
     A <- B.B.0.BUS(7).IN(6)
 
 _:
     BUS(7).BUS2 <- 15
-    A.ARRAY[2].OUT <- (sxt 9)
+    A.ARRAY[2].OUT <- sxt 9
 
 _:
     goto MAIN
 
 MAIN:
-    k0 := (OUT <> IN)
+    k0 := OUT <> IN
     k0 => nop
     !k0 => goto START
 
 _:
-    k0 := (A = 0)
-    k0 => k1 := (B = 0)
+    k0 := A = 0
+    k0 => k1 := B = 0
     k0,k1 => goto LOOP
     nop
 
 LOOP:
-    k0 := (AR = (0 + 1)), k1 := (AR = (2 and 2)), k2 := (AR = (- 1))
+    k0 := AR = 0 + 1, k1 := AR = (2 and 2), k2 := AR = - 1
     !k0,!k1,!k2 => goto LOOP
     k0 => nop
     k0 => goto START
     k1 => nop
-    k2 => k3 := (B = 0)
+    k2 => k3 := B = 0
     k2,k3 => goto LOOP
 
 _:
