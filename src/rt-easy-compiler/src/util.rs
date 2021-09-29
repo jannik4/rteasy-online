@@ -62,7 +62,7 @@ pub fn is_fixed_size_binary_op(op: BinaryOperator) -> bool {
 
 pub fn size_unary_op(lhs: usize, op: UnaryOperator) -> usize {
     match op {
-        UnaryOperator::SignNeg => lhs,
+        UnaryOperator::Sign | UnaryOperator::Neg => lhs,
         UnaryOperator::Not => lhs,
         UnaryOperator::Sxt => lhs,
     }
@@ -70,14 +70,14 @@ pub fn size_unary_op(lhs: usize, op: UnaryOperator) -> usize {
 
 pub fn ctx_size_unary_op(lhs: usize, op: UnaryOperator) -> CtxSize {
     match op {
-        UnaryOperator::SignNeg | UnaryOperator::Not => CtxSize::Inherit,
+        UnaryOperator::Sign | UnaryOperator::Neg | UnaryOperator::Not => CtxSize::Inherit,
         UnaryOperator::Sxt => CtxSize::Size(lhs),
     }
 }
 
 pub fn is_fixed_size_unary_op(op: UnaryOperator) -> bool {
     match op {
-        UnaryOperator::SignNeg => false,
+        UnaryOperator::Sign | UnaryOperator::Neg => false,
         UnaryOperator::Not => false,
         UnaryOperator::Sxt => false,
     }

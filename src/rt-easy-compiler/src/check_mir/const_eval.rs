@@ -57,7 +57,7 @@ impl Evaluate for UnaryTerm<'_> {
         let mut value = self.expression.evaluate(ctx_size_inner)?;
 
         Some(match self.operator.node {
-            UnaryOperator::SignNeg => -value,
+            UnaryOperator::Sign | UnaryOperator::Neg => -value,
             UnaryOperator::Not => !value,
             UnaryOperator::Sxt => {
                 value.extend_sign(ctx_size);

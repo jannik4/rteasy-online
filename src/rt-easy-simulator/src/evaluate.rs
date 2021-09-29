@@ -66,7 +66,7 @@ impl Evaluate for UnaryTerm {
         let mut value = self.expression.evaluate(state, ctx_size_inner)?;
 
         Ok(match self.operator {
-            UnaryOperator::SignNeg => -value,
+            UnaryOperator::Sign | UnaryOperator::Neg => -value,
             UnaryOperator::Not => !value,
             UnaryOperator::Sxt => {
                 value.extend_sign(ctx_size);

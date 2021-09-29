@@ -74,7 +74,8 @@ impl fmt::Display for BinaryOperator {
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub enum UnaryOperator {
-    SignNeg,
+    Sign,
+    Neg,
     Not,
     Sxt,
 }
@@ -83,7 +84,7 @@ impl UnaryOperator {
     pub fn precedence(&self) -> u32 {
         use UnaryOperator::*;
         match self {
-            SignNeg => 10,
+            Sign | Neg => 10,
             Sxt => 9,
             Not => 5,
         }
@@ -92,7 +93,7 @@ impl UnaryOperator {
     pub fn associativity(&self) -> OperatorAssociativity {
         use UnaryOperator::*;
         match self {
-            SignNeg | Not | Sxt => OperatorAssociativity::Right,
+            Sign | Neg | Not | Sxt => OperatorAssociativity::Right,
         }
     }
 }
@@ -101,7 +102,8 @@ impl fmt::Display for UnaryOperator {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         use UnaryOperator::*;
         match self {
-            SignNeg => write!(f, "-"),
+            Sign => write!(f, "-"),
+            Neg => write!(f, "neg"),
             Not => write!(f, "not"),
             Sxt => write!(f, "sxt"),
         }
