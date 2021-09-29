@@ -36,7 +36,7 @@ const StateView: React.FC<Props> = () => {
           {signals.conditionSignals.map((value, idx) => (
             <tr key={idx}>
               <td>{"k" + idx}</td>
-              <td>{value}</td>
+              <td style={{ fontFamily: "monospace" }}>{value}</td>
             </tr>
           ))}
           {dividerRow}
@@ -45,7 +45,7 @@ const StateView: React.FC<Props> = () => {
           {signals.controlSignals.map((value, idx) => (
             <tr key={idx}>
               <td>{"c" + idx}</td>
-              <td>{value}</td>
+              <td style={{ fontFamily: "monospace" }}>{value}</td>
             </tr>
           ))}
         </tbody>
