@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { Monaco } from "@monaco-editor/react";
 
 import { Toolbar } from "./";
@@ -6,7 +6,7 @@ import { EditPage, RunPage } from "../layout";
 
 import { useLazyRef } from "../hooks/useLazyRef";
 import { RtEasyContext } from "../wasm/context";
-import { GlobalContext, GlobalModel } from "../global/context";
+import { GlobalContext, GlobalModel, BaseInherit } from "../global/context";
 import { State, initialState } from "../global/state";
 import { model as modelEdit } from "../global/impl/edit";
 import { model as modelRun } from "../global/impl/run";
@@ -34,6 +34,7 @@ const Scaffold: React.FC<Props> = ({ monaco }) => {
 
     return editorModel;
   });
+  const inheritBasesStorage = useRef<Map<string, BaseInherit>>(new Map());
 
   let globalModel: GlobalModel;
   let page: React.ReactNode;
@@ -43,7 +44,13 @@ const Scaffold: React.FC<Props> = ({ monaco }) => {
       page = <EditPage />;
       break;
     case "Run":
-      globalModel = modelRun(rtEasy, state, setState, editorModelRef.current);
+      globalModel = modelRun(
+        rtEasy,
+        state,
+        setState,
+        editorModelRef.current,
+        inheritBasesStorage
+      );
       page = <RunPage />;
       break;
   }

@@ -15,7 +15,12 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState("1");
   const [focused, setFocused] = useState<Focused | null>(null);
-  const [baseInherit, setBaseInherit] = useState<BaseInherit>("Inherit");
+  const [baseInherit, setBaseInherit] = useState<BaseInherit>(() => {
+    if (globalModel.tag === "Run") {
+      return globalModel.inheritBasesStorage.current.get(memory) ?? "Inherit";
+    }
+    return "Inherit";
+  });
   const base = baseInherit === "Inherit" ? globalModel.base : baseInherit;
 
   // Page count
@@ -50,7 +55,12 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
       >
         <BaseInheritSelect
           value={baseInherit}
-          onChange={(baseInherit) => setBaseInherit(baseInherit)}
+          onChange={(baseInherit) => {
+            if (globalModel.tag === "Run") {
+              globalModel.inheritBasesStorage.current.set(memory, baseInherit);
+            }
+            setBaseInherit(baseInherit);
+          }}
         />
         <div
           style={{

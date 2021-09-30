@@ -13,7 +13,14 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState(1);
   const [focused, setFocused] = useState<Focused | null>(null);
-  const [baseInherit, setBaseInherit] = useState<BaseInherit>("Inherit");
+  const [baseInherit, setBaseInherit] = useState<BaseInherit>(() => {
+    if (globalModel.tag === "Run") {
+      return (
+        globalModel.inheritBasesStorage.current.get(registerArray) ?? "Inherit"
+      );
+    }
+    return "Inherit";
+  });
   const base = baseInherit === "Inherit" ? globalModel.base : baseInherit;
 
   // Page count
@@ -39,7 +46,15 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
       >
         <BaseInheritSelect
           value={baseInherit}
-          onChange={(baseInherit) => setBaseInherit(baseInherit)}
+          onChange={(baseInherit) => {
+            if (globalModel.tag === "Run") {
+              globalModel.inheritBasesStorage.current.set(
+                registerArray,
+                baseInherit
+              );
+            }
+            setBaseInherit(baseInherit);
+          }}
         />
       </div>
 

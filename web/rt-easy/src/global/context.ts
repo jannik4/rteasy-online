@@ -107,6 +107,8 @@ export interface GlobalModelRun extends GlobalModelCommon {
   ) => void;
   memorySave: (name: string) => string;
   memoryLoadFromSave: (name: string, save: string) => void;
+
+  inheritBasesStorage: React.MutableRefObject<Map<string, BaseInherit>>;
 }
 
 export interface SimState {

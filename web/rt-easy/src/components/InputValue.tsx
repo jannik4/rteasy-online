@@ -31,7 +31,14 @@ export interface Focused {
 
 const InputValue: React.FC<Props | PropsWithBaseSelect> = (props) => {
   const globalModel = useContext(GlobalContext);
-  const [baseInherit, setBaseInherit] = useState<BaseInherit>("Inherit");
+  const [baseInherit, setBaseInherit] = useState<BaseInherit>(() => {
+    if (globalModel.tag === "Run") {
+      return (
+        globalModel.inheritBasesStorage.current.get(props.inputKey) ?? "Inherit"
+      );
+    }
+    return "Inherit";
+  });
   const base = baseInherit === "Inherit" ? globalModel.base : baseInherit;
 
   let focused = props.focused;
@@ -86,7 +93,15 @@ const InputValue: React.FC<Props | PropsWithBaseSelect> = (props) => {
       {props.withBaseSelect ? (
         <BaseInheritSelect
           value={baseInherit}
-          onChange={(baseInherit) => setBaseInherit(baseInherit)}
+          onChange={(baseInherit) => {
+            if (globalModel.tag === "Run") {
+              globalModel.inheritBasesStorage.current.set(
+                props.inputKey,
+                baseInherit
+              );
+            }
+            setBaseInherit(baseInherit);
+          }}
         />
       ) : null}
     </div>

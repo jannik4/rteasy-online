@@ -3,7 +3,7 @@ import { editor } from "monaco-editor";
 
 import { calcRange } from "../../util/convertRangeSpan";
 import { RtEasy, StepResult } from "../../wasm";
-import { GlobalModelRun, SimState } from "../context";
+import { GlobalModelRun, SimState, BaseInherit } from "../context";
 import { model as modelCommon } from "./common";
 import { State, StateRun } from "../state";
 
@@ -11,7 +11,8 @@ export function model(
   _rtEasy: RtEasy,
   state: StateRun,
   setState: React.Dispatch<React.SetStateAction<State>>,
-  editorModel: editor.IModel
+  editorModel: editor.IModel,
+  inheritBasesStorage: React.MutableRefObject<Map<string, BaseInherit>>
 ): GlobalModelRun {
   const goToEditMode = () => {
     if (state.timerId !== null) clearInterval(state.timerId);
@@ -230,6 +231,8 @@ export function model(
         console.log(e); // TODO: ???
       }
     },
+
+    inheritBasesStorage,
   };
 }
 
