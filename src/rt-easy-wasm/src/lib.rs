@@ -120,7 +120,7 @@ impl Simulator {
         };
 
         let value = match base {
-            "BIN" => value.as_bin(),
+            "BIN" => value.as_bin(true),
             "DEC" => value.as_dec(),
             "HEX" => value.as_hex(),
             _ => return Err(JsValue::from_str("invalid base")),
@@ -138,7 +138,7 @@ impl Simulator {
 
         let value = match value {
             Some(value) => match base {
-                "BIN" => Some(value.as_bin()),
+                "BIN" => Some(value.as_bin(true)),
                 "DEC" => Some(value.as_dec()),
                 "HEX" => Some(value.as_hex()),
                 _ => return Err(JsValue::from_str("invalid base")),
@@ -189,7 +189,7 @@ impl Simulator {
         };
 
         let value = match base {
-            "BIN" => value.as_bin(),
+            "BIN" => value.as_bin(true),
             "DEC" => value.as_dec(),
             "HEX" => value.as_hex(),
             _ => return Err(JsValue::from_str("invalid base")),
@@ -246,7 +246,7 @@ impl Simulator {
         for (idx, value) in page {
             res.push(JsValue::from_f64(idx as f64));
             res.push(JsValue::from_str(&match base {
-                "BIN" => value.as_bin(),
+                "BIN" => value.as_bin(true),
                 "DEC" => value.as_dec(),
                 "HEX" => value.as_hex(),
                 _ => return Err(JsValue::from_str("invalid base")),
@@ -337,7 +337,7 @@ impl Simulator {
         for (addr, value) in page {
             res.push(JsValue::from_str(&addr.as_hex()));
             res.push(JsValue::from_str(&match base {
-                "BIN" => value.as_bin(),
+                "BIN" => value.as_bin(true),
                 "DEC" => value.as_dec(),
                 "HEX" => value.as_hex(),
                 _ => return Err(JsValue::from_str("invalid base")),

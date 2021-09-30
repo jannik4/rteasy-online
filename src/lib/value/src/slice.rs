@@ -23,14 +23,14 @@ impl ValueSlice {
         self.bits.iter().all(|b| *b == Bit::Zero)
     }
 
-    pub fn as_bin(&self) -> String {
-        if self.is_zero() {
+    pub fn as_bin(&self, with_leading_zeros: bool) -> String {
+        if self.is_zero() && !with_leading_zeros {
             return "0".to_string();
         }
 
         let mut result = String::new();
 
-        for &b in self.bits.iter().rev().skip_while(|&&b| b == Bit::Zero) {
+        for &b in self.bits.iter().rev().skip_while(|&&b| b == Bit::Zero && !with_leading_zeros) {
             match b {
                 Bit::Zero => result.push('0'),
                 Bit::One => result.push('1'),
@@ -112,12 +112,17 @@ mod tests {
 
     #[test]
     fn test_as_bin() {
-        assert_eq!(Value { bits: vec![Bit::Zero, Bit::Zero,] }.as_bin(), "0".to_string());
-        assert_eq!(Value { bits: vec![Bit::One, Bit::Zero,] }.as_bin(), "1".to_string());
-        assert_eq!(Value { bits: vec![Bit::Zero, Bit::One,] }.as_bin(), "10".to_string());
+        assert_eq!(Value { bits: vec![Bit::Zero, Bit::Zero,] }.as_bin(false), "0".to_string());
+        assert_eq!(Value { bits: vec![Bit::Zero, Bit::Zero,] }.as_bin(true), "00".to_string());
+        assert_eq!(Value { bits: vec![Bit::One, Bit::Zero,] }.as_bin(false), "1".to_string());
+        assert_eq!(Value { bits: vec![Bit::Zero, Bit::One,] }.as_bin(false), "10".to_string());
         assert_eq!(
-            Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::One, Bit::Zero] }.as_bin(),
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::One, Bit::Zero] }.as_bin(false),
             "1011".to_string()
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::One, Bit::Zero] }.as_bin(true),
+            "01011".to_string()
         );
 
         assert_eq!(
@@ -139,7 +144,7 @@ mod tests {
                     Bit::Zero,
                 ]
             }
-            .as_bin(),
+            .as_bin(false),
             "11000101110".to_string()
         );
     }
