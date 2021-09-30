@@ -1,8 +1,8 @@
 import React, { useState, useContext, useMemo } from "react";
 import { HTMLTable, Text, Button } from "@blueprintjs/core";
 
-import { InputValue, Focused } from "../components";
-import { GlobalContext } from "../global/context";
+import { InputValue, Focused, BaseInheritSelect } from "../components";
+import { GlobalContext, BaseInherit } from "../global/context";
 
 interface Props {
   registerArray: string;
@@ -13,6 +13,8 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState(1);
   const [focused, setFocused] = useState<Focused | null>(null);
+  const [baseInherit, setBaseInherit] = useState<BaseInherit>("Inherit");
+  const base = baseInherit === "Inherit" ? globalModel.base : baseInherit;
 
   // Page count
   const pageCount = useMemo(() => {
@@ -28,6 +30,18 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
       <div style={{ height: 16 }} />
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+        }}
+      >
+        <BaseInheritSelect
+          value={baseInherit}
+          onChange={(baseInherit) => setBaseInherit(baseInherit)}
+        />
+      </div>
 
       <div style={{ height: 16 }} />
 
@@ -70,7 +84,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
         </thead>
         <tbody>
           {globalModel
-            .registerArrayPage(registerArray, pageNr, globalModel.base)
+            .registerArrayPage(registerArray, pageNr, base)
             .map((row) => (
               <tr key={row.idx}>
                 <td>{row.idx}</td>
@@ -79,14 +93,14 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                     focused={focused}
                     setFocused={setFocused}
                     inputKey={row.idx.toString()}
-                    value={row.value}
+                    value={() => row.value}
                     valueNext={null}
-                    onChanged={(value) =>
+                    onChanged={(value: string) =>
                       globalModel.writeIntoRegisterArray(
                         registerArray,
                         row.idx,
                         value,
-                        globalModel.base
+                        base
                       )
                     }
                   />

@@ -1,10 +1,10 @@
 import React, { useState, useContext, useMemo } from "react";
 import { HTMLTable, Text, Button } from "@blueprintjs/core";
 
-import { InputValue, Focused } from "../components";
+import { InputValue, Focused, BaseInheritSelect } from "../components";
 import { useFilePicker } from "../hooks/useFilePicker";
 import { downloadFile } from "../util/downloadFile";
-import { GlobalContext } from "../global/context";
+import { GlobalContext, BaseInherit } from "../global/context";
 
 interface Props {
   memory: string;
@@ -15,6 +15,8 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
   const globalModel = useContext(GlobalContext);
   const [pageNr, setPageNr] = useState("1");
   const [focused, setFocused] = useState<Focused | null>(null);
+  const [baseInherit, setBaseInherit] = useState<BaseInherit>("Inherit");
+  const base = baseInherit === "Inherit" ? globalModel.base : baseInherit;
 
   // Page count
   const pageCount = useMemo(() => {
@@ -46,21 +48,33 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
           alignItems: "center",
         }}
       >
-        <Button onClick={() => openLoadFromSaveFilePicker()} small>
-          Load
-        </Button>
-        <div style={{ width: 8 }} />
-        <Button
-          onClick={() =>
-            downloadFile(
-              `memory-${memory}.rtmem`,
-              globalModel.memorySave(memory)
-            )
-          }
-          small
+        <BaseInheritSelect
+          value={baseInherit}
+          onChange={(baseInherit) => setBaseInherit(baseInherit)}
+        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginLeft: "auto",
+          }}
         >
-          Save
-        </Button>
+          <Button onClick={() => openLoadFromSaveFilePicker()} small>
+            Load
+          </Button>
+          <div style={{ width: 8 }} />
+          <Button
+            onClick={() =>
+              downloadFile(
+                `memory-${memory}.rtmem`,
+                globalModel.memorySave(memory)
+              )
+            }
+            small
+          >
+            Save
+          </Button>
+        </div>
       </div>
 
       <div style={{ height: 16 }} />
@@ -105,30 +119,28 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
           </tr>
         </thead>
         <tbody>
-          {globalModel
-            .memoryPage(memory, pageNr, globalModel.base)
-            .map((row) => (
-              <tr key={row.address}>
-                <td>{row.address}</td>
-                <td>
-                  <InputValue
-                    focused={focused}
-                    setFocused={setFocused}
-                    inputKey={row.address}
-                    value={row.value}
-                    valueNext={null}
-                    onChanged={(value) =>
-                      globalModel.writeIntoMemory(
-                        memory,
-                        row.address,
-                        value,
-                        globalModel.base
-                      )
-                    }
-                  />
-                </td>
-              </tr>
-            ))}
+          {globalModel.memoryPage(memory, pageNr, base).map((row) => (
+            <tr key={row.address}>
+              <td>{row.address}</td>
+              <td>
+                <InputValue
+                  focused={focused}
+                  setFocused={setFocused}
+                  inputKey={row.address}
+                  value={() => row.value}
+                  valueNext={null}
+                  onChanged={(value: string) =>
+                    globalModel.writeIntoMemory(
+                      memory,
+                      row.address,
+                      value,
+                      base
+                    )
+                  }
+                />
+              </td>
+            </tr>
+          ))}
         </tbody>
       </HTMLTable>
     </div>

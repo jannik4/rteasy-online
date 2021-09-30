@@ -52,16 +52,14 @@ const StateView: React.FC<Props> = () => {
             <td>{name}</td>
             <td>
               <InputValue
+                withBaseSelect
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
-                value={globalModel.registerValue(name, globalModel.base)}
-                valueNext={globalModel.registerValueNext(
-                  name,
-                  globalModel.base
-                )}
-                onChanged={(value) =>
-                  globalModel.writeIntoRegister(name, value, globalModel.base)
+                value={(base) => globalModel.registerValue(name, base)}
+                valueNext={(base) => globalModel.registerValueNext(name, base)}
+                onChanged={(value, base) =>
+                  globalModel.writeIntoRegister(name, value, base)
                 }
               />
             </td>
@@ -76,13 +74,14 @@ const StateView: React.FC<Props> = () => {
             <td>{name}</td>
             <td>
               <InputValue
+                withBaseSelect
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
-                value={globalModel.busValue(name, globalModel.base)}
+                value={(base) => globalModel.busValue(name, base)}
                 valueNext={null}
-                onChanged={(value) =>
-                  globalModel.writeIntoBus(name, value, globalModel.base)
+                onChanged={(value, base) =>
+                  globalModel.writeIntoBus(name, value, base)
                 }
               />
             </td>

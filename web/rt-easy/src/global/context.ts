@@ -20,6 +20,11 @@ export const baseValues = ["BIN", "DEC", "HEX"] as const;
 export type Base = typeof baseValues[number];
 export const isBase = (x: any): x is Base => baseValues.includes(x);
 
+export const baseInheritValues = ["Inherit", "BIN", "DEC", "HEX"] as const;
+export type BaseInherit = typeof baseInheritValues[number];
+export const isBaseInherit = (x: any): x is BaseInherit =>
+  baseInheritValues.includes(x);
+
 export const clockRateValues = [1, 2, 4, 8, 100, "Max"] as const;
 export type ClockRate = typeof clockRateValues[number];
 export const isClockRate = (x: any): x is ClockRate =>
