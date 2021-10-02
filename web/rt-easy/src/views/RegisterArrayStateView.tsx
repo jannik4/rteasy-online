@@ -111,7 +111,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                     value={() => row.value}
                     valueNext={null}
                     onChanged={(value: string) =>
-                      globalModel.writeIntoRegisterArray(
+                      globalModel.writeRegisterArray(
                         registerArray,
                         row.idx,
                         value,

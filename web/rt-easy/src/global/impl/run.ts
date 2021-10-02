@@ -142,9 +142,9 @@ export function model(
       state.simulator.register_value(name, base),
     registerValueNext: (name: string, base: string) =>
       state.simulator.register_value_next(name, base) ?? null,
-    writeIntoRegister: (name: string, value: string, base: string) => {
+    writeRegister: (name: string, value: string, base: string) => {
       try {
-        state.simulator.write_into_register(name, value, base);
+        state.simulator.write_register(name, value, base);
         setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
@@ -153,9 +153,9 @@ export function model(
     buses: (kind: "Intern" | "Input") => state.simulator.buses(kind),
     busValue: (name: string, base: string) =>
       state.simulator.bus_value(name, base),
-    writeIntoBus: (name: string, value: string, base: string) => {
+    writeBus: (name: string, value: string, base: string) => {
       try {
-        state.simulator.write_into_bus(name, value, base);
+        state.simulator.write_bus(name, value, base);
         setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
@@ -177,14 +177,14 @@ export function model(
 
       return page;
     },
-    writeIntoRegisterArray: (
+    writeRegisterArray: (
       name: string,
       idx: number,
       value: string,
       base: string
     ) => {
       try {
-        state.simulator.write_into_register_array(name, idx, value, base);
+        state.simulator.write_register_array(name, idx, value, base);
         setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
@@ -209,23 +209,23 @@ export function model(
 
       return page;
     },
-    writeIntoMemory: (
+    writeMemory: (
       name: string,
       address: string,
       value: string,
       base: string
     ) => {
       try {
-        state.simulator.write_into_memory(name, address, value, base);
+        state.simulator.write_memory(name, address, value, base);
         setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???
       }
     },
-    memorySave: (name: string) => state.simulator.memory_save(name),
+    memorySave: (name: string) => state.simulator.save_memory(name),
     memoryLoadFromSave: (name: string, save: string) => {
       try {
-        state.simulator.memory_load_from_save(name, save);
+        state.simulator.load_memory_from_save(name, save);
         setState({ ...state }); // Force state update
       } catch (e) {
         console.log(e); // TODO: ???

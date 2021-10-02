@@ -59,7 +59,7 @@ const StateView: React.FC<Props> = () => {
                 value={(base) => globalModel.registerValue(name, base)}
                 valueNext={(base) => globalModel.registerValueNext(name, base)}
                 onChanged={(value, base) =>
-                  globalModel.writeIntoRegister(name, value, base)
+                  globalModel.writeRegister(name, value, base)
                 }
               />
             </td>
@@ -81,7 +81,7 @@ const StateView: React.FC<Props> = () => {
                 value={(base) => globalModel.busValue(name, base)}
                 valueNext={null}
                 onChanged={(value, base) =>
-                  globalModel.writeIntoBus(name, value, base)
+                  globalModel.writeBus(name, value, base)
                 }
               />
             </td>

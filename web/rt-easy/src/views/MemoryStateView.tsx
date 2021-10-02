@@ -140,12 +140,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
                   value={() => row.value}
                   valueNext={null}
                   onChanged={(value: string) =>
-                    globalModel.writeIntoMemory(
-                      memory,
-                      row.address,
-                      value,
-                      base
-                    )
+                    globalModel.writeMemory(memory, row.address, value, base)
                   }
                 />
               </td>

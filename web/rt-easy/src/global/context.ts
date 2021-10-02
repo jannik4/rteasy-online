@@ -73,10 +73,10 @@ export interface GlobalModelRun extends GlobalModelCommon {
   registers: (kind: "Intern" | "Output") => string[];
   registerValue: (name: string, base: Base) => string;
   registerValueNext: (name: string, base: Base) => string | null;
-  writeIntoRegister: (name: string, value: string, base: Base) => void;
+  writeRegister: (name: string, value: string, base: Base) => void;
   buses: (kind: "Intern" | "Input") => string[];
   busValue: (name: string, base: Base) => string;
-  writeIntoBus: (name: string, value: string, base: Base) => void;
+  writeBus: (name: string, value: string, base: Base) => void;
   registerArrays: () => string[];
   registerArrayPageCount: (name: string) => number;
   registerArrayPage: (
@@ -84,7 +84,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
     pageNr: number,
     base: Base
   ) => { idx: number; value: string }[];
-  writeIntoRegisterArray: (
+  writeRegisterArray: (
     name: string,
     idx: number,
     value: string,
@@ -99,7 +99,7 @@ export interface GlobalModelRun extends GlobalModelCommon {
     pageNr: string,
     base: Base
   ) => { address: string; value: string }[];
-  writeIntoMemory: (
+  writeMemory: (
     name: string,
     address: string,
     value: string,
