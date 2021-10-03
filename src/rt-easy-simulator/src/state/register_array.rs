@@ -2,7 +2,6 @@ use crate::Error;
 use rtcore::value::Value;
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 
 const REGISTER_ARRAY_PAGE_SIZE: usize = 32;
 
@@ -94,20 +93,20 @@ impl RegisterArrayState {
     }
 }
 
-impl fmt::Display for RegisterArrayState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut indexes = self.data.keys().collect::<Vec<_>>();
-        indexes.sort();
-
-        write!(f, "[\n")?;
-        for idx in indexes {
-            write!(f, "  {} = {}\n", idx.as_dec(), self.data.get(idx).unwrap().as_dec())?;
-        }
-        write!(f, "]")?;
-
-        Ok(())
-    }
-}
+// impl fmt::Display for RegisterArrayState {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         let mut indexes = self.data.keys().collect::<Vec<_>>();
+//         indexes.sort();
+//
+//         write!(f, "[\n")?;
+//         for idx in indexes {
+//             write!(f, "  {} = {}\n", idx.as_dec(), self.data.get(idx).unwrap().as_dec())?;
+//         }
+//         write!(f, "]")?;
+//
+//         Ok(())
+//     }
+// }
 
 fn log_2(x: usize) -> usize {
     const fn num_bits<T>() -> usize {

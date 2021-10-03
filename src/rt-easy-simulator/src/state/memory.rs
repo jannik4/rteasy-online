@@ -3,7 +3,6 @@ use crate::Error;
 use rtcore::{program::MemoryRange, value::Value};
 use std::cell::RefCell;
 use std::collections::HashMap;
-use std::fmt;
 use std::io;
 
 const MEMORY_PAGE_SIZE_EXP: usize = 5;
@@ -173,20 +172,20 @@ impl MemoryState {
     }
 }
 
-impl fmt::Display for MemoryState {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        let mut addresses = self.data.keys().collect::<Vec<_>>();
-        addresses.sort();
-
-        write!(f, "[\n")?;
-        for addr in addresses {
-            write!(f, "  {} = {}\n", addr.as_dec(), self.data.get(addr).unwrap().as_dec())?;
-        }
-        write!(f, "]")?;
-
-        Ok(())
-    }
-}
+// impl fmt::Display for MemoryState {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         let mut addresses = self.data.keys().collect::<Vec<_>>();
+//         addresses.sort();
+//
+//         write!(f, "[\n")?;
+//         for addr in addresses {
+//             write!(f, "  {} = {}\n", addr.as_dec(), self.data.get(addr).unwrap().as_dec())?;
+//         }
+//         write!(f, "]")?;
+//
+//         Ok(())
+//     }
+// }
 
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 struct MemorySave {

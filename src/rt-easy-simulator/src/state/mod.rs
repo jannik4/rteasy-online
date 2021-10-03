@@ -13,7 +13,6 @@ use rtcore::{
     value::Value,
 };
 use std::collections::{HashMap, HashSet};
-use std::fmt;
 
 #[derive(Debug)]
 pub struct State {
@@ -140,97 +139,97 @@ impl State {
     }
 }
 
-impl fmt::Display for State {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        // Inputs
-        write!(f, "--- Inputs ---\n")?;
-        let mut inputs = self.bus_names(BusKind::Input).collect::<Vec<_>>();
-        inputs.sort();
-        for (idx, bus) in inputs.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                bus.0,
-                self.bus(bus).unwrap().read(None).unwrap().as_dec()
-            )?;
-        }
-        write!(f, "\n\n")?;
-
-        // Outputs
-        write!(f, "--- Outputs ---\n")?;
-        let mut outputs = self.register_names(RegisterKind::Output).collect::<Vec<_>>();
-        outputs.sort();
-        for (idx, reg) in outputs.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                reg.0,
-                self.register(reg).unwrap().read(None).unwrap().as_dec()
-            )?;
-        }
-        write!(f, "\n\n")?;
-
-        // Registers
-        write!(f, "--- Registers ---\n")?;
-        let mut registers = self.register_names(RegisterKind::Intern).collect::<Vec<_>>();
-        registers.sort();
-        for (idx, reg) in registers.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                reg.0,
-                self.register(reg).unwrap().read(None).unwrap().as_dec()
-            )?;
-        }
-        write!(f, "\n\n")?;
-
-        // Buses
-        write!(f, "--- Buses ---\n")?;
-        let mut buses = self.bus_names(BusKind::Intern).collect::<Vec<_>>();
-        buses.sort();
-        for (idx, bus) in buses.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                bus.0,
-                self.bus(bus).unwrap().read(None).unwrap().as_dec()
-            )?;
-        }
-        write!(f, "\n\n")?;
-
-        // Register arrays
-        write!(f, "--- Register Arrays ---\n")?;
-        let mut register_arrays = self.register_array_names().collect::<Vec<_>>();
-        register_arrays.sort();
-        for (idx, reg_array) in register_arrays.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                reg_array.0,
-                self.register_array(reg_array).unwrap()
-            )?;
-        }
-        write!(f, "\n\n")?;
-
-        // Memories
-        write!(f, "--- Memories ---\n")?;
-        let mut memories = self.memory_names().collect::<Vec<_>>();
-        memories.sort();
-        for (idx, mem) in memories.into_iter().enumerate() {
-            write!(
-                f,
-                "{}{} = {}",
-                if idx != 0 { "\n" } else { "" },
-                mem.0,
-                self.memory(mem).unwrap()
-            )?;
-        }
-
-        Ok(())
-    }
-}
+// impl fmt::Display for State {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         // Inputs
+//         write!(f, "--- Inputs ---\n")?;
+//         let mut inputs = self.bus_names(BusKind::Input).collect::<Vec<_>>();
+//         inputs.sort();
+//         for (idx, bus) in inputs.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 bus.0,
+//                 self.bus(bus).unwrap().read(None).unwrap().as_dec()
+//             )?;
+//         }
+//         write!(f, "\n\n")?;
+//
+//         // Outputs
+//         write!(f, "--- Outputs ---\n")?;
+//         let mut outputs = self.register_names(RegisterKind::Output).collect::<Vec<_>>();
+//         outputs.sort();
+//         for (idx, reg) in outputs.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 reg.0,
+//                 self.register(reg).unwrap().read(None).unwrap().as_dec()
+//             )?;
+//         }
+//         write!(f, "\n\n")?;
+//
+//         // Registers
+//         write!(f, "--- Registers ---\n")?;
+//         let mut registers = self.register_names(RegisterKind::Intern).collect::<Vec<_>>();
+//         registers.sort();
+//         for (idx, reg) in registers.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 reg.0,
+//                 self.register(reg).unwrap().read(None).unwrap().as_dec()
+//             )?;
+//         }
+//         write!(f, "\n\n")?;
+//
+//         // Buses
+//         write!(f, "--- Buses ---\n")?;
+//         let mut buses = self.bus_names(BusKind::Intern).collect::<Vec<_>>();
+//         buses.sort();
+//         for (idx, bus) in buses.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 bus.0,
+//                 self.bus(bus).unwrap().read(None).unwrap().as_dec()
+//             )?;
+//         }
+//         write!(f, "\n\n")?;
+//
+//         // Register arrays
+//         write!(f, "--- Register Arrays ---\n")?;
+//         let mut register_arrays = self.register_array_names().collect::<Vec<_>>();
+//         register_arrays.sort();
+//         for (idx, reg_array) in register_arrays.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 reg_array.0,
+//                 self.register_array(reg_array).unwrap()
+//             )?;
+//         }
+//         write!(f, "\n\n")?;
+//
+//         // Memories
+//         write!(f, "--- Memories ---\n")?;
+//         let mut memories = self.memory_names().collect::<Vec<_>>();
+//         memories.sort();
+//         for (idx, mem) in memories.into_iter().enumerate() {
+//             write!(
+//                 f,
+//                 "{}{} = {}",
+//                 if idx != 0 { "\n" } else { "" },
+//                 mem.0,
+//                 self.memory(mem).unwrap()
+//             )?;
+//         }
+//
+//         Ok(())
+//     }
+// }
