@@ -29,11 +29,11 @@ impl Evaluate for Atom<'_> {
 
 impl Evaluate for BinaryTerm<'_> {
     fn evaluate(&self, ctx_size: usize) -> Option<Value> {
-        let ctx_size = self.ctx_size.calc(ctx_size);
-        let lhs = self.lhs.evaluate(ctx_size)?;
-        let rhs = self.rhs.evaluate(ctx_size)?;
+        let ctx_size_inner = self.ctx_size.calc(ctx_size);
+        let lhs = self.lhs.evaluate(ctx_size_inner)?;
+        let rhs = self.rhs.evaluate(ctx_size_inner)?;
 
-        Some(match self.operator.node {
+        let mut value = match self.operator.node {
             BinaryOperator::Eq => Value::from(Bit::from(lhs == rhs)),
             BinaryOperator::Ne => Value::from(Bit::from(lhs != rhs)),
             BinaryOperator::Le => Value::from(Bit::from(lhs <= rhs)),
@@ -47,23 +47,27 @@ impl Evaluate for BinaryTerm<'_> {
             BinaryOperator::Or => lhs | rhs,
             BinaryOperator::Nor => !(lhs | rhs),
             BinaryOperator::Xor => lhs ^ rhs,
-        })
+        };
+        value.extend_zero(ctx_size);
+        Some(value)
     }
 }
 
 impl Evaluate for UnaryTerm<'_> {
     fn evaluate(&self, ctx_size: usize) -> Option<Value> {
         let ctx_size_inner = self.ctx_size.calc(ctx_size);
-        let mut value = self.expression.evaluate(ctx_size_inner)?;
+        let mut rhs = self.expression.evaluate(ctx_size_inner)?;
 
-        Some(match self.operator.node {
-            UnaryOperator::Sign | UnaryOperator::Neg => -value,
-            UnaryOperator::Not => !value,
+        let mut value = match self.operator.node {
+            UnaryOperator::Sign | UnaryOperator::Neg => -rhs,
+            UnaryOperator::Not => !rhs,
             UnaryOperator::Sxt => {
-                value.extend_sign(ctx_size);
-                value
+                rhs.extend_sign(ctx_size);
+                rhs
             }
-        })
+        };
+        value.extend_zero(ctx_size);
+        Some(value)
     }
 }
 
