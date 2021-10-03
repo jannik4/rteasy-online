@@ -1,5 +1,5 @@
 import { Monaco } from "@monaco-editor/react";
-import { languages } from "monaco-editor";
+import { languages, Position, editor } from "monaco-editor";
 
 export function setUpRtEasyLang(monaco: Monaco) {
   monaco.languages.register({ id: "rt-easy" });
@@ -105,6 +105,16 @@ export function setUpRtEasyLang(monaco: Monaco) {
         endColumn: word.endColumn,
       };
 
+      const completionIdents: languages.CompletionItem[] = [];
+      for (const ident of findAllIdents(model, position)) {
+        completionIdents.push({
+          label: ident,
+          kind: monaco.languages.CompletionItemKind.Variable,
+          insertText: ident,
+          range,
+        });
+      }
+
       const completionKeyWord = (
         keyword: string,
         more?: boolean
@@ -117,7 +127,7 @@ export function setUpRtEasyLang(monaco: Monaco) {
           command: more
             ? {
                 id: "editor.action.triggerSuggest",
-                title: "lol",
+                title: "More",
               }
             : undefined,
         };
@@ -134,6 +144,9 @@ export function setUpRtEasyLang(monaco: Monaco) {
       };
 
       const suggestions: languages.CompletionItem[] = [
+        // Idents
+        ...completionIdents,
+
         // Declare
         completionKeyWord("declare", true),
         completionKeyWord("input"),
@@ -216,4 +229,32 @@ export function setUpRtEasyLang(monaco: Monaco) {
       return { suggestions };
     },
   });
+}
+
+function findAllIdents(model: editor.ITextModel, position: Position): string[] {
+  // Find all matches
+  const matches = model.findMatches(
+    "[A-Z_][A-Z0-9_]*(?![a-z])",
+    false,
+    true,
+    true,
+    null,
+    true
+  );
+
+  // Collect into set
+  const identsSet: Set<string> = new Set();
+  for (const match of matches) {
+    // Skip if cursor is inside match
+    if (match.range.containsPosition(position)) continue;
+
+    if (match.matches) identsSet.add(match.matches[0]);
+  }
+
+  // Collect and sort into array
+  const idents: string[] = [];
+  identsSet.forEach((e) => idents.push(e));
+  idents.sort();
+
+  return idents;
 }
