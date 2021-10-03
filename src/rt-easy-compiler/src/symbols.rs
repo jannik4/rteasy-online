@@ -38,7 +38,7 @@ impl<'s> Symbols<'s> {
                             let size = range.node.size();
                             if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide {
+                                    CompilerErrorKind::BitRangeTooWide {
                                         max_size: MAX_BIT_RANGE_SIZE,
                                         size,
                                     },
@@ -68,7 +68,7 @@ impl<'s> Symbols<'s> {
                             let size = range.node.size();
                             if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide {
+                                    CompilerErrorKind::BitRangeTooWide {
                                         max_size: MAX_BIT_RANGE_SIZE,
                                         size,
                                     },
@@ -148,7 +148,7 @@ impl<'s> Symbols<'s> {
                             let size = range.node.size();
                             if size > MAX_BIT_RANGE_SIZE {
                                 error_sink(CompilerError::new(
-                                    CompilerErrorKind::BitRangeToWide {
+                                    CompilerErrorKind::BitRangeTooWide {
                                         max_size: MAX_BIT_RANGE_SIZE,
                                         size,
                                     },

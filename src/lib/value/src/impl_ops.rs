@@ -335,3 +335,207 @@ where
         unsafe { &mut *(&mut self.bits[index] as *mut [Bit] as *mut ValueSlice) }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_cmp() {
+        // GE
+        assert!(
+            Value { bits: vec![Bit::One, Bit::One] }
+                >= Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+        assert!(
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
+                >= Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
+        );
+
+        // LE
+        assert!(
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+                <= Value { bits: vec![Bit::One, Bit::One] }
+        );
+        assert!(
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
+                <= Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
+        );
+
+        // GT
+        assert!(
+            Value { bits: vec![Bit::One, Bit::One] }
+                > Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+        assert!(
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One, Bit::One] }
+                > Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::Zero,] }
+        );
+
+        // LT
+        assert!(
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+                < Value { bits: vec![Bit::One, Bit::One] }
+        );
+        assert!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::Zero,] }
+                < Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One, Bit::One] }
+        );
+
+        // EQ
+        assert!(Value { bits: vec![Bit::Zero, Bit::Zero] } == Value { bits: vec![Bit::Zero] });
+        assert!(
+            Value { bits: vec![Bit::Zero, Bit::One, Bit::One, Bit::Zero] }
+                == Value { bits: vec![Bit::Zero, Bit::One, Bit::One] }
+        );
+
+        // NE
+        assert!(Value { bits: vec![Bit::Zero, Bit::One] } != Value { bits: vec![Bit::One] });
+        assert!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::One, Bit::One] }
+                != Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::One] }
+        );
+    }
+
+    #[test]
+    fn test_add() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+                + Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One] } + Value { bits: vec![Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One] } + Value { bits: vec![Bit::One] },
+            Value { bits: vec![Bit::Zero, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::One, Bit::Zero] }
+                + Value { bits: vec![Bit::One, Bit::One, Bit::Zero, Bit::One] },
+            Value { bits: vec![Bit::Zero, Bit::One, Bit::One, Bit::Zero, Bit::One] }
+        );
+    }
+
+    #[test]
+    fn test_sub() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+                - Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::One, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::Zero, Bit::Zero] } - Value { bits: vec![Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::One, Bit::One] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::Zero] } - Value { bits: vec![Bit::One, Bit::One] },
+            Value { bits: vec![Bit::Zero, Bit::One] }
+        );
+    }
+
+    #[test]
+    fn test_bit_and() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+                & Value { bits: vec![Bit::One, Bit::One, Bit::One] },
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One] } & Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] },
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_bit_or() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+                | Value { bits: vec![Bit::One, Bit::One, Bit::One] },
+            Value { bits: vec![Bit::One, Bit::One, Bit::One] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One] } | Value { bits: vec![Bit::One, Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_bit_xor() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+                ^ Value { bits: vec![Bit::One, Bit::One, Bit::One] },
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One] } ^ Value { bits: vec![Bit::One, Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::One, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_shl() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] } << 0,
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] } << 2,
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] } << 12,
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_shr() {
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] } >> 0,
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::One] } >> 2,
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] }
+        );
+        assert_eq!(
+            Value { bits: vec![Bit::One, Bit::One, Bit::Zero] } >> 12,
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_neg() {
+        assert_eq!(
+            -Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+        assert_eq!(
+            -Value { bits: vec![Bit::One, Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::One] }
+        );
+        assert_eq!(
+            -Value { bits: vec![Bit::One, Bit::One, Bit::One] },
+            Value { bits: vec![Bit::One, Bit::Zero, Bit::Zero] }
+        );
+    }
+
+    #[test]
+    fn test_not() {
+        assert_eq!(
+            !Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] },
+            Value { bits: vec![Bit::One, Bit::One, Bit::One] }
+        );
+        assert_eq!(
+            !Value { bits: vec![Bit::One, Bit::One, Bit::Zero] },
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::One] }
+        );
+        assert_eq!(
+            !Value { bits: vec![Bit::One, Bit::One, Bit::One] },
+            Value { bits: vec![Bit::Zero, Bit::Zero, Bit::Zero] }
+        );
+    }
+}

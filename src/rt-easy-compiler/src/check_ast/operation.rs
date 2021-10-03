@@ -81,7 +81,7 @@ impl<'s> CheckOp<'s> for If<'s> {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
                 error_sink(CompilerError::new(
-                    CompilerErrorKind::ConditionToWide(size),
+                    CompilerErrorKind::ConditionTooWide(size),
                     self.condition.span(),
                 ));
             }
@@ -272,7 +272,7 @@ impl<'s> CheckOp<'s> for Assert<'s> {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
                 error_sink(CompilerError::new(
-                    CompilerErrorKind::ConditionToWide(size),
+                    CompilerErrorKind::ConditionTooWide(size),
                     self.condition.span(),
                 ));
             }

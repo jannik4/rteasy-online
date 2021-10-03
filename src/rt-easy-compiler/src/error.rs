@@ -83,8 +83,8 @@ pub enum CompilerErrorKind {
     ConcatContainsNumberNonBitString,
     AssignmentDoesNotFit { lhs_size: usize, rhs_size: usize },
     RegArrayIndexDoesNotFit { index_size: usize, index_expr_size: usize },
-    ConditionToWide(usize),
-    BitRangeToWide { max_size: usize, size: usize },
+    ConditionTooWide(usize),
+    BitRangeTooWide { max_size: usize, size: usize },
     CaseValueTooWide { expr_size: usize, case_value_size: usize },
     DuplicateCaseValue,
     AssignmentLhsContainsClockedAndUnclocked,
@@ -138,13 +138,13 @@ impl CompilerErrorKind {
             RegArrayIndexDoesNotFit { index_size, index_expr_size } => {
                 format!("index expression is too wide: {} > {}", index_expr_size, index_size)
             }
-            ConditionToWide(condition_size) => {
+            ConditionTooWide(condition_size) => {
                 format!(
                     "condition expression must be exactly one bit wide, but is: {}",
                     condition_size
                 )
             }
-            BitRangeToWide { max_size, size } => {
+            BitRangeTooWide { max_size, size } => {
                 format!("bit range size exceeds max size: {} > {}", size, max_size)
             }
             CaseValueTooWide { expr_size, case_value_size } => {
