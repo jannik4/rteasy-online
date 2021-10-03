@@ -1,3 +1,5 @@
+mod util;
+
 const SOURCE: &'static str = r#"
 declare input IN(2:17)
 declare output OUT
@@ -77,23 +79,6 @@ _:
 
 #[test]
 fn program_display() {
-    let program = compile(SOURCE);
+    let program = util::compile(SOURCE);
     assert_eq!(format!("{}", program), EXPECTED);
-}
-
-fn compile(source: &str) -> rt_easy::rtcore::program::Program {
-    let ast = match rt_easy::parser::parse(source) {
-        Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, source, false)),
-    };
-
-    let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    match rt_easy::compiler::compile(
-        &backend,
-        ast,
-        &rt_easy::compiler::Options { print_mir: true, print_mir_unordered: true },
-    ) {
-        Ok(program) => program,
-        Err(e) => panic!("{:#?}", e),
-    }
 }

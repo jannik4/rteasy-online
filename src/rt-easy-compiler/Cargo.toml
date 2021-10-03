@@ -8,3 +8,6 @@ publish = false
 [dependencies]
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
 pretty-error = { path = "../lib/pretty-error" }
+
+[dev-dependencies]
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }

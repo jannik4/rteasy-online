@@ -1,6 +1,6 @@
 mod util;
 
-use rt_easy::compiler::{CompilerErrorKind, Error};
+use rt_easy_compiler::{CompilerErrorKind, Error};
 
 #[test]
 fn feeback_loop_bus_to_bus() {
@@ -9,7 +9,7 @@ fn feeback_loop_bus_to_bus() {
         Q(0) <- B(0), B(0) <- Q(0);
     "#;
 
-    match util::compile_error(SOURCE) {
+    match util::check_err(SOURCE) {
         Error::Errors(errors) => {
             for error in errors {
                 match error.kind {
@@ -29,7 +29,7 @@ fn feeback_loop_if() {
         if B(0) then B <- 0 fi;
     "#;
 
-    match util::compile_error(SOURCE) {
+    match util::check_err(SOURCE) {
         Error::Errors(errors) => {
             for error in errors {
                 match error.kind {
@@ -49,5 +49,5 @@ fn no_feeback_loop_bus_to_bus() {
         Q(8) <- B(0), B(1) <- Q(7);
     "#;
 
-    let _program = util::compile(SOURCE);
+    util::check(SOURCE);
 }
