@@ -1,5 +1,6 @@
 import * as wasm from "./pkg";
 import { Range } from "monaco-editor";
+import { showErrorToast } from "../toaster";
 
 type RtEasyWasm = typeof import("./pkg");
 
@@ -171,7 +172,7 @@ export class Simulator {
       this.simulatorWasm.write_register(name, value, base);
       this.onChange();
     } catch (e) {
-      console.log(e); // TODO: ???
+      showErrorToast({ message: e as string });
     }
   };
 
@@ -184,7 +185,7 @@ export class Simulator {
       this.simulatorWasm.write_bus(name, value, base);
       this.onChange();
     } catch (e) {
-      console.log(e); // TODO: ???
+      showErrorToast({ message: e as string });
     }
   };
 
@@ -226,7 +227,7 @@ export class Simulator {
       this.simulatorWasm.write_register_array(name, idx, value, base);
       this.onChange();
     } catch (e) {
-      console.log(e); // TODO: ???
+      showErrorToast({ message: e as string });
     }
   };
 
@@ -274,7 +275,7 @@ export class Simulator {
       this.simulatorWasm.write_memory(name, address, value, base);
       this.onChange();
     } catch (e) {
-      console.log(e); // TODO: ???
+      showErrorToast({ message: e as string });
     }
   };
   memorySave = (name: string): string => this.simulatorWasm.save_memory(name);
@@ -283,7 +284,7 @@ export class Simulator {
       this.simulatorWasm.load_memory_from_save(name, save);
       this.onChange();
     } catch (e) {
-      console.log(e); // TODO: ???
+      showErrorToast({ message: e as string });
     }
   };
 }

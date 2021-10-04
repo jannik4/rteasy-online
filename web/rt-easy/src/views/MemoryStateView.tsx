@@ -1,5 +1,6 @@
 import React, { useState, useContext, useMemo, useRef, useEffect } from "react";
 import { HTMLTable, Text, Button } from "@blueprintjs/core";
+import { showErrorToast } from "../toaster";
 
 import {
   InputValue,
@@ -70,14 +71,14 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
               address
             );
             if (pageNr === null) {
-              console.log("Address out of range"); // TODO: ???
+              showErrorToast({ message: "Address out of range" });
             } else {
               setGotoAddress([address.toUpperCase()]);
               setPageNr(pageNr);
               setShowGotoDialog(false);
             }
           } catch (e) {
-            console.log(e); // TODO: ???
+            showErrorToast({ message: e as string });
           }
         }}
       />
