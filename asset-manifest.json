@@ -5,18 +5,18 @@
     "static/js/1.25f1708e.chunk.js": "/rteasy-online/static/js/1.25f1708e.chunk.js",
     "static/js/1.25f1708e.chunk.js.map": "/rteasy-online/static/js/1.25f1708e.chunk.js.map",
     "main.css": "/rteasy-online/static/css/main.25fd0815.chunk.css",
-    "main.js": "/rteasy-online/static/js/main.6b39344e.chunk.js",
-    "main.js.map": "/rteasy-online/static/js/main.6b39344e.chunk.js.map",
-    "runtime-main.js": "/rteasy-online/static/js/runtime-main.bd0ea52d.js",
-    "runtime-main.js.map": "/rteasy-online/static/js/runtime-main.bd0ea52d.js.map",
+    "main.js": "/rteasy-online/static/js/main.789e6658.chunk.js",
+    "main.js.map": "/rteasy-online/static/js/main.789e6658.chunk.js.map",
+    "runtime-main.js": "/rteasy-online/static/js/runtime-main.2c611eea.js",
+    "runtime-main.js.map": "/rteasy-online/static/js/runtime-main.2c611eea.js.map",
     "static/js/4.ae4d6017.chunk.js": "/rteasy-online/static/js/4.ae4d6017.chunk.js",
     "static/js/4.ae4d6017.chunk.js.map": "/rteasy-online/static/js/4.ae4d6017.chunk.js.map",
     "static/css/5.582b9d24.chunk.css": "/rteasy-online/static/css/5.582b9d24.chunk.css",
     "static/js/5.bec9697d.chunk.js": "/rteasy-online/static/js/5.bec9697d.chunk.js",
     "static/js/5.bec9697d.chunk.js.map": "/rteasy-online/static/js/5.bec9697d.chunk.js.map",
-    "static/js/6.104c003a.chunk.js": "/rteasy-online/static/js/6.104c003a.chunk.js",
-    "381e93b2dc11404b5657.module.wasm": "/rteasy-online/381e93b2dc11404b5657.module.wasm",
-    "static/js/6.104c003a.chunk.js.map": "/rteasy-online/static/js/6.104c003a.chunk.js.map",
+    "static/js/6.8bcaf7d1.chunk.js": "/rteasy-online/static/js/6.8bcaf7d1.chunk.js",
+    "05b1ddb6a79749b60d1b.module.wasm": "/rteasy-online/05b1ddb6a79749b60d1b.module.wasm",
+    "static/js/6.8bcaf7d1.chunk.js.map": "/rteasy-online/static/js/6.8bcaf7d1.chunk.js.map",
     "static/js/7.59860469.chunk.js": "/rteasy-online/static/js/7.59860469.chunk.js",
     "static/js/7.59860469.chunk.js.map": "/rteasy-online/static/js/7.59860469.chunk.js.map",
     "static/js/8.fe514905.chunk.js": "/rteasy-online/static/js/8.fe514905.chunk.js",
@@ -166,10 +166,10 @@
     "static/media/codicon.css": "/rteasy-online/static/media/codicon.74d8acf8.ttf"
   },
   "entrypoints": [
-    "static/js/runtime-main.bd0ea52d.js",
+    "static/js/runtime-main.2c611eea.js",
     "static/css/5.582b9d24.chunk.css",
     "static/js/5.bec9697d.chunk.js",
     "static/css/main.25fd0815.chunk.css",
-    "static/js/main.6b39344e.chunk.js"
+    "static/js/main.789e6658.chunk.js"
   ]
 }
