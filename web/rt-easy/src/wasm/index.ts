@@ -60,7 +60,9 @@ export class Simulator {
     this.onChange();
   };
   cycleCount = (): number => this.simulatorWasm.cycle_count();
-  isFinished = (): boolean => this.simulatorWasm.is_finished();
+  isFinished = (): boolean =>
+    (this.simulatorWasm.is_finished() && this.simState === null) ||
+    (this.simState?.isAtAssertError ?? false);
   getSimState = (): SimState | null => this.simState;
   getSignals = (): Signals => this.signals;
 
@@ -301,6 +303,7 @@ export interface SimState {
   marker: SimStateMarker[];
 
   isAtBreakpoint: boolean;
+  isAtAssertError: boolean;
   isStatementEnd: boolean;
 
   changed: Changed | null;
@@ -369,8 +372,8 @@ function simulatorStep({
   stopOnBreakpoint,
   sourceCode,
 }: SimulatorStepParams): SimState | null {
-  // Check is finished
-  if (simulator.is_finished()) return currSimState;
+  // Return current sim state if at assert error
+  if (currSimState?.isAtAssertError) return currSimState;
 
   // Step
   const stepResultWasm = micro
@@ -423,6 +426,7 @@ function simulatorStep({
       : currSimState?.marker ?? [],
 
     isAtBreakpoint: stepResult.kind.tag === "Breakpoint",
+    isAtAssertError: stepResult.kind.tag === "AssertError",
     isStatementEnd: stepResult.kind.tag === "StatementEnd",
 
     changed:
