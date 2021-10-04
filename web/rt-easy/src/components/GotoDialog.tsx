@@ -17,6 +17,7 @@ const GotoDialog: React.FC<Props> = ({ isOpen, onClose, onGoto }) => {
       isOpen={isOpen}
       usePortal={false}
       style={{ width: 250 }}
+      enforceFocus={false}
     >
       <div className={Classes.DIALOG_BODY}>
         <div>
