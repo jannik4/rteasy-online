@@ -25,6 +25,6 @@ export function initialState(): State {
     tag: "Edit",
     editor: null,
     base: Storage.getBase() || "DEC",
-    clockRate: Storage.getClockRate() || "Max",
+    clockRate: Storage.getClockRate() || 100,
   };
 }
