@@ -34,6 +34,8 @@ pub struct Statement {
     pub label: Option<Spanned<Label>>,
     pub steps: Spanned<SplitVec<Step>>,
     pub span: Span,
+    pub span_semicolon: Span,
+    pub span_pipe: Option<Span>,
 }
 
 #[derive(Debug)]

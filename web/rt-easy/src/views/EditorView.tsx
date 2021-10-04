@@ -41,23 +41,21 @@ const EditorView: React.FC<Props> = () => {
           inlineClassName: "monacoInlineDecorationYellow",
         },
       });
-      if (simState.currCondition) {
+      if (simState.markerCurrent) {
         decorations.push({
-          range: simState.currCondition.span,
+          range: simState.markerCurrent.span,
           options: {
-            inlineClassName: simState.currCondition.value
-              ? "monacoInlineDecorationGreen"
-              : "monacoInlineDecorationRed",
+            inlineClassName:
+              "monacoInlineDecorationMarkerCurrent-" +
+              simState.markerCurrent.kind,
           },
         });
       }
-      for (const condition of simState.conditions) {
+      for (const marker of simState.marker) {
         decorations.push({
-          range: condition.span,
+          range: marker.span,
           options: {
-            inlineClassName: condition.value
-              ? "monacoInlineDecorationLightGreen"
-              : "monacoInlineDecorationLightRed",
+            inlineClassName: "monacoInlineDecorationMarker-" + marker.kind,
           },
         });
       }

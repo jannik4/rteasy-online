@@ -38,9 +38,13 @@ impl RegisterArrayState {
         Ok(())
     }
 
-    pub fn clock(&mut self) {
-        if let Some((idx, value)) = self.data_next.get_mut().take() {
-            self.data.insert(idx, value);
+    pub fn clock(&mut self) -> Option<Value> {
+        match self.data_next.get_mut().take() {
+            Some((idx, value)) => {
+                self.data.insert(idx.clone(), value);
+                Some(idx)
+            }
+            None => None,
         }
     }
 

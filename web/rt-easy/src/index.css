@@ -16,21 +16,31 @@ body,
   background-color: yellow;
 }
 
-.monacoInlineDecorationRed {
+/* ----- MARKER ----- */
+
+.monacoInlineDecorationMarkerCurrent-False {
   background-color: rgb(226, 0, 0) !important;
 }
-
-.monacoInlineDecorationLightRed {
+.monacoInlineDecorationMarker-False {
   background-color: rgb(255, 109, 109) !important;
 }
 
-.monacoInlineDecorationGreen {
+.monacoInlineDecorationMarkerCurrent-True {
   background-color: rgb(91, 214, 91) !important;
 }
-
-.monacoInlineDecorationLightGreen {
+.monacoInlineDecorationMarker-True {
   background-color: rgb(204, 247, 204) !important;
 }
+
+.monacoInlineDecorationMarkerCurrent-Breakpoint {
+  background-color: rgb(255, 106, 106) !important;
+}
+
+.monacoInlineDecorationMarkerCurrent-AssertError {
+  background-color: rgb(226, 0, 0) !important;
+}
+
+/* ----- END MARKER ----- */
 
 .noFocus:focus {
   outline: none !important;

@@ -110,6 +110,7 @@ pub struct Statement<'s> {
     pub label: Option<Spanned<Label<'s>>>,
     pub operations: Operations<'s>,
     pub span: Span,
+    pub span_semicolon: Span,
 }
 
 #[derive(Debug, Clone)]
@@ -117,6 +118,7 @@ pub struct Operations<'s> {
     pub operations: Vec<Operation<'s>>,
     pub operations_post: Option<Vec<Operation<'s>>>,
     pub span: Span,
+    pub span_pipe: Option<Span>,
 }
 
 #[derive(Debug, Clone)]

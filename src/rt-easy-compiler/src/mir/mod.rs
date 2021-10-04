@@ -23,6 +23,8 @@ pub struct Statement<'s> {
     pub label: Option<Spanned<Label<'s>>>,
     pub steps: Spanned<Vec<Step<'s>>>,
     pub span: Span,
+    pub span_semicolon: Span,
+    pub span_pipe: Option<Span>,
 }
 
 #[derive(Debug, Clone)]

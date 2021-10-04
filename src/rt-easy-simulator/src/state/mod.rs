@@ -7,7 +7,7 @@ mod util;
 use self::{
     bus::BusState, memory::MemoryState, register::RegisterState, register_array::RegisterArrayState,
 };
-use crate::{Error, Result};
+use crate::{Changed, Error, Result};
 use rtcore::{
     program::{BusKind, Declaration, Ident, Program, RegisterKind},
     value::Value,
@@ -74,16 +74,26 @@ impl State {
         Self { registers, buses, memories, register_arrays }
     }
 
-    pub fn clock(&mut self) {
-        for state in self.registers.values_mut() {
-            state.clock();
+    pub fn clock(&mut self) -> Vec<Changed> {
+        let mut changed = Vec::new();
+
+        for (name, state) in &mut self.registers {
+            if state.clock() {
+                changed.push(Changed::Register { name: name.clone() });
+            }
         }
-        for state in self.memories.values_mut() {
-            state.clock();
+        for (name, state) in &mut self.memories {
+            if let Some(address) = state.clock() {
+                changed.push(Changed::Memory { name: name.clone(), address });
+            }
         }
-        for state in self.register_arrays.values_mut() {
-            state.clock();
+        for (name, state) in &mut self.register_arrays {
+            if let Some(index) = state.clock() {
+                changed.push(Changed::RegisterArray { name: name.clone(), index });
+            }
         }
+
+        changed
     }
 
     pub fn clear_intern_buses(&self, buses_persist: &HashSet<Ident>) {

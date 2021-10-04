@@ -2,8 +2,13 @@ import React from "react";
 import { editor } from "monaco-editor";
 
 import { calcRange } from "../../util/convertRangeSpan";
-import { RtEasy, StepResult } from "../../wasm";
-import { GlobalModelRun, SimState, BaseInherit } from "../context";
+import { RtEasy, Simulator } from "../../wasm";
+import {
+  GlobalModelRun,
+  SimState,
+  SimStateMarker,
+  BaseInherit,
+} from "../context";
 import { model as modelCommon } from "./common";
 import { State, StateRun } from "../state";
 
@@ -36,21 +41,23 @@ export function model(
     },
     isFinished: () => state.simulator.is_finished(),
     microStep: () => {
-      const stepResult = state.simulator.micro_step() ?? null;
-      const simState = calcNextSimState(
-        editorModel.getValue(),
-        state.simState,
-        stepResult
-      );
+      const simState = simulatorStep({
+        simulator: state.simulator,
+        currSimState: state.simState,
+        micro: true,
+        stopOnBreakpoint: false,
+        sourceCode: editorModel.getValue(),
+      });
       setState({ ...state, simState });
     },
     step: () => {
-      const stepResult = state.simulator.step() ?? null;
-      const simState = calcNextSimState(
-        editorModel.getValue(),
-        state.simState,
-        stepResult
-      );
+      const simState = simulatorStep({
+        simulator: state.simulator,
+        currSimState: state.simState,
+        micro: false,
+        stopOnBreakpoint: false,
+        sourceCode: editorModel.getValue(),
+      });
       setState({ ...state, simState });
     },
     simState: state.simState,
@@ -86,15 +93,6 @@ export function model(
         const intervalSleep =
           state.clockRate === "Max" ? 10 : 1000 / state.clockRate;
         const timerId = setInterval(() => {
-          // Stop if finished
-          if (state.simulator.is_finished()) {
-            clearInterval(timerId);
-            setState((prev) => {
-              return { ...prev, timerId: null, simState: null };
-            });
-            return;
-          }
-
           // Next sim state
           let simState = state.simState;
 
@@ -104,23 +102,35 @@ export function model(
             let start = performance.now();
             const MS = 5;
             while (true) {
-              const stepResult = state.simulator.step() ?? null;
-              simState = calcNextSimState(
-                editorModel.getValue(),
-                simState,
-                stepResult
-              );
+              simState = simulatorStep({
+                simulator: state.simulator,
+                currSimState: simState,
+                micro: false,
+                stopOnBreakpoint: true,
+                sourceCode: editorModel.getValue(),
+              });
 
+              if (simState?.isAtBreakpoint) break;
               if (performance.now() - start > MS) break;
             }
           } else {
             // Run one step
-            const stepResult = state.simulator.step() ?? null;
-            simState = calcNextSimState(
-              editorModel.getValue(),
-              simState,
-              stepResult
-            );
+            simState = simulatorStep({
+              simulator: state.simulator,
+              currSimState: simState,
+              micro: false,
+              stopOnBreakpoint: true,
+              sourceCode: editorModel.getValue(),
+            });
+          }
+
+          // Check finished or breakpoint
+          if (state.simulator.is_finished() || simState?.isAtBreakpoint) {
+            clearInterval(timerId);
+            setState((prev) => {
+              return { ...prev, timerId: null, simState };
+            });
+            return;
           }
 
           // Update state
@@ -236,28 +246,71 @@ export function model(
   };
 }
 
-function calcNextSimState(
-  sourceCode: string,
-  currSimState: SimState | null,
-  stepResult: StepResult | null
-): SimState | null {
+interface SimulatorStepParams {
+  simulator: Simulator;
+  currSimState: SimState | null;
+  micro: boolean;
+  stopOnBreakpoint: boolean;
+  sourceCode: string;
+}
+
+function simulatorStep({
+  simulator,
+  currSimState,
+  micro,
+  stopOnBreakpoint,
+  sourceCode,
+}: SimulatorStepParams): SimState | null {
+  // Check is finished
+  if (simulator.is_finished()) return currSimState;
+
+  // Call step
+  const stepResult = micro
+    ? simulator.micro_step(stopOnBreakpoint) ?? null
+    : simulator.step(stopOnBreakpoint) ?? null;
   if (stepResult === null) return null;
 
-  const nextSimState = {
-    span: calcRange(sourceCode, stepResult.span),
-    currCondition: stepResult.condition
-      ? {
-          value: stepResult.condition.value,
-          span: calcRange(sourceCode, stepResult.condition.span),
-        }
-      : null,
-    conditions: stepResult.is_at_statement_start
+  // ...
+  const span = calcRange(sourceCode, stepResult.span);
+  let isAtBreakpoint = false;
+
+  // Calc marker
+  let markerCurrent: SimStateMarker | null = null;
+  if (stepResult.is_condition()) {
+    const stepResultCondition = stepResult.as_condition()!;
+    markerCurrent = {
+      kind: stepResultCondition.result ? "True" : "False",
+      span: calcRange(sourceCode, stepResultCondition.span),
+    };
+  } else if (stepResult.is_breakpoint()) {
+    isAtBreakpoint = true;
+    markerCurrent = {
+      kind: "Breakpoint",
+      span,
+    };
+  } else if (stepResult.is_assert_error()) {
+    markerCurrent = {
+      kind: "AssertError",
+      span,
+    };
+  }
+
+  // Next sim state
+  const nextSimState: SimState = {
+    statement: stepResult.statement,
+    span,
+    isAtBreakpoint,
+    isStatementEnd: stepResult.is_statement_end(),
+    markerCurrent,
+    marker: currSimState?.isStatementEnd
       ? []
-      : currSimState?.currCondition
-      ? [...currSimState.conditions, currSimState.currCondition]
-      : currSimState?.conditions ?? [],
+      : currSimState?.markerCurrent
+      ? [...currSimState.marker, currSimState.markerCurrent]
+      : currSimState?.marker ?? [],
   };
 
+  // Free wasm object
   stepResult.free();
+
   return nextSimState;
 }

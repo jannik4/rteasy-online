@@ -24,15 +24,15 @@ fn mult() {
 
     // A
     simulator.write_bus(&Ident("INBUS".to_string()), Value::parse_dec("3").unwrap()).unwrap();
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
 
     // FACTOR
     simulator.write_bus(&Ident("INBUS".to_string()), Value::parse_dec("7").unwrap()).unwrap();
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
 
     // Run to end
     while !simulator.is_finished() {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
 
     assert_eq!(

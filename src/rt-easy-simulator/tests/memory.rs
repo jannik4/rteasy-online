@@ -54,7 +54,7 @@ fn memory() {
 
     // 1
     for _ in 0..4 {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
     let page =
         simulator.memory_page(&Ident("MEM".to_string()), Value::parse_dec("1").unwrap()).unwrap();
@@ -69,7 +69,7 @@ fn memory() {
 
     // 2
     for _ in 0..2 {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
     let page =
         simulator.memory_page(&Ident("MEM".to_string()), Value::parse_dec("1").unwrap()).unwrap();

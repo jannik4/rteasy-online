@@ -16,7 +16,7 @@ fn overflow() {
     let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // 1
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.bus_value(&Ident("A".to_string())).unwrap(),
         Value::parse_dec("0").unwrap()
@@ -27,14 +27,14 @@ fn overflow() {
     );
 
     // 2
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.bus_value(&Ident("A".to_string())).unwrap(),
         Value::parse_dec("2").unwrap()
     );
 
     // 3
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.bus_value(&Ident("A".to_string())).unwrap(),
         Value::parse_dec("14").unwrap()

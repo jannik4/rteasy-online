@@ -16,7 +16,7 @@ fn dr_then_write() {
 
     let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
 
     assert_eq!(
@@ -40,7 +40,7 @@ fn ar_then_read() {
 
     let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
 
     assert_eq!(
@@ -74,7 +74,7 @@ fn read_then_read() {
 
     let mut simulator = Simulator::init(util::compile(SOURCE));
     while !simulator.is_finished() {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
 
     assert_eq!(

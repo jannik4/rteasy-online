@@ -29,7 +29,7 @@ fn switch_case() {
 
     // 1
     for _ in 0..3 {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
@@ -37,7 +37,7 @@ fn switch_case() {
     );
 
     // 2
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_dec("42").unwrap()
@@ -72,7 +72,7 @@ fn switch_case_const_expr() {
 
     // Run to end
     while !simulator.is_finished() {
-        simulator.step().unwrap();
+        simulator.step(false).unwrap();
     }
 
     assert_eq!(

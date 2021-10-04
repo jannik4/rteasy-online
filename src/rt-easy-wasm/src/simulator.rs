@@ -44,16 +44,16 @@ impl Simulator {
         self.0.breakpoints().collect()
     }
 
-    pub fn micro_step(&mut self) -> Result<Option<StepResult>> {
+    pub fn micro_step(&mut self, stop_on_breakpoint: bool) -> Result<Option<StepResult>> {
         map_err(move || {
-            let step_result = self.0.micro_step()?;
+            let step_result = self.0.micro_step(stop_on_breakpoint)?;
             Ok(step_result.map(Into::into))
         })
     }
 
-    pub fn step(&mut self) -> Result<Option<StepResult>> {
+    pub fn step(&mut self, stop_on_breakpoint: bool) -> Result<Option<StepResult>> {
         map_err(move || {
-            let step_result = self.0.step()?;
+            let step_result = self.0.step(stop_on_breakpoint)?;
             Ok(step_result.map(Into::into))
         })
     }

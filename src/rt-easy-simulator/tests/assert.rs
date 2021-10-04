@@ -1,6 +1,6 @@
 mod util;
 
-use rt_easy_simulator::Simulator;
+use rt_easy_simulator::{Simulator, StepResultKind};
 
 const SOURCE: &'static str = r#"
 declare register X(7:0)
@@ -23,9 +23,12 @@ fn assert() {
     let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // 1
-    assert!(simulator.step().unwrap().is_some());
+    assert!(matches!(
+        simulator.step(false).unwrap().unwrap().kind,
+        StepResultKind::StatementEnd(..)
+    ));
 
     // 2
-    assert!(simulator.step().unwrap().is_some());
-    assert!(simulator.step().unwrap().is_none());
+    assert!(matches!(simulator.step(false).unwrap().unwrap().kind, StepResultKind::AssertError));
+    assert!(simulator.step(false).unwrap().is_none());
 }

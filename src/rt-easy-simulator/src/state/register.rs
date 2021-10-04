@@ -51,9 +51,13 @@ impl RegisterState {
         Ok(())
     }
 
-    pub fn clock(&mut self) {
-        if let Some(value_next) = self.value_next.get_mut().take() {
-            self.value = value_next;
+    pub fn clock(&mut self) -> bool {
+        match self.value_next.get_mut().take() {
+            Some(value_next) => {
+                self.value = value_next;
+                true
+            }
+            None => false,
         }
     }
 

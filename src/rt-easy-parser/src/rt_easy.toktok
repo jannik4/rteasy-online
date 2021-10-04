@@ -34,12 +34,17 @@ declare_memory -> DeclareMemory<'s>:
 
 // Statement
 statement -> Statement<'s>:
-    opt(terminated(spanned(label), ":")) statement_operations ";" {
-        Statement { label: $1, operations: $2, span: $span.into() }
+    opt(terminated(spanned(label), ":")) statement_operations spanned(";") {
+        Statement { label: $1, operations: $2, span: $span.into(), span_semicolon: $3.span }
     };
 statement_operations -> Operations<'s>:
-    operations opt(preceded("|", operations)) {
-        Operations { operations: $1, operations_post: $2, span: $span.into() }
+    operations opt(pair(spanned("|"), operations)) {
+        Operations {
+          span: $span.into(),
+          span_pipe: $2.as_ref().map(|post| post.0.span),
+          operations: $1,
+          operations_post: $2.map(|post| post.1),
+        }
     };
 
 // Operations

@@ -22,22 +22,22 @@ fn register_array() {
     assert_eq!(simulator.register_array_page_count(&Ident("ARR".to_string())).unwrap(), 2);
 
     // 1
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_array_page(&Ident("ARR".to_string()), 1).unwrap()[0].1,
         Value::parse_dec("12").unwrap()
     );
 
     // 2
-    simulator.step().unwrap();
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_array_page(&Ident("ARR".to_string()), 1).unwrap()[1].1,
         Value::parse_dec("15").unwrap()
     );
 
     // 3
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_array_page(&Ident("ARR".to_string()), 2).unwrap()[31].1,
         Value::parse_bin("10").unwrap()

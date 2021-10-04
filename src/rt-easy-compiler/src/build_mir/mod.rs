@@ -15,6 +15,8 @@ pub fn build_mir<'s>(ast: ast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>
             label: Some(trailing_label),
             steps: Spanned { node: Vec::new(), span: Span::dummy() },
             span: trailing_label.span,
+            span_semicolon: Span::dummy(),
+            span_pipe: None,
         });
     }
 
@@ -46,6 +48,8 @@ fn build_statements<'s>(
                     span: statement.operations.span,
                 },
                 span: statement.span,
+                span_semicolon: statement.span_semicolon,
+                span_pipe: statement.operations.span_pipe,
             })
         })
         .collect()

@@ -18,35 +18,35 @@ fn bit_op() {
     let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // xor
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("1011").unwrap()
     );
 
     // or
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("1111").unwrap()
     );
 
     // nor
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("11111111111111111111111111110000").unwrap()
     );
 
     // and
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("100").unwrap()
     );
 
     // nand
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("A".to_string())).unwrap(),
         Value::parse_bin("11111111111111111111111111111011").unwrap()

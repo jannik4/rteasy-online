@@ -1,4 +1,4 @@
-use super::{impl_step::Cursor, Simulator};
+use super::Simulator;
 use crate::Error;
 use rtcore::{
     program::{BusKind, Ident, RegisterKind},
@@ -39,7 +39,7 @@ impl Simulator {
         self.state.bus_mut(name)?.write(None, value)?;
 
         // Persist bus value if between statements
-        if self.cursor.as_ref().map(Cursor::is_at_statement_start).unwrap_or(false) {
+        if self.cursor.is_at_statement_start() {
             self.buses_persist.insert(name.clone());
         }
 

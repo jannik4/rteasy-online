@@ -112,12 +112,15 @@ export interface GlobalModelRun extends GlobalModelCommon {
 }
 
 export interface SimState {
+  statement: number;
   span: Range;
-  currCondition: SimStateCondition | null;
-  conditions: SimStateCondition[];
+  isAtBreakpoint: boolean;
+  isStatementEnd: boolean;
+  markerCurrent: SimStateMarker | null;
+  marker: SimStateMarker[];
 }
 
-export interface SimStateCondition {
-  value: boolean;
+export interface SimStateMarker {
+  kind: "True" | "False" | "Breakpoint" | "AssertError";
   span: Range;
 }

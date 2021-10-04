@@ -17,21 +17,21 @@ fn ctx_size() {
     let mut simulator = Simulator::init(util::compile(SOURCE));
 
     // 1
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_bin("10").unwrap()
     );
 
     // 2
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_bin("0101").unwrap()
     );
 
     // 3
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_bin("11111111").unwrap()

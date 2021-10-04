@@ -17,23 +17,23 @@ X <- 8 - (2 + 5) - 1;
 fn add_sub_assoc() {
     let mut simulator = Simulator::init(util::compile(SOURCE));
 
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_dec("9").unwrap()
     );
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_dec("3").unwrap()
     );
 
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_dec("10").unwrap()
     );
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),
         Value::parse_dec("0").unwrap()

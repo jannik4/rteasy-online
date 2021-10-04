@@ -51,9 +51,13 @@ impl MemoryState {
         Ok(())
     }
 
-    pub fn clock(&mut self) {
-        if let Some((ar_value, dr_value)) = self.data_next.get_mut().take() {
-            self.data.insert(ar_value, dr_value);
+    pub fn clock(&mut self) -> Option<Value> {
+        match self.data_next.get_mut().take() {
+            Some((ar_value, dr_value)) => {
+                self.data.insert(ar_value.clone(), dr_value);
+                Some(ar_value)
+            }
+            None => None,
         }
     }
 

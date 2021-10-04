@@ -24,19 +24,19 @@ fn input_misc() {
     simulator.write_bus(&Ident("IN".to_string()), three.clone()).unwrap();
 
     // S0
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(simulator.bus_value(&Ident("IN".to_string())).unwrap(), three.clone());
     assert_eq!(simulator.bus_value(&Ident("BUS".to_string())).unwrap(), three.clone());
     assert_eq!(simulator.register_value(&Ident("REG".to_string())).unwrap(), zero.clone());
 
     // S1
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(simulator.bus_value(&Ident("IN".to_string())).unwrap(), three.clone());
     assert_eq!(simulator.bus_value(&Ident("BUS".to_string())).unwrap(), zero.clone());
     assert_eq!(simulator.register_value(&Ident("REG".to_string())).unwrap(), zero.clone());
 
     // S2
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(simulator.bus_value(&Ident("IN".to_string())).unwrap(), three.clone());
     assert_eq!(simulator.bus_value(&Ident("BUS".to_string())).unwrap(), zero.clone());
     assert_eq!(simulator.register_value(&Ident("REG".to_string())).unwrap(), zero.clone());
@@ -44,7 +44,7 @@ fn input_misc() {
     simulator.write_bus(&Ident("IN".to_string()), six.clone()).unwrap();
 
     // S3
-    simulator.step().unwrap();
+    simulator.step(false).unwrap();
     assert_eq!(simulator.bus_value(&Ident("IN".to_string())).unwrap(), six.clone());
     assert_eq!(simulator.bus_value(&Ident("BUS".to_string())).unwrap(), six.clone());
     assert_eq!(simulator.register_value(&Ident("REG".to_string())).unwrap(), six.clone());

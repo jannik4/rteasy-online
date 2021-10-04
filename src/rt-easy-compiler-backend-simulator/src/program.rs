@@ -28,6 +28,8 @@ impl Generate<mir::Statement<'_>> for Statement {
                 }
             },
             span: statement.span,
+            span_semicolon: statement.span_semicolon,
+            span_pipe: statement.span_pipe,
         })
     }
 }

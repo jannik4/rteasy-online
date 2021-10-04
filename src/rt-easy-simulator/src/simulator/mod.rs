@@ -2,11 +2,9 @@ mod impl_state_view;
 mod impl_step;
 
 use self::impl_step::Cursor;
-use crate::state::State;
+use crate::{state::State, Changed};
 use rtcore::program::{Ident, Program, Signals, Span};
 use std::collections::{BTreeSet, HashSet};
-
-pub use self::impl_step::StepResult;
 
 pub struct Simulator {
     cycle_count: usize,
@@ -14,7 +12,7 @@ pub struct Simulator {
     buses_persist: HashSet<Ident>,
 
     program: Program,
-    cursor: Option<Cursor>,
+    cursor: Cursor,
 
     breakpoints: BTreeSet<usize>,
 }
@@ -27,7 +25,7 @@ impl Simulator {
             buses_persist: HashSet::new(),
 
             program,
-            cursor: Some(Cursor::new(0)),
+            cursor: Cursor::new(0),
 
             breakpoints: BTreeSet::new(),
         }
@@ -38,7 +36,7 @@ impl Simulator {
         self.state = State::init(&self.program);
         self.buses_persist = HashSet::new();
 
-        self.cursor = Some(Cursor::new(0));
+        self.cursor = Cursor::new(0);
     }
 
     pub fn cycle_count(&self) -> usize {
@@ -46,7 +44,7 @@ impl Simulator {
     }
 
     pub fn is_finished(&self) -> bool {
-        self.cursor.is_none()
+        !self.cursor.is_live()
     }
 
     pub fn signals(&self) -> Signals {
@@ -70,4 +68,21 @@ impl Simulator {
     pub fn breakpoints(&self) -> impl Iterator<Item = usize> + '_ {
         self.breakpoints.iter().copied()
     }
+}
+
+#[derive(Debug)]
+pub struct StepResult {
+    pub statement: usize,
+    pub span: Span,
+    pub kind: StepResultKind,
+}
+
+#[derive(Debug)]
+pub enum StepResultKind {
+    Void,
+    Condition { result: bool, span: Span },
+    Pipe(Vec<Changed>),
+    StatementEnd(Vec<Changed>),
+    Breakpoint,
+    AssertError,
 }
