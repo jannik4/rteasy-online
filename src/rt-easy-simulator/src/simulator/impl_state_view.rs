@@ -98,6 +98,13 @@ impl Simulator {
     pub fn memory_page_next(&self, name: &Ident, page_nr: Value) -> Result<Option<Value>, Error> {
         Ok(self.state.memory(name)?.page_next(page_nr))
     }
+    pub fn memory_page_nr_of_address(
+        &self,
+        name: &Ident,
+        address: Value,
+    ) -> Result<Option<Value>, Error> {
+        Ok(self.state.memory(name)?.page_nr_of_address(address))
+    }
     pub fn memory_page(&self, name: &Ident, page_nr: Value) -> Result<Vec<(Value, Value)>, Error> {
         Ok(self.state.memory(name)?.page(page_nr))
     }

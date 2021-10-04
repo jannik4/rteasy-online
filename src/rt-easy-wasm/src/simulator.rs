@@ -216,6 +216,16 @@ impl Simulator {
         })
     }
 
+    pub fn memory_page_nr_of_address(&self, name: String, address: &str) -> Result<Option<String>> {
+        map_err(move || {
+            let address = match Value::parse_hex(address) {
+                Ok(address) => address,
+                Err(()) => return Err(JsError::from_str("invalid address")),
+            };
+            Ok(self.0.memory_page_nr_of_address(&Ident(name), address)?.map(|value| value.as_dec()))
+        })
+    }
+
     pub fn memory_page(&self, name: String, page_nr: &str, base: &str) -> Result<Vec<JsValue>> {
         map_err(move || {
             let page_nr = match Value::parse_dec(page_nr) {

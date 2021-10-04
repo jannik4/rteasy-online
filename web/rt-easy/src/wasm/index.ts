@@ -245,6 +245,8 @@ export class Simulator {
     this.simulatorWasm.memory_page_prev(name, pageNr) ?? null;
   memoryPageNext = (name: string, pageNr: string): string | null =>
     this.simulatorWasm.memory_page_next(name, pageNr) ?? null;
+  memoryPageNrOfAddress = (name: string, address: string): string | null =>
+    this.simulatorWasm.memory_page_nr_of_address(name, address) ?? null;
   memoryPage = (
     name: string,
     pageNr: string,

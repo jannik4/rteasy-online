@@ -112,6 +112,18 @@ impl MemoryState {
         Some(page_nr + Value::one(1))
     }
 
+    pub fn page_nr_of_address(&self, address: Value) -> Option<Value> {
+        let page_idx = address >> MEMORY_PAGE_SIZE_EXP;
+        let page_nr = page_idx + Value::one(1);
+
+        // Check in range (1..=page_count)
+        if page_nr < Value::one(1) || page_nr > self.page_count() {
+            return None;
+        }
+
+        Some(page_nr)
+    }
+
     pub fn page(&self, page_nr: Value) -> Vec<(Value, Value)> {
         // Check in range (1..=page_count)
         if page_nr < Value::one(1) || page_nr > self.page_count() {
