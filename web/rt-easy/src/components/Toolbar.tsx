@@ -181,20 +181,24 @@ const Toolbar: React.FC<Props> = () => {
       />
       <MenuItem
         icon={
-          globalModel.tag === "Run" && globalModel.isRunning() ? "stop" : "play"
+          globalModel.tag === "Run" && globalModel.simulator.isRunning()
+            ? "stop"
+            : "play"
         }
         text={
-          globalModel.tag === "Run" && globalModel.isRunning() ? "Stop" : "Run"
+          globalModel.tag === "Run" && globalModel.simulator.isRunning()
+            ? "Stop"
+            : "Run"
         }
         label="F6"
         intent={
-          globalModel.tag === "Run" && globalModel.isRunning()
+          globalModel.tag === "Run" && globalModel.simulator.isRunning()
             ? "danger"
             : "success"
         }
         disabled={globalModel.tag === "Edit"}
         onClick={() => {
-          if (globalModel.tag === "Run") globalModel.runStop();
+          if (globalModel.tag === "Run") globalModel.toggleRun();
         }}
       />
       <MenuItem
@@ -204,7 +208,7 @@ const Toolbar: React.FC<Props> = () => {
         intent="success"
         disabled={globalModel.tag === "Edit"}
         onClick={() => {
-          if (globalModel.tag === "Run") globalModel.reset();
+          if (globalModel.tag === "Run") globalModel.simulator.reset();
         }}
       />
       <MenuItem
@@ -214,7 +218,7 @@ const Toolbar: React.FC<Props> = () => {
         intent="none"
         disabled={globalModel.tag === "Edit"}
         onClick={() => {
-          if (globalModel.tag === "Run") globalModel.step();
+          if (globalModel.tag === "Run") globalModel.simulator.step();
         }}
       />
       <MenuItem
@@ -224,7 +228,7 @@ const Toolbar: React.FC<Props> = () => {
         intent="none"
         disabled={globalModel.tag === "Edit"}
         onClick={() => {
-          if (globalModel.tag === "Run") globalModel.microStep();
+          if (globalModel.tag === "Run") globalModel.simulator.microStep();
         }}
       />
     </Menu>
@@ -303,17 +307,17 @@ const Toolbar: React.FC<Props> = () => {
         />
         <Button
           icon={
-            globalModel.tag === "Run" && globalModel.isRunning()
+            globalModel.tag === "Run" && globalModel.simulator.isRunning()
               ? "stop"
               : "play"
           }
           onClick={() => {
-            if (globalModel.tag === "Run") globalModel.runStop();
+            if (globalModel.tag === "Run") globalModel.toggleRun();
           }}
           className="noFocus"
           style={{ marginRight: "16px" }}
           intent={
-            globalModel.tag === "Run" && globalModel.isRunning()
+            globalModel.tag === "Run" && globalModel.simulator.isRunning()
               ? "danger"
               : "success"
           }
@@ -324,7 +328,7 @@ const Toolbar: React.FC<Props> = () => {
         <Button
           icon="reset"
           onClick={() => {
-            if (globalModel.tag === "Run") globalModel.reset();
+            if (globalModel.tag === "Run") globalModel.simulator.reset();
           }}
           className="noFocus"
           style={{ marginRight: "16px" }}
@@ -336,7 +340,7 @@ const Toolbar: React.FC<Props> = () => {
         <Button
           icon="step-forward"
           onClick={() => {
-            if (globalModel.tag === "Run") globalModel.step();
+            if (globalModel.tag === "Run") globalModel.simulator.step();
           }}
           className="noFocus"
           style={{ marginRight: "16px" }}
@@ -348,7 +352,7 @@ const Toolbar: React.FC<Props> = () => {
         <Button
           icon="caret-right"
           onClick={() => {
-            if (globalModel.tag === "Run") globalModel.microStep();
+            if (globalModel.tag === "Run") globalModel.simulator.microStep();
           }}
           className="noFocus"
           intent="none"
@@ -399,20 +403,20 @@ function handleUserKeyPress(
     case "F6":
       event.preventDefault();
       if (event.repeat) return;
-      if (globalModel.tag === "Run") globalModel.runStop();
+      if (globalModel.tag === "Run") globalModel.toggleRun();
       break;
     case "F7":
       event.preventDefault();
       if (event.repeat) return;
-      if (globalModel.tag === "Run") globalModel.reset();
+      if (globalModel.tag === "Run") globalModel.simulator.reset();
       break;
     case "F8":
       event.preventDefault();
-      if (globalModel.tag === "Run") globalModel.step();
+      if (globalModel.tag === "Run") globalModel.simulator.step();
       break;
     case "F9":
       event.preventDefault();
-      if (globalModel.tag === "Run") globalModel.microStep();
+      if (globalModel.tag === "Run") globalModel.simulator.microStep();
       break;
   }
 }

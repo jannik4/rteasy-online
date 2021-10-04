@@ -1,4 +1,5 @@
-import { Base, isBase, ClockRate, isClockRate } from "./global/context";
+import { ClockRate, isClockRate } from "./global/context";
+import { Base, isBase } from "./wasm";
 
 const VERSION = "0.0.1";
 

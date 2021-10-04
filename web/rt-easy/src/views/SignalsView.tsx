@@ -1,20 +1,16 @@
-import React, { useMemo, useContext } from "react";
+import React, { useContext } from "react";
 import { HTMLTable } from "@blueprintjs/core";
 
-import { GlobalContext, Signals } from "../global/context";
+import { GlobalContext } from "../global/context";
 
 interface Props {}
 
 const StateView: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
-  const signals = useMemo<Signals>(() => {
-    return globalModel.tag === "Run"
-      ? globalModel.signals()
+  const signals =
+    globalModel.tag === "Run"
+      ? globalModel.simulator.getSignals()
       : { conditionSignals: [], controlSignals: [] };
-
-    // Signals are only dependent on tag and source code
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [globalModel.tag, globalModel.editorModel.getValue()]);
 
   const headerRow = (title: string) => (
     <tr style={{ backgroundColor: "#f2f2f2" }}>

@@ -1,6 +1,6 @@
 import { editor } from "monaco-editor";
-import { Base, ClockRate, SimState } from "./context";
-import { Simulator } from "../wasm";
+import { ClockRate } from "./context";
+import { Simulator, Base } from "../wasm";
 import { Storage } from "../storage";
 
 export type State = StateEdit | StateRun;
@@ -17,9 +17,7 @@ export interface StateEdit extends StateCommon {
 
 export interface StateRun extends StateCommon {
   tag: "Run";
-  simState: SimState | null;
   simulator: Simulator;
-  timerId: NodeJS.Timeout | null;
 }
 
 export function initialState(): State {

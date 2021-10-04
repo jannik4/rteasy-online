@@ -26,7 +26,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
   // Page count
   const pageCount = useMemo(() => {
     if (globalModel.tag === "Edit") return "";
-    return globalModel.registerArrayPageCount(registerArray);
+    return globalModel.simulator.registerArrayPageCount(registerArray);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalModel.tag, registerArray]);
 
@@ -98,7 +98,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
           </tr>
         </thead>
         <tbody>
-          {globalModel
+          {globalModel.simulator
             .registerArrayPage(registerArray, pageNr, base)
             .map((row) => (
               <tr key={row.idx}>
@@ -111,7 +111,7 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                     value={() => row.value}
                     valueNext={null}
                     onChanged={(value: string) =>
-                      globalModel.writeRegisterArray(
+                      globalModel.simulator.writeRegisterArray(
                         registerArray,
                         row.idx,
                         value,

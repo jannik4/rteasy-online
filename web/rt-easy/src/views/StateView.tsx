@@ -3,9 +3,10 @@ import { HTMLTable, HTMLSelect, Text, Button } from "@blueprintjs/core";
 import { DockLocation, Orientation } from "flexlayout-react";
 
 import { InputValue, Focused } from "../components";
-import { GlobalContext, baseValues, isBase } from "../global/context";
+import { GlobalContext } from "../global/context";
 import { LayoutModelContext, LayoutModel } from "../layout/context";
 import * as consts from "../layout/consts";
+import { baseValues, isBase } from "../wasm";
 
 interface Props {}
 
@@ -20,12 +21,12 @@ const StateView: React.FC<Props> = () => {
     useMemo(() => {
       if (globalModel.tag === "Edit") return [[], [], [], [], [], []];
       return [
-        globalModel.buses("Input"),
-        globalModel.registers("Output"),
-        globalModel.registers("Intern"),
-        globalModel.buses("Intern"),
-        globalModel.registerArrays(),
-        globalModel.memories(),
+        globalModel.simulator.buses("Input"),
+        globalModel.simulator.registers("Output"),
+        globalModel.simulator.registers("Intern"),
+        globalModel.simulator.buses("Intern"),
+        globalModel.simulator.registerArrays(),
+        globalModel.simulator.memories(),
       ];
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [globalModel.tag]);
@@ -56,10 +57,14 @@ const StateView: React.FC<Props> = () => {
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
-                value={(base) => globalModel.registerValue(name, base)}
-                valueNext={(base) => globalModel.registerValueNext(name, base)}
+                value={(base) =>
+                  globalModel.simulator.registerValue(name, base)
+                }
+                valueNext={(base) =>
+                  globalModel.simulator.registerValueNext(name, base)
+                }
                 onChanged={(value, base) =>
-                  globalModel.writeRegister(name, value, base)
+                  globalModel.simulator.writeRegister(name, value, base)
                 }
               />
             </td>
@@ -78,10 +83,10 @@ const StateView: React.FC<Props> = () => {
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
-                value={(base) => globalModel.busValue(name, base)}
+                value={(base) => globalModel.simulator.busValue(name, base)}
                 valueNext={null}
                 onChanged={(value, base) =>
-                  globalModel.writeBus(name, value, base)
+                  globalModel.simulator.writeBus(name, value, base)
                 }
               />
             </td>
@@ -112,7 +117,7 @@ const StateView: React.FC<Props> = () => {
             </option>
           ))}
         </HTMLSelect>
-        <Text>Cycle count: {globalModel.cycleCount()}</Text>
+        <Text>Cycle count: {globalModel.simulator.cycleCount()}</Text>
       </div>
 
       <div style={{ height: 16 }} />

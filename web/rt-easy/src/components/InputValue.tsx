@@ -1,8 +1,9 @@
 import React, { useContext, useState } from "react";
 import { InputGroup } from "@blueprintjs/core";
 
-import { GlobalContext, Base, BaseInherit } from "../global/context";
+import { GlobalContext, BaseInherit } from "../global/context";
 import { BaseInheritSelect } from "../components";
+import { Base } from "../wasm";
 
 interface Props {
   withBaseSelect?: false;

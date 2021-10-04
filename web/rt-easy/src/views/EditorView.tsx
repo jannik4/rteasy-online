@@ -11,12 +11,12 @@ const EditorView: React.FC<Props> = () => {
   const globalModel = useContext(GlobalContext);
 
   if (globalModel.editor !== null && globalModel.tag === "Run") {
-    const simState = globalModel.simState;
+    const simState = globalModel.simulator.getSimState();
     let decorations = [];
 
     // Breakpoints (TODO: Use memo to calc ranges)
-    for (const breakpoint of globalModel.breakpoints()) {
-      const statementRange = globalModel.statementRange(breakpoint);
+    for (const breakpoint of globalModel.simulator.breakpoints()) {
+      const statementRange = globalModel.simulator.statementRange(breakpoint);
       if (statementRange !== null) {
         decorations.push({
           range: new monaco.Range(
@@ -83,10 +83,10 @@ const EditorView: React.FC<Props> = () => {
 
         if (breakpoint !== null) {
           // Toggle breakpoint
-          if (globalModel.breakpoints().includes(breakpoint)) {
-            globalModel.removeBreakpoint(breakpoint);
+          if (globalModel.simulator.breakpoints().includes(breakpoint)) {
+            globalModel.simulator.removeBreakpoint(breakpoint);
           } else {
-            globalModel.addBreakpoint(breakpoint);
+            globalModel.simulator.addBreakpoint(breakpoint);
           }
         }
       }
@@ -143,7 +143,7 @@ function calcBreakpoint(
   let breakpoint: number | null = null;
   for (let statement = 0; true; statement++) {
     // Get statement range
-    const statementRange = globalModel.statementRange(statement);
+    const statementRange = globalModel.simulator.statementRange(statement);
     if (statementRange === null) break;
 
     // Check perfect match

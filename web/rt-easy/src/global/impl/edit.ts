@@ -14,15 +14,17 @@ export function model(
 ): GlobalModelEdit {
   const build = () => {
     try {
-      const simulator = rtEasy.build(editorModel.getValue());
+      const onChange = () =>
+        setState((prev) => {
+          return { ...prev };
+        });
+      const simulator = rtEasy.build(editorModel.getValue(), onChange);
       setState({
         tag: "Run",
         editor: state.editor,
         base: state.base,
         clockRate: state.clockRate,
         simulator,
-        simState: null,
-        timerId: null,
       });
     } catch (_e) {
       alert("Code has errors");

@@ -26,7 +26,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
   // Page count
   const pageCount = useMemo(() => {
     if (globalModel.tag === "Edit") return "";
-    return globalModel.memoryPageCount(memory);
+    return globalModel.simulator.memoryPageCount(memory);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [globalModel.tag, memory]);
 
@@ -35,7 +35,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
     accept: [".rtmem"],
     onChange: (_name, content) => {
       if (globalModel.tag === "Edit") return;
-      globalModel.memoryLoadFromSave(memory, content);
+      globalModel.simulator.memoryLoadFromSave(memory, content);
     },
   });
 
@@ -77,7 +77,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
             onClick={() =>
               downloadFile(
                 `memory-${memory}.rtmem`,
-                globalModel.memorySave(memory)
+                globalModel.simulator.memorySave(memory)
               )
             }
             small
@@ -99,7 +99,10 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
         <Button
           icon="arrow-left"
           onClick={() => {
-            const pageNrPrev = globalModel.memoryPagePrev(memory, pageNr);
+            const pageNrPrev = globalModel.simulator.memoryPagePrev(
+              memory,
+              pageNr
+            );
             if (pageNrPrev !== null) setPageNr(pageNrPrev);
           }}
           minimal
@@ -111,7 +114,10 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
         <Button
           icon="arrow-right"
           onClick={() => {
-            const pageNrNext = globalModel.memoryPageNext(memory, pageNr);
+            const pageNrNext = globalModel.simulator.memoryPageNext(
+              memory,
+              pageNr
+            );
             if (pageNrNext !== null) setPageNr(pageNrNext);
           }}
           minimal
@@ -129,7 +135,7 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
           </tr>
         </thead>
         <tbody>
-          {globalModel.memoryPage(memory, pageNr, base).map((row) => (
+          {globalModel.simulator.memoryPage(memory, pageNr, base).map((row) => (
             <tr key={row.address}>
               <td>{row.address}</td>
               <td>
@@ -140,7 +146,12 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
                   value={() => row.value}
                   valueNext={null}
                   onChanged={(value: string) =>
-                    globalModel.writeMemory(memory, row.address, value, base)
+                    globalModel.simulator.writeMemory(
+                      memory,
+                      row.address,
+                      value,
+                      base
+                    )
                   }
                 />
               </td>

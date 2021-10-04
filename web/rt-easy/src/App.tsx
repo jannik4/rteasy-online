@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useMonaco } from "@monaco-editor/react";
 
 import { RtEasyContext } from "./wasm/context";
-import { RtEasy } from "./wasm";
+import { RtEasy, load } from "./wasm";
 import { Loading, Scaffold } from "./components";
 import { setUpRtEasyLang } from "./util/monacoRtEasy";
 
@@ -12,10 +12,7 @@ const App: React.FC<Props> = () => {
   // Load rtEasy wasm
   const [rtEasy, setRtEasy] = useState<RtEasy | null>(null);
   useEffect(() => {
-    import("./wasm/pkg").then((rtEasy) => {
-      rtEasy.setPanicHook();
-      setRtEasy(rtEasy);
-    });
+    load().then((rtEasy) => setRtEasy(rtEasy));
   }, []);
 
   // Load monaco editor
