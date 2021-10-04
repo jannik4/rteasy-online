@@ -280,15 +280,25 @@ export interface Signals {
 export interface SimState {
   statement: number;
   span: Range;
-  isAtBreakpoint: boolean;
-  isStatementEnd: boolean;
+
   markerCurrent: SimStateMarker | null;
   marker: SimStateMarker[];
+
+  isAtBreakpoint: boolean;
+  isStatementEnd: boolean;
+
+  changed: Changed | null;
 }
 
 export interface SimStateMarker {
   kind: "True" | "False" | "Breakpoint" | "AssertError";
   span: Range;
+}
+
+export interface Changed {
+  registers: Set<string>; // Name
+  registerArrays: Map<string, number>; // Name -> idx
+  memories: Map<string, string>; // Name -> address
 }
 
 // ------------ HELPER ------------
@@ -346,53 +356,133 @@ function simulatorStep({
   // Check is finished
   if (simulator.is_finished()) return currSimState;
 
-  // Call step
-  const stepResult = micro
+  // Step
+  const stepResultWasm = micro
     ? simulator.micro_step(stopOnBreakpoint) ?? null
     : simulator.step(stopOnBreakpoint) ?? null;
-  if (stepResult === null) return null;
+  if (stepResultWasm === null) return null;
 
-  // ...
-  const span = calcRange(sourceCode, stepResult.span);
-  let isAtBreakpoint = false;
+  // Map step result
+  let stepResult = calcStepResult(stepResultWasm, sourceCode);
+  stepResultWasm.free();
 
-  // Calc marker
-  let markerCurrent: SimStateMarker | null = null;
-  if (stepResult.is_condition()) {
-    const stepResultCondition = stepResult.as_condition()!;
-    markerCurrent = {
-      kind: stepResultCondition.result ? "True" : "False",
-      span: calcRange(sourceCode, stepResultCondition.span),
-    };
-  } else if (stepResult.is_breakpoint()) {
-    isAtBreakpoint = true;
-    markerCurrent = {
-      kind: "Breakpoint",
-      span,
-    };
-  } else if (stepResult.is_assert_error()) {
-    markerCurrent = {
-      kind: "AssertError",
-      span,
-    };
+  // Marker
+  let markerCurrent: SimStateMarker | null;
+  switch (stepResult.kind.tag) {
+    case "Condition":
+      markerCurrent = {
+        kind: stepResult.kind.result ? "True" : "False",
+        span: stepResult.kind.span,
+      };
+      break;
+    case "Breakpoint":
+      markerCurrent = {
+        kind: "Breakpoint",
+        span: stepResult.span,
+      };
+      break;
+    case "AssertError":
+      markerCurrent = {
+        kind: "AssertError",
+        span: stepResult.span,
+      };
+      break;
+    case "Void":
+    case "Pipe":
+    case "StatementEnd":
+      markerCurrent = null;
+      break;
   }
 
   // Next sim state
   const nextSimState: SimState = {
     statement: stepResult.statement,
-    span,
-    isAtBreakpoint,
-    isStatementEnd: stepResult.is_statement_end(),
+    span: stepResult.span,
+
     markerCurrent,
     marker: currSimState?.isStatementEnd
       ? []
       : currSimState?.markerCurrent
       ? [...currSimState.marker, currSimState.markerCurrent]
       : currSimState?.marker ?? [],
+
+    isAtBreakpoint: stepResult.kind.tag === "Breakpoint",
+    isStatementEnd: stepResult.kind.tag === "StatementEnd",
+
+    changed:
+      stepResult.kind.tag === "Pipe" || stepResult.kind.tag === "StatementEnd"
+        ? stepResult.kind.changed
+        : null,
   };
 
-  // Free wasm object
-  stepResult.free();
-
   return nextSimState;
+}
+
+interface StepResult {
+  statement: number;
+  span: Range;
+  kind: StepResultKind;
+}
+
+type StepResultKind =
+  | { tag: "Void" }
+  | { tag: "Condition"; result: boolean; span: Range }
+  | { tag: "Pipe"; changed: Changed }
+  | { tag: "StatementEnd"; changed: Changed }
+  | { tag: "Breakpoint" }
+  | { tag: "AssertError" };
+
+function calcStepResult(
+  stepResultWasm: wasm.StepResult,
+  sourceCode: string
+): StepResult {
+  let kind: StepResultKind;
+
+  if (stepResultWasm.is_void()) {
+    kind = { tag: "Void" };
+  } else if (stepResultWasm.is_condition()) {
+    const cond = stepResultWasm.as_condition()!;
+    kind = {
+      tag: "Condition",
+      result: cond.result,
+      span: calcRange(sourceCode, cond.span),
+    };
+    cond.free();
+  } else if (stepResultWasm.is_pipe()) {
+    kind = { tag: "Pipe", changed: calcChanged(stepResultWasm) };
+  } else if (stepResultWasm.is_statement_end()) {
+    kind = { tag: "StatementEnd", changed: calcChanged(stepResultWasm) };
+  } else if (stepResultWasm.is_breakpoint()) {
+    kind = { tag: "Breakpoint" };
+  } else if (stepResultWasm.is_assert_error()) {
+    kind = { tag: "AssertError" };
+  } else {
+    throw new Error("unexpected step result");
+  }
+
+  return {
+    statement: stepResultWasm.statement,
+    span: calcRange(sourceCode, stepResultWasm.span),
+    kind,
+  };
+}
+
+function calcChanged(stepResultWasm: wasm.StepResult): Changed {
+  const registersWasm = stepResultWasm.changed_registers();
+  const registers = new Set<string>();
+  registersWasm.forEach((e) => registers.add(e));
+
+  const registerArraysWasm = stepResultWasm.changed_register_arrays();
+  const registerArrays = new Map<string, number>();
+  for (let i = 0; i < registerArraysWasm.length; i += 2) {
+    registerArrays.set(registerArraysWasm[i], registerArraysWasm[i + 1]);
+  }
+
+  const memoriesWasm = stepResultWasm.changed_memories();
+  const memories = new Map<string, string>();
+  for (let i = 0; i < memoriesWasm.length; i += 2) {
+    memories.set(memoriesWasm[i], memoriesWasm[i + 1]);
+  }
+
+  return { registers, registerArrays, memories };
 }

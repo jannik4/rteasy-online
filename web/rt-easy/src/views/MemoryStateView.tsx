@@ -143,6 +143,11 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
                   focused={focused}
                   setFocused={setFocused}
                   inputKey={row.address}
+                  highlight={
+                    globalModel.simulator
+                      .getSimState()
+                      ?.changed?.memories.get(memory) === row.address
+                  }
                   value={() => row.value}
                   valueNext={null}
                   onChanged={(value: string) =>

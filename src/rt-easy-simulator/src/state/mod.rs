@@ -74,22 +74,25 @@ impl State {
         Self { registers, buses, memories, register_arrays }
     }
 
-    pub fn clock(&mut self) -> Vec<Changed> {
-        let mut changed = Vec::new();
+    pub fn clock(&mut self) -> Changed {
+        let mut changed = Changed::default();
 
         for (name, state) in &mut self.registers {
             if state.clock() {
-                changed.push(Changed::Register { name: name.clone() });
+                changed.registers.insert(name.clone());
             }
         }
         for (name, state) in &mut self.memories {
             if let Some(address) = state.clock() {
-                changed.push(Changed::Memory { name: name.clone(), address });
+                changed.memories.insert((name.clone(), address));
             }
         }
         for (name, state) in &mut self.register_arrays {
             if let Some(index) = state.clock() {
-                changed.push(Changed::RegisterArray { name: name.clone(), index });
+                changed.register_arrays.insert((
+                    name.clone(),
+                    usize::from_str_radix(&index.as_bin(false), 2).unwrap(),
+                ));
             }
         }
 

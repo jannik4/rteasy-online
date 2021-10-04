@@ -57,6 +57,11 @@ const StateView: React.FC<Props> = () => {
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
+                highlight={
+                  globalModel.simulator
+                    .getSimState()
+                    ?.changed?.registers.has(name) ?? false
+                }
                 value={(base) =>
                   globalModel.simulator.registerValue(name, base)
                 }
@@ -83,6 +88,7 @@ const StateView: React.FC<Props> = () => {
                 focused={focused}
                 setFocused={setFocused}
                 inputKey={name}
+                highlight={false}
                 value={(base) => globalModel.simulator.busValue(name, base)}
                 valueNext={null}
                 onChanged={(value, base) =>

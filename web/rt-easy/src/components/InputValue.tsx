@@ -5,21 +5,22 @@ import { GlobalContext, BaseInherit } from "../global/context";
 import { BaseInheritSelect } from "../components";
 import { Base } from "../wasm";
 
-interface Props {
-  withBaseSelect?: false;
+interface PropsCommon {
   focused: Focused | null;
   setFocused: (focused: Focused | null) => void;
   inputKey: string;
+  highlight: boolean;
+}
+
+interface Props extends PropsCommon {
+  withBaseSelect?: false;
   value: () => string;
   valueNext: (() => string | null) | null;
   onChanged: (value: string) => void;
 }
 
-interface PropsWithBaseSelect {
+interface PropsWithBaseSelect extends PropsCommon {
   withBaseSelect: true;
-  focused: Focused | null;
-  setFocused: (focused: Focused | null) => void;
-  inputKey: string;
   value: (base: Base) => string;
   valueNext: ((base: Base) => string | null) | null;
   onChanged: (value: string, base: Base) => void;
@@ -70,6 +71,7 @@ const InputValue: React.FC<Props | PropsWithBaseSelect> = (props) => {
       <div style={{ flex: "1" }}>
         <InputGroup
           small
+          style={{ backgroundColor: props.highlight ? "yellow" : undefined }}
           value={valueDisplay}
           onChange={(e) => setFocused({ inputKey, value: e.target.value })}
           onFocus={() => setFocused({ inputKey, value: value })}

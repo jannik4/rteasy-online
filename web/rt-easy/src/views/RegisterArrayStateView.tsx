@@ -108,6 +108,11 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                     focused={focused}
                     setFocused={setFocused}
                     inputKey={row.idx.toString()}
+                    highlight={
+                      globalModel.simulator
+                        .getSimState()
+                        ?.changed?.registerArrays.get(registerArray) === row.idx
+                    }
                     value={() => row.value}
                     valueNext={null}
                     onChanged={(value: string) =>

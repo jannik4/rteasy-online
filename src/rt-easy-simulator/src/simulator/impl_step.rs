@@ -1,4 +1,4 @@
-use super::{Simulator, StepResult, StepResultKind};
+use super::{Changed, Simulator, StepResult, StepResultKind};
 use crate::{
     execute::{Execute, ExecuteResult},
     state::State,
@@ -9,7 +9,7 @@ use std::{collections::HashSet, mem};
 
 impl Simulator {
     pub fn step(&mut self, stop_on_breakpoint: bool) -> Result<Option<StepResult>, Error> {
-        let mut changed = Vec::new();
+        let mut changed = Changed::default();
 
         loop {
             match self.micro_step(stop_on_breakpoint)? {

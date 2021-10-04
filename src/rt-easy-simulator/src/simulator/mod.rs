@@ -81,8 +81,8 @@ pub struct StepResult {
 pub enum StepResultKind {
     Void,
     Condition { result: bool, span: Span },
-    Pipe(Vec<Changed>),
-    StatementEnd(Vec<Changed>),
+    Pipe(Changed),
+    StatementEnd(Changed),
     Breakpoint,
     AssertError,
 }

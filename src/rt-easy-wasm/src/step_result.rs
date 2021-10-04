@@ -43,6 +43,51 @@ impl StepResult {
             _ => None,
         }
     }
+
+    pub fn changed_registers(&self) -> Vec<JsValue> {
+        let changed = match &self.kind {
+            simulator::StepResultKind::Pipe(changed)
+            | simulator::StepResultKind::StatementEnd(changed) => &changed.registers,
+            _ => return Vec::new(),
+        };
+        changed.iter().map(|reg| JsValue::from_str(&reg.0)).collect()
+    }
+
+    pub fn changed_register_arrays(&self) -> Vec<JsValue> {
+        let changed = match &self.kind {
+            simulator::StepResultKind::Pipe(changed)
+            | simulator::StepResultKind::StatementEnd(changed) => &changed.register_arrays,
+            _ => return Vec::new(),
+        };
+        changed
+            .iter()
+            .map(|(reg_array, idx)| {
+                std::array::IntoIter::new([
+                    JsValue::from_str(&reg_array.0),
+                    JsValue::from_f64(*idx as f64),
+                ])
+            })
+            .flatten()
+            .collect()
+    }
+
+    pub fn changed_memories(&self) -> Vec<JsValue> {
+        let changed = match &self.kind {
+            simulator::StepResultKind::Pipe(changed)
+            | simulator::StepResultKind::StatementEnd(changed) => &changed.memories,
+            _ => return Vec::new(),
+        };
+        changed
+            .iter()
+            .map(|(mem, addr)| {
+                std::array::IntoIter::new([
+                    JsValue::from_str(&mem.0),
+                    JsValue::from_str(&addr.as_hex()),
+                ])
+            })
+            .flatten()
+            .collect()
+    }
 }
 
 impl From<rt_easy::simulator::StepResult> for StepResult {
