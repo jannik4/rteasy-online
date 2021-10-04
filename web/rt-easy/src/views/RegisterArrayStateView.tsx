@@ -34,6 +34,11 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
     return <div>Err</div>;
   }
 
+  const valueNext = globalModel.simulator.registerArrayValueNext(
+    registerArray,
+    base
+  );
+
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
       <div style={{ height: 16 }} />
@@ -114,7 +119,9 @@ const RegisterArrayStateView: React.FC<Props> = ({ registerArray }) => {
                         ?.changed?.registerArrays.get(registerArray) === row.idx
                     }
                     value={() => row.value}
-                    valueNext={null}
+                    valueNext={() =>
+                      row.idx === valueNext?.idx ? valueNext.value : null
+                    }
                     onChanged={(value: string) =>
                       globalModel.simulator.writeRegisterArray(
                         registerArray,

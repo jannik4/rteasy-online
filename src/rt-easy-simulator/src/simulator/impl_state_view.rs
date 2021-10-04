@@ -53,6 +53,9 @@ impl Simulator {
     pub fn register_arrays(&self) -> impl Iterator<Item = &Ident> {
         self.state.register_array_names()
     }
+    pub fn register_array_value_next(&self, name: &Ident) -> Result<Option<(usize, Value)>, Error> {
+        Ok(self.state.register_array(name)?.value_next())
+    }
     pub fn register_array_page_count(&self, name: &Ident) -> Result<usize, Error> {
         Ok(self.state.register_array(name)?.page_count())
     }
@@ -82,6 +85,9 @@ impl Simulator {
 
     pub fn memories(&self) -> impl Iterator<Item = &Ident> {
         self.state.memory_names()
+    }
+    pub fn memory_value_next(&self, name: &Ident) -> Result<Option<(Value, Value)>, Error> {
+        Ok(self.state.memory(name)?.value_next())
     }
     pub fn memory_page_count(&self, name: &Ident) -> Result<Value, Error> {
         Ok(self.state.memory(name)?.page_count())

@@ -187,6 +187,14 @@ export class Simulator {
   };
 
   registerArrays = (): string[] => this.simulatorWasm.register_arrays();
+  registerArrayValueNext = (
+    name: string,
+    base: Base
+  ): { idx: number; value: string } | null => {
+    const raw = this.simulatorWasm.register_array_value_next(name, base);
+    if (raw === undefined) return null;
+    return { idx: raw[0], value: raw[1] };
+  };
   registerArrayPageCount = (name: string): number =>
     this.simulatorWasm.register_array_page_count(name);
   registerArrayPage = (
@@ -221,6 +229,14 @@ export class Simulator {
   };
 
   memories = (): string[] => this.simulatorWasm.memories();
+  memoryValueNext = (
+    name: string,
+    base: Base
+  ): { address: string; value: string } | null => {
+    const raw = this.simulatorWasm.memory_value_next(name, base);
+    if (raw === undefined) return null;
+    return { address: raw[0], value: raw[1] };
+  };
   memoryPageCount = (name: string): string =>
     this.simulatorWasm.memory_page_count(name);
   memoryPagePrev = (name: string, pageNr: string): string | null =>

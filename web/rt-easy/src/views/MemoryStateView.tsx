@@ -43,6 +43,8 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
     return <div>Err</div>;
   }
 
+  const valueNext = globalModel.simulator.memoryValueNext(memory, base);
+
   return (
     <div style={{ height: "100%", padding: "0 8px" /*, overflow: "hidden"*/ }}>
       <div style={{ height: 16 }} />
@@ -149,7 +151,9 @@ const MemoryStateView: React.FC<Props> = ({ memory }) => {
                       ?.changed?.memories.get(memory) === row.address
                   }
                   value={() => row.value}
-                  valueNext={null}
+                  valueNext={() =>
+                    row.address === valueNext?.address ? valueNext.value : null
+                  }
                   onChanged={(value: string) =>
                     globalModel.simulator.writeMemory(
                       memory,

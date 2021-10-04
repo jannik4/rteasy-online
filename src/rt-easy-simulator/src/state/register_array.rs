@@ -18,6 +18,11 @@ impl RegisterArrayState {
         Self { data: HashMap::new(), data_next: RefCell::new(None), len, data_size }
     }
 
+    pub fn value_next(&self) -> Option<(usize, Value)> {
+        let (idx, value) = self.data_next.borrow().clone()?;
+        Some((usize::from_str_radix(&idx.as_bin(false), 2).unwrap(), value))
+    }
+
     pub fn read(&self, idx: Value) -> Result<Value, Error> {
         // Check idx
         if idx.size() > self.index_size() {

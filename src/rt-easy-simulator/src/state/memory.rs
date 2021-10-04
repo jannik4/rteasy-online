@@ -22,6 +22,10 @@ impl MemoryState {
         Self { data: HashMap::new(), data_next: RefCell::new(None), range, ar_size, dr_size }
     }
 
+    pub fn value_next(&self) -> Option<(Value, Value)> {
+        self.data_next.borrow().clone()
+    }
+
     pub fn read(&self, state: &State) -> Result<(), Error> {
         // Get AR value
         let ar_value = state.register(&self.range.address_register)?.read(None)?;

@@ -124,6 +124,20 @@ impl Simulator {
         register_arrays.into_iter().map(Into::into).collect()
     }
 
+    pub fn register_array_value_next(
+        &self,
+        name: String,
+        base: &str,
+    ) -> Result<Option<Vec<JsValue>>> {
+        map_err(move || {
+            let (idx, value) = match self.0.register_array_value_next(&Ident(name))? {
+                Some((idx, value)) => (idx, value.as_base(base)?),
+                None => return Ok(None),
+            };
+            Ok(Some(vec![JsValue::from_f64(idx as f64), JsValue::from_str(&value)]))
+        })
+    }
+
     pub fn register_array_page_count(&self, name: String) -> Result<usize> {
         map_err(move || Ok(self.0.register_array_page_count(&Ident(name))?))
     }
@@ -166,6 +180,16 @@ impl Simulator {
         memories.sort();
 
         memories.into_iter().map(Into::into).collect()
+    }
+
+    pub fn memory_value_next(&self, name: String, base: &str) -> Result<Option<Vec<JsValue>>> {
+        map_err(move || {
+            let (addr, value) = match self.0.memory_value_next(&Ident(name))? {
+                Some((addr, value)) => (addr, value.as_base(base)?),
+                None => return Ok(None),
+            };
+            Ok(Some(vec![JsValue::from_str(&addr.as_hex()), JsValue::from_str(&value)]))
+        })
     }
 
     pub fn memory_page_count(&self, name: String) -> Result<String> {
