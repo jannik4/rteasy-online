@@ -52,7 +52,7 @@ export function setUpRtEasyLang(monaco: Monaco) {
       root: [
         // identifiers and keywords
         [
-          /[a-z_$][\w$]*/,
+          /[a-zA-Z_$][\w$]*/,
           {
             cases: {
               "@typeKeywords": "keyword",
