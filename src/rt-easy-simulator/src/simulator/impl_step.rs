@@ -4,6 +4,7 @@ use crate::{
     state::State,
     Error,
 };
+use anyhow::anyhow;
 use rtcore::program::{Criterion, CriterionId, Label, Step};
 use std::{collections::HashSet, mem};
 
@@ -94,7 +95,9 @@ impl Simulator {
                 StepIdx::Step(step_idx) => {
                     // Get current step
                     let (step, _is_pre_pipe) =
-                        statement.steps.node.get(step_idx).ok_or_else(|| Error::Other)?;
+                        statement.steps.node.get(step_idx).ok_or_else(|| {
+                            anyhow!("[[internal error]] step {} does not exist", step_idx)
+                        })?;
 
                     // Execute step
                     let step_result = exec_step(cursor, &self.state, cursor.statement_idx, step)?;
@@ -120,7 +123,12 @@ impl Simulator {
                     // Step result
                     let step_result = StepResult {
                         statement: cursor.statement_idx,
-                        span: statement.span_pipe.ok_or_else(|| Error::Other)?,
+                        span: statement.span_pipe.ok_or_else(|| {
+                            anyhow!(
+                                "[[internal error]] expected pipe in statement {} ",
+                                cursor.statement_idx
+                            )
+                        })?,
                         kind: StepResultKind::Pipe(changed),
                     };
 
@@ -149,7 +157,10 @@ impl Simulator {
                             .position(|stmt| {
                                 stmt.label.as_ref().map(|s| &s.node) == Some(goto_label)
                             })
-                            .ok_or(Error::Other)?,
+                            .ok_or(anyhow!(
+                                "[[internal error]] failed to find goto label `{}`",
+                                goto_label.0
+                            ))?,
                         None => cursor.statement_idx + 1,
                     };
                     self.cursor = Cursor::new(next_statement_idx);

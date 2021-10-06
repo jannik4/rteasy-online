@@ -1,5 +1,6 @@
 use super::State;
 use crate::Error;
+use anyhow::anyhow;
 use rtcore::{program::MemoryRange, value::Value};
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -67,8 +68,11 @@ impl MemoryState {
 
     pub fn write_at(&mut self, addr: Value, value: Value) -> Result<(), Error> {
         // Check addr and value
-        if addr.size() > self.ar_size || value.size() > self.dr_size {
-            return Err(Error::Other);
+        if addr.size() > self.ar_size {
+            return Err(anyhow!("address too big"));
+        }
+        if value.size() > self.dr_size {
+            return Err(anyhow!("value too big"));
         }
 
         // Reset data_next if same address
@@ -162,26 +166,29 @@ impl MemoryState {
             ar_size: self.ar_size,
             dr_size: self.dr_size,
         };
-        serde_json::to_writer(writer, &save).map_err(|_| Error::Other)
+        serde_json::to_writer(writer, &save).map_err(|e| anyhow!("failed to save memory: {}", e))
     }
 
     pub fn load_from_save<R>(&mut self, reader: R) -> Result<(), Error>
     where
         R: io::Read,
     {
-        let save = serde_json::from_reader::<_, MemorySave>(reader).map_err(|_| Error::Other)?;
+        let save = serde_json::from_reader::<_, MemorySave>(reader)
+            .map_err(|_| anyhow!("invalid memory file"))?;
         if save.version != "v1" || save.ar_size != self.ar_size || save.dr_size != self.dr_size {
-            return Err(Error::Other);
+            return Err(anyhow!("invalid memory size"));
         }
 
         self.data = save
             .data
             .into_iter()
             .map(|(addr, value)| {
-                let addr = Value::parse_hex(&addr).map_err(|()| Error::Other)?;
-                let value = Value::parse_hex(&value).map_err(|()| Error::Other)?;
+                let addr = Value::parse_hex(&addr)
+                    .map_err(|()| anyhow!("memory save contains faulty data"))?;
+                let value = Value::parse_hex(&value)
+                    .map_err(|()| anyhow!("memory save contains faulty data"))?;
                 if addr.size() > self.ar_size || value.size() > self.dr_size {
-                    return Err(Error::Other);
+                    return Err(anyhow!("memory save contains faulty data"));
                 }
                 Ok((addr, value))
             })

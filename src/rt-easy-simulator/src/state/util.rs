@@ -1,10 +1,11 @@
 use crate::Error;
+use anyhow::anyhow;
 use rtcore::program::BitRange;
 use std::ops::Range;
 
 pub fn slice_idx(range: BitRange, idx: BitRange) -> Result<Range<usize>, Error> {
     if !range.contains_range(idx) {
-        return Err(Error::Other);
+        return Err(anyhow!("failed to index `{:?}` `{:?}`", range, idx));
     }
 
     let (self_msb, self_lsb) = range.msb_lsb();

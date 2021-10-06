@@ -22,7 +22,7 @@ impl From<JsValue> for JsError {
 
 impl From<SimulatorError> for JsError {
     fn from(e: SimulatorError) -> Self {
-        Self(format!("{:#?}", e).into())
+        Self(format!("{}", e).into())
     }
 }
 

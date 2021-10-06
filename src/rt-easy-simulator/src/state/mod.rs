@@ -7,7 +7,8 @@ mod util;
 use self::{
     bus::BusState, memory::MemoryState, register::RegisterState, register_array::RegisterArrayState,
 };
-use crate::{Changed, Error, Result};
+use crate::{Changed, Result};
+use anyhow::anyhow;
 use rtcore::{
     program::{BusKind, Declaration, Ident, Program, RegisterKind},
     value::Value,
@@ -113,10 +114,10 @@ impl State {
             .filter_map(move |(name, state)| if state.kind() == kind { Some(name) } else { None })
     }
     pub fn register(&self, name: &Ident) -> Result<&RegisterState> {
-        self.registers.get(name).ok_or(Error::Other)
+        self.registers.get(name).ok_or(anyhow!("register `{}` does not exist", name.0))
     }
     pub fn register_mut(&mut self, name: &Ident) -> Result<&mut RegisterState> {
-        self.registers.get_mut(name).ok_or(Error::Other)
+        self.registers.get_mut(name).ok_or(anyhow!("register `{}` does not exist", name.0))
     }
 
     pub fn bus_names(&self, kind: BusKind) -> impl Iterator<Item = &Ident> {
@@ -125,30 +126,32 @@ impl State {
             .filter_map(move |(name, state)| if state.kind() == kind { Some(name) } else { None })
     }
     pub fn bus(&self, name: &Ident) -> Result<&BusState> {
-        self.buses.get(name).ok_or(Error::Other)
+        self.buses.get(name).ok_or(anyhow!("bus `{}` does not exist", name.0))
     }
     pub fn bus_mut(&mut self, name: &Ident) -> Result<&mut BusState> {
-        self.buses.get_mut(name).ok_or(Error::Other)
+        self.buses.get_mut(name).ok_or(anyhow!("bus `{}` does not exist", name.0))
     }
 
     pub fn register_array_names(&self) -> impl Iterator<Item = &Ident> {
         self.register_arrays.keys()
     }
     pub fn register_array(&self, name: &Ident) -> Result<&RegisterArrayState> {
-        self.register_arrays.get(name).ok_or(Error::Other)
+        self.register_arrays.get(name).ok_or(anyhow!("register array `{}` does not exist", name.0))
     }
     pub fn register_array_mut(&mut self, name: &Ident) -> Result<&mut RegisterArrayState> {
-        self.register_arrays.get_mut(name).ok_or(Error::Other)
+        self.register_arrays
+            .get_mut(name)
+            .ok_or(anyhow!("register array `{}` does not exist", name.0))
     }
 
     pub fn memory_names(&self) -> impl Iterator<Item = &Ident> {
         self.memories.keys()
     }
     pub fn memory(&self, name: &Ident) -> Result<&MemoryState> {
-        self.memories.get(name).ok_or(Error::Other)
+        self.memories.get(name).ok_or(anyhow!("memory `{}` does not exist", name.0))
     }
     pub fn memory_mut(&mut self, name: &Ident) -> Result<&mut MemoryState> {
-        self.memories.get_mut(name).ok_or(Error::Other)
+        self.memories.get_mut(name).ok_or(anyhow!("memory `{}` does not exist", name.0))
     }
 }
 

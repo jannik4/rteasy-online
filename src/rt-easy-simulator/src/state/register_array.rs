@@ -1,4 +1,5 @@
 use crate::Error;
+use anyhow::anyhow;
 use rtcore::value::Value;
 use std::cell::RefCell;
 use std::collections::HashMap;
@@ -26,7 +27,7 @@ impl RegisterArrayState {
     pub fn read(&self, idx: Value) -> Result<Value, Error> {
         // Check idx
         if idx.size() > self.index_size() {
-            return Err(Error::Other);
+            return Err(anyhow!("index too big"));
         }
 
         let value = self.data.get(&idx).cloned().unwrap_or_else(|| Value::zero(self.data_size));
@@ -35,8 +36,11 @@ impl RegisterArrayState {
 
     pub fn write(&self, idx: Value, value: Value) -> Result<(), Error> {
         // Check idx and value
-        if idx.size() > self.index_size() || value.size() > self.data_size {
-            return Err(Error::Other);
+        if idx.size() > self.index_size() {
+            return Err(anyhow!("index too big"));
+        }
+        if value.size() > self.data_size {
+            return Err(anyhow!("value too big"));
         }
 
         *self.data_next.borrow_mut() = Some((idx, value));
