@@ -33,6 +33,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          override: true
 
       - name: Build
         run: cargo build --verbose
@@ -51,6 +52,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          override: true
 
       - name: fmt
         run: cargo fmt -- --check
@@ -66,9 +68,9 @@ jobs:
       - name: Setup toolchain
         uses: actions-rs/toolchain@v1
         with:
-          profile: minimal
           toolchain: nightly
           components: miri
+          override: true
 
       - name: Test miri
         run: cargo miri test --verbose
