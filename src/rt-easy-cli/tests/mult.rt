@@ -1,0 +1,13 @@
+declare register A(7:0), FACTOR(7:0), RES(7:0)
+declare input INPUT(7:0)
+declare output OUTPUT(7:0)
+
+BEGIN:
+    A <- INPUT, RES <- 0;
+    FACTOR <- INPUT;
+LOOP:
+    if FACTOR <> 0 then
+        RES <- RES + A, FACTOR <- FACTOR - 1, goto LOOP
+    else
+        OUTPUT <- RES
+    fi;

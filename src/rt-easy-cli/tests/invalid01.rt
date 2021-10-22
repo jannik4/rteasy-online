@@ -1,0 +1,4 @@
+declare register A(7:0)
+
+BEGIN:
+    A <- INPUT,

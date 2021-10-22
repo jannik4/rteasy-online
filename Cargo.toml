@@ -15,6 +15,7 @@ members = [
     "src/rt-easy-simulator",
     "src/rt-easy",
 
+    "src/rt-easy-cli",
     "src/rt-easy-wasm",
 ]
 

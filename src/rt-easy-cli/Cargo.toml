@@ -1,0 +1,15 @@
+[package]
+name = "rt-easy-cli"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+
+structopt = "0.3.25"
+anyhow = "1.0.44"
+ansi_term = "0.12.1"
