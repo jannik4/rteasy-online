@@ -24,7 +24,7 @@ pub fn check_err(source: &str) -> Error {
 fn check_(source: &str, options: &Options) -> Result<(), Error> {
     let ast = match parser::parse(source) {
         Ok(ast) => ast,
-        Err(e) => panic!("{}", parser::pretty_print_error(&e, source, false)),
+        Err(e) => panic!("{}", parser::pretty_print_error(&e, source, None, false)),
     };
 
     rt_easy_compiler::check(ast, options)

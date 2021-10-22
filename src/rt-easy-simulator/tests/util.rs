@@ -3,7 +3,7 @@ use rtcore::program::Program;
 pub fn compile(source: &str) -> Program {
     let ast = match parser::parse(source) {
         Ok(ast) => ast,
-        Err(e) => panic!("{}", parser::pretty_print_error(&e, source, false)),
+        Err(e) => panic!("{}", parser::pretty_print_error(&e, source, None, false)),
     };
 
     let backend = compiler_backend_simulator::BackendSimulator;

@@ -6,7 +6,9 @@ pub fn check(code: String) -> Result<(), JsValue> {
     let ast = match rt_easy::parser::parse(&code) {
         Ok(ast) => ast,
         Err(e) => {
-            return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(&e, &code, true)))
+            return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(
+                &e, &code, None, true,
+            )))
         }
     };
 
@@ -23,7 +25,9 @@ pub fn build(code: String) -> Result<Simulator, JsValue> {
     let ast = match rt_easy::parser::parse(&code) {
         Ok(ast) => ast,
         Err(e) => {
-            return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(&e, &code, true)))
+            return Err(JsValue::from_str(&rt_easy::parser::pretty_print_error(
+                &e, &code, None, true,
+            )))
         }
     };
 

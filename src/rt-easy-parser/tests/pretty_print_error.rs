@@ -26,7 +26,7 @@ fn pretty_print_error() {
 
     let error = match rt_easy_parser::parse(SOURCE) {
         Ok(_) => panic!("expected error"),
-        Err(e) => rt_easy_parser::pretty_print_error(&e, SOURCE, false),
+        Err(e) => rt_easy_parser::pretty_print_error(&e, SOURCE, None, false),
     };
     assert_eq!(error, EXPECTED_ERROR);
 }

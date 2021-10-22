@@ -14,7 +14,7 @@ goto END;
 fn main() {
     let ast = match rt_easy::parser::parse(SOURCE) {
         Ok(ast) => ast,
-        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, SOURCE, false)),
+        Err(e) => panic!("{}", rt_easy::parser::pretty_print_error(&e, SOURCE, None, false)),
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
