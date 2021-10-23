@@ -1,0 +1,70 @@
+name: pre-release
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  prepare_release:
+    name: Prepare Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: marvinpinto/action-automatic-releases@latest
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: dev
+          prerelease: true
+          title: Development Build
+
+  release_cli:
+    name: Release CLI
+    needs: [prepare_release]
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: macos-latest
+          - os: windows-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Cache crate
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: ${{ runner.os }}-cargo-release-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-plugins
+
+      - name: Setup toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - name: Build
+        run: cargo build --package rt-easy-cli --release
+
+      - name: Rename build
+        run: mv target/release/rt-easy-cli${{ runner.os == 'Windows' && '.exe' || '' }} target/release/rt-easy-cli-${{ runner.os }}${{ runner.os == 'Windows' && '.exe' || '' }}
+
+      - name: Upload Release Asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          tag: dev
+          file: target/release/rt-easy-cli-${{ runner.os }}${{ runner.os == 'Windows' && '.exe' || '' }}
