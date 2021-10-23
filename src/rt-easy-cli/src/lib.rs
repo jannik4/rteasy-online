@@ -8,7 +8,7 @@ use std::path::PathBuf;
 use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
-#[structopt(about = "rt easy cli")]
+#[structopt(name = "rt-easy-cli", about = "rt easy cli")]
 pub enum Opt {
     #[structopt(about = "Check the rt file")]
     Check {
