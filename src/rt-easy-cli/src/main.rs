@@ -5,7 +5,7 @@ use structopt::StructOpt;
 
 fn main() {
     let opt = Opt::from_args();
-    match run(opt, true) {
+    match run(opt) {
         Ok(msg) => println!("{}", msg),
         Err(err) => {
             println!("{:?}", err);

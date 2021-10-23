@@ -9,7 +9,16 @@ use structopt::StructOpt;
 
 #[derive(Debug, StructOpt)]
 #[structopt(name = "rt-easy-cli", about = "rt easy cli")]
-pub enum Opt {
+pub struct Opt {
+    #[structopt(long, help = "Disable ansi colors")]
+    pub no_ansi: bool,
+    #[structopt(subcommand)]
+    pub command: Command,
+}
+
+#[derive(Debug, StructOpt)]
+#[structopt(name = "rt-easy-cli", about = "rt easy cli")]
+pub enum Command {
     #[structopt(about = "Check the rt file")]
     Check {
         #[structopt(parse(from_os_str))]
@@ -24,13 +33,14 @@ pub enum Opt {
     },
 }
 
-pub fn run(opt: Opt, ansi_colors: bool) -> Result<String> {
-    let msg = match opt {
-        Opt::Check { file } => {
+pub fn run(opt: Opt) -> Result<String> {
+    let ansi_colors = !opt.no_ansi;
+    let msg = match opt.command {
+        Command::Check { file } => {
             commands::check(file, ansi_colors)?;
             "Code is syntactically valid"
         }
-        Opt::Test { file, test_file } => {
+        Command::Test { file, test_file } => {
             commands::test(file, test_file, ansi_colors)?;
             "Tests passed"
         }
