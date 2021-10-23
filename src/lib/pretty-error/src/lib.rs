@@ -189,6 +189,15 @@ fn locations(source: &str, span: Span) -> Vec<ErrLoc<'_>> {
             '\r' if chars.peek() == Some(&'\n') => {
                 chars.next().unwrap();
 
+                if span.start == pos {
+                    result.push(ErrLoc {
+                        line,
+                        column,
+                        column_last: column,
+                        line_slice,
+                        range: pos..pos + 2,
+                    });
+                }
                 if span.contains(&pos) {
                     result_start_new = true;
                 }
@@ -205,6 +214,15 @@ fn locations(source: &str, span: Span) -> Vec<ErrLoc<'_>> {
                 }
             }
             '\n' => {
+                if span.start == pos {
+                    result.push(ErrLoc {
+                        line,
+                        column,
+                        column_last: column,
+                        line_slice,
+                        range: pos..pos + 1,
+                    });
+                }
                 if span.contains(&pos) {
                     result_start_new = true;
                 }
