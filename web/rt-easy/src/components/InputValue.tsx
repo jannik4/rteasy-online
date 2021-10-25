@@ -78,10 +78,11 @@ const InputValue: React.FC<Props | PropsWithBaseSelect> = (props) => {
           onBlur={() => {
             if (focused !== null) {
               if (focused.value !== value) {
+                const valueTrimmed = focused.value.trim();
                 if (props.withBaseSelect) {
-                  props.onChanged(focused.value, base);
+                  props.onChanged(valueTrimmed, base);
                 } else {
-                  props.onChanged(focused.value);
+                  props.onChanged(valueTrimmed);
                 }
               }
               setFocused(null);
