@@ -1,6 +1,7 @@
 mod case_values;
 mod const_eval;
 mod double_assign;
+mod double_goto;
 mod ordering;
 mod register_array_read;
 mod sim;
@@ -13,6 +14,9 @@ pub fn check(symbols: &Symbols<'_>, mir: &mut Mir<'_>, options: &Options) -> Res
     // Errors
     let mut errors = Vec::new();
     let mut error_sink = |e| errors.push(e);
+
+    // Check double goto
+    double_goto::check(symbols, &*mir, &mut error_sink)?;
 
     // Check double assign
     double_assign::check(symbols, &*mir, &mut error_sink)?;

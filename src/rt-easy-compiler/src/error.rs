@@ -96,6 +96,7 @@ pub enum CompilerErrorKind {
     SxtTerm,
     WrongSymbolType { expected: &'static [SymbolType], found: SymbolType },
     DoubleAssign(SymbolType, String),
+    DoubleGoto,
     RegisterArrayTooManyReads { name: String, allowed: usize },
     FeedbackLoop,
 }
@@ -169,6 +170,9 @@ impl CompilerErrorKind {
             }
             DoubleAssign(symbol_type, name) => {
                 format!("{} \"{}\" is assigned more than once", symbol_type, name)
+            }
+            DoubleGoto => {
+                format!("statement contains multiple gotos on at least one possible execution path")
             }
             RegisterArrayTooManyReads { name, allowed } => {
                 format!("register array \"{}\" is read more than {} times", name, allowed)
