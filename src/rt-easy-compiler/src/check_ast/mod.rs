@@ -13,7 +13,7 @@ pub fn check<'s>(ast: &rtcore::ast::Ast<'s>) -> Result<Symbols<'s>, Error> {
     let symbols = Symbols::build(ast, &mut error_sink);
 
     // Check statements
-    statements::check(&ast.statements, &symbols, &mut error_sink);
+    statements::check(&ast.statements, &symbols, &mut error_sink)?;
 
     // Check errors
     if errors.is_empty() {

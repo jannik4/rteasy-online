@@ -1,9 +1,11 @@
 use super::expression::CheckExpr;
 use crate::{
     symbols::{Symbol, Symbols},
-    util, CompilerError, CompilerErrorKind, SymbolType,
+    util, CompilerError, CompilerErrorKind, InternalError, SymbolType,
 };
 use rtcore::ast::*;
+
+pub type Result = std::result::Result<Res, InternalError>;
 
 #[derive(Debug, Default)]
 pub struct Res {
@@ -23,27 +25,36 @@ impl Res {
 }
 
 pub trait CheckOp<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res;
+    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError))
+        -> Result;
 }
 
 impl<'s> CheckOp<'s> for [Operation<'s>] {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         let mut operations = self.iter();
         let mut res = operations
             .next()
             .expect("expected at least one operation")
-            .check_op(symbols, error_sink);
+            .check_op(symbols, error_sink)?;
 
         for operation in operations {
-            res = Res::merge(res, operation.check_op(symbols, error_sink));
+            res = Res::merge(res, operation.check_op(symbols, error_sink)?);
         }
 
-        res
+        Ok(res)
     }
 }
 
 impl<'s> CheckOp<'s> for Operation<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         match self {
             Operation::Nop(nop) => nop.check_op(symbols, error_sink),
             Operation::Goto(goto) => goto.check_op(symbols, error_sink),
@@ -58,26 +69,40 @@ impl<'s> CheckOp<'s> for Operation<'s> {
 }
 
 impl<'s> CheckOp<'s> for Nop {
-    fn check_op(&self, _: &Symbols<'_>, _: &mut impl FnMut(CompilerError)) -> Res {
-        Res::default()
+    fn check_op(&self, _: &Symbols<'_>, _: &mut impl FnMut(CompilerError)) -> Result {
+        Ok(Res::default())
     }
 }
 
 impl<'s> CheckOp<'s> for Goto<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         if !symbols.contains_label(self.label.node) {
+            if self.label.node.0 == "MOON" {
+                return Err(InternalError(format!(
+                    "`goto MOON`. The compiler panicked as expected. This is a feature."
+                )));
+            }
+
             error_sink(CompilerError::new(
                 CompilerErrorKind::LabelNotFound(self.label.node.0.to_string()),
                 self.label.span,
             ));
         }
 
-        Res { contains_goto: true, contains_mutate: false }
+        Ok(Res { contains_goto: true, contains_mutate: false })
     }
 }
 
 impl<'s> CheckOp<'s> for If<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
                 error_sink(CompilerError::new(
@@ -87,17 +112,21 @@ impl<'s> CheckOp<'s> for If<'s> {
             }
         }
 
-        let mut res = self.operations_if.check_op(symbols, error_sink);
+        let mut res = self.operations_if.check_op(symbols, error_sink)?;
         if let Some(operations_else) = &self.operations_else {
-            res = Res::merge(res, operations_else.check_op(symbols, error_sink));
+            res = Res::merge(res, operations_else.check_op(symbols, error_sink)?);
         }
 
-        res
+        Ok(res)
     }
 }
 
 impl<'s> CheckOp<'s> for Switch<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         let expr_res = self.expression.check_expr(symbols, error_sink);
         if !expr_res.fixed_size {
             error_sink(CompilerError::new(
@@ -131,11 +160,11 @@ impl<'s> CheckOp<'s> for Switch<'s> {
                         _ => (),
                     }
 
-                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink));
+                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink)?);
                 }
                 Either::Right(_default) => {
                     default_clauses_count += 1;
-                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink));
+                    res = Res::merge(res, clause.operations.check_op(symbols, error_sink)?);
                 }
             }
         }
@@ -147,12 +176,16 @@ impl<'s> CheckOp<'s> for Switch<'s> {
             ));
         }
 
-        res
+        Ok(res)
     }
 }
 
 impl<'s> CheckOp<'s> for Write<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
             Some(symbol) => error_sink(CompilerError::new(
@@ -171,12 +204,16 @@ impl<'s> CheckOp<'s> for Write<'s> {
             )),
         }
 
-        Res { contains_goto: false, contains_mutate: true }
+        Ok(Res { contains_goto: false, contains_mutate: true })
     }
 }
 
 impl<'s> CheckOp<'s> for Read<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         match symbols.symbol(self.ident.node) {
             Some(Symbol::Memory(_)) => (),
             Some(symbol) => error_sink(CompilerError::new(
@@ -195,12 +232,16 @@ impl<'s> CheckOp<'s> for Read<'s> {
             )),
         }
 
-        Res { contains_goto: false, contains_mutate: true }
+        Ok(Res { contains_goto: false, contains_mutate: true })
     }
 }
 
 impl<'s> CheckOp<'s> for Assignment<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         // Check lhs/rhs as expr and size
         let lhs = match &self.lhs {
             Lvalue::RegBus(reg_bus) => reg_bus.check_expr(symbols, error_sink),
@@ -263,12 +304,16 @@ impl<'s> CheckOp<'s> for Assignment<'s> {
             }
         }
 
-        Res { contains_goto: false, contains_mutate: true }
+        Ok(Res { contains_goto: false, contains_mutate: true })
     }
 }
 
 impl<'s> CheckOp<'s> for Assert<'s> {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         if let Some(size) = self.condition.check_expr(symbols, error_sink).size {
             if size > 1 {
                 error_sink(CompilerError::new(
@@ -278,7 +323,7 @@ impl<'s> CheckOp<'s> for Assert<'s> {
             }
         }
 
-        Res { contains_goto: false, contains_mutate: true }
+        Ok(Res { contains_goto: false, contains_mutate: true })
     }
 }
 
@@ -287,7 +332,11 @@ where
     L: CheckOp<'s>,
     R: CheckOp<'s>,
 {
-    fn check_op(&self, symbols: &Symbols<'_>, error_sink: &mut impl FnMut(CompilerError)) -> Res {
+    fn check_op(
+        &self,
+        symbols: &Symbols<'_>,
+        error_sink: &mut impl FnMut(CompilerError),
+    ) -> Result {
         match self {
             Self::Left(left) => left.check_op(symbols, error_sink),
             Self::Right(right) => right.check_op(symbols, error_sink),
