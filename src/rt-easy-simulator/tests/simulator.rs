@@ -26,7 +26,7 @@ fn simulator_reset() {
         Value::parse_dec("3").unwrap()
     );
 
-    simulator.reset();
+    simulator.reset(true);
     assert_eq!(simulator.cycle_count(), 0);
     assert_eq!(
         simulator.register_value(&Ident("X".to_string())).unwrap(),

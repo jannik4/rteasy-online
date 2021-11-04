@@ -13,7 +13,7 @@ pub struct Simulator(pub(crate) rt_easy::simulator::Simulator);
 #[wasm_bindgen]
 impl Simulator {
     pub fn reset(&mut self) {
-        self.0.reset();
+        self.0.reset(false);
     }
 
     pub fn cycle_count(&self) -> usize {

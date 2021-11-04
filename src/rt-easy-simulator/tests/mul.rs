@@ -178,7 +178,7 @@ fn mul_2c_int() {
         Value::parse_dec("0").unwrap()
     );
 
-    simulator.reset();
+    simulator.reset(true);
 
     // 31 * 47
     simulator.write_bus(&Ident("IN".to_string()), Value::parse_dec("31").unwrap()).unwrap();
@@ -248,7 +248,7 @@ fn mul_2c_booth() {
         Value::parse_dec("0").unwrap()
     );
 
-    simulator.reset();
+    simulator.reset(true);
 
     // 31 * 47
     simulator.write_bus(&Ident("IN".to_string()), Value::parse_dec("31").unwrap()).unwrap();

@@ -31,12 +31,15 @@ impl Simulator {
         }
     }
 
-    pub fn reset(&mut self) {
+    pub fn reset(&mut self, reset_breakpoints: bool) {
         self.cycle_count = 0;
         self.state = State::init(&self.program);
         self.buses_persist = HashSet::new();
 
         self.cursor = Cursor::new(0);
+        if reset_breakpoints {
+            self.breakpoints = BTreeSet::new();
+        }
     }
 
     pub fn cycle_count(&self) -> usize {
