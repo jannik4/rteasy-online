@@ -3,7 +3,7 @@ mod impl_step;
 
 use self::impl_step::Cursor;
 use crate::{state::State, Changed};
-use rtcore::program::{Ident, Program, Signals, Span};
+use rtcore::program::{Ident, Label, Program, Signals, Span};
 use std::collections::{BTreeSet, HashSet};
 
 pub struct Simulator {
@@ -50,6 +50,10 @@ impl Simulator {
         !self.cursor.is_live()
     }
 
+    pub fn program(&self) -> &Program {
+        &self.program
+    }
+
     pub fn signals(&self) -> Signals {
         self.program.signals()
     }
@@ -68,8 +72,27 @@ impl Simulator {
         self.breakpoints.remove(&statement);
     }
 
+    pub fn add_breakpoint_at_label(&mut self, label: &Label) {
+        if let Some(statement) = self.statement_idx(label) {
+            self.breakpoints.insert(statement);
+        }
+    }
+
+    pub fn remove_breakpoint_at_label(&mut self, label: &Label) {
+        if let Some(statement) = self.statement_idx(label) {
+            self.breakpoints.remove(&statement);
+        }
+    }
+
     pub fn breakpoints(&self) -> impl Iterator<Item = usize> + '_ {
         self.breakpoints.iter().copied()
+    }
+
+    fn statement_idx(&self, label: &Label) -> Option<usize> {
+        self.program
+            .statements()
+            .iter()
+            .position(|stmt| stmt.label.as_ref().map(|s| &s.node) == Some(label))
     }
 }
 
