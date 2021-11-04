@@ -1,0 +1,64 @@
+// Unit Test
+pub unit_test -> UnitTest:
+    delimited(
+        many0(exact(Token::Newline)),
+        sep0(operation, many1(exact(Token::Newline))),
+        many0(exact(Token::Newline))
+    ) eoi {
+        UnitTest { operations: $1 }
+    };
+
+// Operations
+step -> Step: "step" opt(number_usize) { Step { amount: $2 } };
+microStep -> MicroStep: "microStep" opt(number_usize) { MicroStep { amount: $2 } };
+run -> Run: "run" { Run };
+reset -> Reset: "reset" { Reset };
+setBreakpoint -> SetBreakpoint:  "set" "breakpoint" label { SetBreakpoint { label: $3} };
+removeBreakpoint -> RemoveBreakpoint:  "remove" "breakpoint" label { RemoveBreakpoint { label: $3} };
+assignment -> Assignment: exact(Token::OperationAssignment) { Assignment { assignment: $1.into() } };
+assert -> Assert: exact(Token::OperationAssert) { Assert { assert: $1.into() } };
+
+operation -> Operation:
+      step { Operation { kind: OperationKind::Step($1), span: $span.into() } }
+    | microStep { Operation { kind: OperationKind::MicroStep($1), span: $span.into() } }
+    | run { Operation { kind: OperationKind::Run($1), span: $span.into() } }
+    | reset { Operation { kind: OperationKind::Reset($1), span: $span.into() } }
+    | setBreakpoint { Operation { kind: OperationKind::SetBreakpoint($1), span: $span.into() } }
+    | removeBreakpoint { Operation { kind: OperationKind::RemoveBreakpoint($1), span: $span.into() } }
+    | assignment { Operation { kind: OperationKind::Assignment($1), span: $span.into() } }
+    | assert { Operation { kind: OperationKind::Assert($1), span: $span.into() } };
+
+// Number rules
+number_usize -> usize: exact(Token::LiteralNumberDec) { parse_usize($1, $span) }?;
+
+// Label
+label -> Label: exact(Token::Identifier) { Label($1.to_string()) };
+
++++
+
+// Token shortcuts
+
+"step" = Token::KeywordStep
+"microStep" = Token::KeywordMicroStep
+"run" = Token::KeywordRun
+"reset" = Token::KeywordReset
+"set" = Token::KeywordSet
+"remove" = Token::KeywordRemove
+"breakpoint" = Token::KeywordBreakpoint
+
++++
+
+use crate::unit_test::*;
+use crate::parser::lexer::Token;
+use toktok::combinator::{many0, many1, sep0, eoi, exact, opt, delimited};
+use toktok::Error;
+use std::ops::Range;
+
+type Result<T> = std::result::Result<T, Error<Token>>;
+
+fn parse_usize(s: &str, span: Range<usize>) -> Result<usize> {
+    match s.parse() {
+        Ok(value) => Ok(value),
+        Err(_) => Err(Error::new_custom(span, "invalid number".into())),
+    }
+}

@@ -1,0 +1,6 @@
+# mult 4 * 7
+INPUT <- 4
+step
+INPUT <- 7
+run
+assert OUTPUT = 28

@@ -9,6 +9,8 @@ publish = false
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
 parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
 compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+compiler-backend-simulator = { path = "../rt-easy-compiler-backend-simulator", package = "rt-easy-compiler-backend-simulator" }
+unit-test = { path = "../rt-easy-unit-test", package = "rt-easy-unit-test" }
 
 structopt = "0.3.25"
 anyhow = "1.0.44"

@@ -1,0 +1,25 @@
+[package]
+name = "rt-easy-unit-test"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2018"
+publish = false
+
+[dependencies]
+rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+compiler-backend-simulator = { path = "../rt-easy-compiler-backend-simulator", package = "rt-easy-compiler-backend-simulator" }
+simulator = { path = "../rt-easy-simulator", package = "rt-easy-simulator" }
+
+anyhow = "1.0.44"
+toktok = { path = "../lib/toktok" }
+logos = "0.12.0"
+
+[build-dependencies]
+toktok-generator = { path = "../lib/toktok-generator" }
+
+[dev-dependencies]
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+compiler-backend-simulator = { path = "../rt-easy-compiler-backend-simulator", package = "rt-easy-compiler-backend-simulator" }
