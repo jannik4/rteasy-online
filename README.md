@@ -9,4 +9,6 @@
 [![dependency status](https://deps.rs/repo/github/jannik4/rteasy-online/status.svg)](https://deps.rs/repo/github/jannik4/rteasy-online)
 [![codecov](https://codecov.io/gh/jannik4/rteasy-online/branch/master/graph/badge.svg?token=XZSLPAm9rG)](https://codecov.io/gh/jannik4/rteasy-online)
 
+[API Docs](https://jannik4.github.io/rteasy-online/docs/backend/rt_easy)
+
 ## Frontend

@@ -42,19 +42,23 @@ jobs:
         with:
           node-version: "14"
 
-      - name: Install dependencies
-        run: npm install
+      - name: Build Backend Api Docs
+        run: cargo doc --no-deps
+
+      - name: Build Web App
+        run: |
+          npm install
+          npm run build
         working-directory: web/rt-easy
 
-      - name: Deploy
+      - name: Copy to dist
         run: |
-          git config --global user.name $user_name
-          git config --global user.email $user_email
-          git remote set-url origin https://${github_token}@github.com/${repository}
-          npm run deploy
-        env:
-          user_name: "github-actions[bot]"
-          user_email: "github-actions[bot]@users.noreply.github.com"
-          github_token: ${{ secrets.ACTIONS_DEPLOY_ACCESS_TOKEN }}
-          repository: ${{ github.repository }}
-        working-directory: web/rt-easy
+          mkdir -p dist/docs/backend
+          cp -r target/doc/* dist/docs/backend/
+          cp -r web/rt-easy/build/* dist/
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: dist
