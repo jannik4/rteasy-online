@@ -53,7 +53,7 @@ fn mul_sm() {
         Value::parse_dec("0").unwrap()
     );
 
-    simulator.reset();
+    simulator.reset(true);
 
     // 31 * 47
     simulator.write_bus(&Ident("IN".to_string()), Value::parse_dec("31").unwrap()).unwrap();
@@ -211,19 +211,18 @@ fn mul_2c_booth() {
 
         SCAN:
             if Q(0) = 0 and Q_1 = 1 then
-                A <- A + M, goto TEST
+                A <- A + M
             else
                 if Q(0) = 1 and Q_1 = 0 then
                     A <- A - M
                 fi
             fi;
-        TEST:
+        TEST_AND_RSHIFT:
             if COUNT = 7 then
                 A(7) <- A(7), A(6:0).Q <- A.Q(7:1), goto OUTPUT
+            else
+                A(7) <- A(7), A(6:0).Q.Q_1 <- A.Q, COUNT <- COUNT + 1, goto SCAN
             fi;
-
-        RSHIFT:
-            A(7) <- A(7), A(6:0).Q.Q_1 <- A.Q, COUNT <- COUNT + 1, goto SCAN;
 
         OUTPUT:
             OUT <- A;
