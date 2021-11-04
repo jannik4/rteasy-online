@@ -1,0 +1,5 @@
+(function() {var implementors = {};
+implementors["rt_easy_parser"] = [{"text":"impl&lt;'s&gt; Logos&lt;'s&gt; for <a class=\"enum\" href=\"rt_easy_parser/enum.Token.html\" title=\"enum rt_easy_parser::Token\">Token</a>","synthetic":false,"types":["rt_easy_parser::lexer::Token"]}];
+implementors["rt_easy_unit_test"] = [{"text":"impl&lt;'s&gt; Logos&lt;'s&gt; for <a class=\"enum\" href=\"rt_easy_unit_test/parser/enum.Token.html\" title=\"enum rt_easy_unit_test::parser::Token\">Token</a>","synthetic":false,"types":["rt_easy_unit_test::parser::lexer::Token"]}];
+implementors["toktok_generator_tests"] = [{"text":"impl&lt;'s&gt; Logos&lt;'s&gt; for <a class=\"enum\" href=\"toktok_generator_tests/json/enum.Token.html\" title=\"enum toktok_generator_tests::json::Token\">Token</a>","synthetic":false,"types":["toktok_generator_tests::json::Token"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
