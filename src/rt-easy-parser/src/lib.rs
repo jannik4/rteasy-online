@@ -5,21 +5,40 @@ mod parser;
 
 pub use self::lexer::Token;
 
-pub fn parse(source: &str) -> Result<rtcore::ast::Ast<'_>, toktok::Error<Token>> {
+fn lex(source: &str) -> Result<Vec<toktok::SpannedToken<Token>>, toktok::Error<Token>> {
     use logos::Logos;
 
-    // Lex
     let mut lexer = Token::lexer(source);
     let mut tokens = Vec::new();
     while let Some(token) = lexer.next() {
         tokens.push(toktok::SpannedToken { token, span: lexer.span() });
     }
 
-    // Parse
+    Ok(tokens)
+}
+
+pub fn parse(source: &str) -> Result<rtcore::ast::Ast<'_>, toktok::Error<Token>> {
+    let tokens = lex(source)?;
     let state = toktok::State::new(source, &tokens);
-    let (_, ast) = parser::ast(state)?;
+    let (_, ast) = parser::ast_eoi(state)?;
 
     Ok(ast)
+}
+
+pub fn parse_assignment(source: &str) -> Result<rtcore::ast::Assignment<'_>, toktok::Error<Token>> {
+    let tokens = lex(source)?;
+    let state = toktok::State::new(source, &tokens);
+    let (_, assignment) = parser::assignment_eoi(state)?;
+
+    Ok(assignment)
+}
+
+pub fn parse_assert(source: &str) -> Result<rtcore::ast::Assert<'_>, toktok::Error<Token>> {
+    let tokens = lex(source)?;
+    let state = toktok::State::new(source, &tokens);
+    let (_, assert) = parser::assert_eoi(state)?;
+
+    Ok(assert)
 }
 
 pub fn pretty_print_error(

@@ -1,6 +1,11 @@
+// Export
+pub ast_eoi -> Ast<'s>: ast eoi { $1 };
+pub assignment_eoi -> Assignment<'s>: assignment eoi { $1 };
+pub assert_eoi -> Assert<'s>: assert eoi { $1 };
+
 // Ast
-pub ast -> Ast<'s>:
-    many0(declaration) many0(statement) opt(terminated(spanned(label), ":")) eoi {
+ast -> Ast<'s>:
+    many0(declaration) many0(statement) opt(terminated(spanned(label), ":")) {
         Ast { declarations: $1, statements: $2, trailing_label: $3 }
     };
 
