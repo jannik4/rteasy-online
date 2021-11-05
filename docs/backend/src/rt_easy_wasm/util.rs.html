@@ -60,7 +60,23 @@
 <span id="60">60</span>
 <span id="61">61</span>
 <span id="62">62</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rt_easy::rtcore::value</span>::{<span class="ident">Value</span>, <span class="ident">ValueSlice</span>};
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">rt_easy::rtcore::value</span>::{<span class="ident">SignedValue</span>, <span class="ident">ValueSlice</span>};
 <span class="kw">use</span> <span class="ident">rt_easy::simulator::Error</span> <span class="kw">as</span> <span class="ident">SimulatorError</span>;
 <span class="kw">use</span> <span class="ident">wasm_bindgen::prelude</span>::<span class="kw-2">*</span>;
 
@@ -103,16 +119,32 @@
     }
 }
 
-<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ValueExt</span> {
-    <span class="kw">fn</span> <span class="ident">parse_with_base</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Value</span>, <span class="ident">JsError</span><span class="op">&gt;</span>;
+<span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ValueExt</span>: <span class="ident">Sized</span> {
+    <span class="kw">fn</span> <span class="ident">parse_with_base</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">JsError</span><span class="op">&gt;</span>;
 }
 
-<span class="kw">impl</span> <span class="ident">ValueExt</span> <span class="kw">for</span> <span class="ident">Value</span> {
-    <span class="kw">fn</span> <span class="ident">parse_with_base</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Value</span>, <span class="ident">JsError</span><span class="op">&gt;</span> {
+<span class="comment">// impl ValueExt for Value {</span>
+<span class="comment">//     fn parse_with_base(value: &amp;str, base: &amp;str) -&gt; Result&lt;Self, JsError&gt; {</span>
+<span class="comment">//         let parse_result = match base {</span>
+<span class="comment">//             &quot;BIN&quot; =&gt; Value::parse_bin(value),</span>
+<span class="comment">//             &quot;DEC&quot; =&gt; Value::parse_dec(value),</span>
+<span class="comment">//             &quot;HEX&quot; =&gt; Value::parse_hex(value),</span>
+<span class="comment">//             _ =&gt; return Err(JsError::from_str(&amp;format!(&quot;invalid base: {}&quot;, base))),</span>
+<span class="comment">//         };</span>
+<span class="comment">//</span>
+<span class="comment">//         match parse_result {</span>
+<span class="comment">//             Ok(value) =&gt; Ok(value),</span>
+<span class="comment">//             Err(()) =&gt; Err(JsError::from_str(&amp;format!(&quot;invalid value: {}&quot;, value))),</span>
+<span class="comment">//         }</span>
+<span class="comment">//     }</span>
+<span class="comment">// }</span>
+
+<span class="kw">impl</span> <span class="ident">ValueExt</span> <span class="kw">for</span> <span class="ident">SignedValue</span> {
+    <span class="kw">fn</span> <span class="ident">parse_with_base</span>(<span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">base</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="ident">JsError</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">parse_result</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">base</span> {
-            <span class="string">&quot;BIN&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Value::parse_bin</span>(<span class="ident">value</span>),
-            <span class="string">&quot;DEC&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Value::parse_dec</span>(<span class="ident">value</span>),
-            <span class="string">&quot;HEX&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">Value::parse_hex</span>(<span class="ident">value</span>),
+            <span class="string">&quot;BIN&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SignedValue::parse_bin</span>(<span class="ident">value</span>),
+            <span class="string">&quot;DEC&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SignedValue::parse_dec</span>(<span class="ident">value</span>),
+            <span class="string">&quot;HEX&quot;</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">SignedValue::parse_hex</span>(<span class="ident">value</span>),
             <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">JsError::from_str</span>(<span class="kw-2">&amp;</span><span class="macro">format!</span>(<span class="string">&quot;invalid base: {}&quot;</span>, <span class="ident">base</span>))),
         };
 

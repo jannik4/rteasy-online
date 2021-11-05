@@ -14,5 +14,5 @@ sourcesIndex["split_vec"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["toktok"] = {"name":"","files":["combinator.rs","error.rs","lib.rs","span.rs","state.rs"]};
 sourcesIndex["toktok_generator"] = {"name":"","files":["ast.rs","generator.rs","lexer.rs","lib.rs","parser.rs","token_map.rs"]};
 sourcesIndex["toktok_generator_tests"] = {"name":"","files":["json.rs","lib.rs"]};
-sourcesIndex["value"] = {"name":"","files":["bit.rs","impl_ops.rs","lib.rs","slice.rs","value.rs"]};
+sourcesIndex["value"] = {"name":"","files":["bit.rs","impl_ops.rs","lib.rs","signed_value.rs","slice.rs","value.rs"]};
 createSourceSidebar();

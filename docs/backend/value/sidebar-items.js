@@ -1,1 +1,1 @@
-initSidebarItems({"enum":[["Bit",""]],"struct":[["Value",""],["ValueSlice",""]]});
+initSidebarItems({"enum":[["Bit",""],["SignedValue",""]],"struct":[["Value",""],["ValueSlice",""]]});

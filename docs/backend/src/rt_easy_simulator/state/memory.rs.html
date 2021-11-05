@@ -221,6 +221,10 @@
 <span id="221">221</span>
 <span id="222">222</span>
 <span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::State</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Error</span>;
 <span class="kw">use</span> <span class="ident">anyhow::anyhow</span>;
@@ -419,6 +423,10 @@
         <span class="kw-2">*</span><span class="self">self</span>.<span class="ident">data_next</span>.<span class="ident">get_mut</span>() <span class="op">=</span> <span class="prelude-val">None</span>;
 
         <span class="prelude-val">Ok</span>(())
+    }
+
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">dr_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="ident">dr_size</span>
     }
 }
 
