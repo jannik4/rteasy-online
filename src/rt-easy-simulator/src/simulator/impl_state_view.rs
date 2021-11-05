@@ -2,7 +2,7 @@ use super::Simulator;
 use crate::Error;
 use rtcore::{
     program::{BusKind, Ident, RegisterKind},
-    value::Value,
+    value::{SignedValue, Value},
 };
 
 impl Simulator {
@@ -19,9 +19,16 @@ impl Simulator {
     pub fn register_value_next(&self, name: &Ident) -> Result<Option<Value>, Error> {
         Ok(self.state.register(name)?.value_next())
     }
-    pub fn write_register(&mut self, name: &Ident, value: Value) -> Result<(), Error> {
-        self.state.register_mut(name)?.write(None, value)?;
-        self.state.register_mut(name)?.clock();
+    pub fn write_register(
+        &mut self,
+        name: &Ident,
+        value: impl Into<SignedValue>,
+    ) -> Result<(), Error> {
+        let register = self.state.register_mut(name)?;
+        let value = into_twos_complement(value.into(), register.range().size())?;
+        register.write(None, value)?;
+        register.clock();
+
         Ok(())
     }
 
@@ -35,8 +42,10 @@ impl Simulator {
     pub fn bus_value(&self, name: &Ident) -> Result<Value, Error> {
         self.state.bus(name)?.read(None)
     }
-    pub fn write_bus(&mut self, name: &Ident, value: Value) -> Result<(), Error> {
-        self.state.bus_mut(name)?.write(None, value)?;
+    pub fn write_bus(&mut self, name: &Ident, value: impl Into<SignedValue>) -> Result<(), Error> {
+        let bus = self.state.bus_mut(name)?;
+        let value = into_twos_complement(value.into(), bus.range().size())?;
+        bus.write(None, value)?;
 
         // Persist bus value if between statements
         if self.cursor.is_at_statement_start() {
@@ -70,12 +79,16 @@ impl Simulator {
         &mut self,
         name: &Ident,
         idx: usize,
-        value: Value,
+        value: impl Into<SignedValue>,
     ) -> Result<(), Error> {
-        let reg_array_state = self.state.register_array_mut(name)?;
+        let reg_array = self.state.register_array_mut(name)?;
+
         let idx = Value::parse_bin(&format!("{:b}", idx)).unwrap();
-        reg_array_state.write(idx, value)?;
-        reg_array_state.clock();
+        let value = into_twos_complement(value.into(), reg_array.data_size())?;
+
+        reg_array.write(idx, value)?;
+        reg_array.clock();
+
         Ok(())
     }
 
@@ -108,8 +121,16 @@ impl Simulator {
     pub fn memory_page(&self, name: &Ident, page_nr: Value) -> Result<Vec<(Value, Value)>, Error> {
         Ok(self.state.memory(name)?.page(page_nr))
     }
-    pub fn write_memory(&mut self, name: &Ident, addr: Value, value: Value) -> Result<(), Error> {
-        Ok(self.state.memory_mut(name)?.write_at(addr, value)?)
+    pub fn write_memory(
+        &mut self,
+        name: &Ident,
+        addr: Value,
+        value: impl Into<SignedValue>,
+    ) -> Result<(), Error> {
+        let memory = self.state.memory_mut(name)?;
+        let value = into_twos_complement(value.into(), memory.dr_size())?;
+        memory.write_at(addr, value)?;
+        Ok(())
     }
     pub fn save_memory<W>(&self, name: &Ident, writer: W) -> Result<(), Error>
     where
@@ -122,5 +143,12 @@ impl Simulator {
         R: std::io::Read,
     {
         self.state.memory_mut(name)?.load_from_save(reader)
+    }
+}
+
+fn into_twos_complement(value: SignedValue, size: usize) -> anyhow::Result<Value> {
+    match value.into_twos_complement(size) {
+        Ok(value) => Ok(value),
+        Err(_) => Err(anyhow::anyhow!("value too big")),
     }
 }

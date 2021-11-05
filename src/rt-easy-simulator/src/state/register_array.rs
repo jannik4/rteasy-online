@@ -104,6 +104,10 @@ impl RegisterArrayState {
     pub fn index_size(&self) -> usize {
         log_2(self.len)
     }
+
+    pub fn data_size(&self) -> usize {
+        self.data_size
+    }
 }
 
 // impl fmt::Display for RegisterArrayState {

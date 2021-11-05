@@ -197,6 +197,10 @@ impl MemoryState {
 
         Ok(())
     }
+
+    pub fn dr_size(&self) -> usize {
+        self.dr_size
+    }
 }
 
 // impl fmt::Display for MemoryState {

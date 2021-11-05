@@ -1,4 +1,4 @@
-use rt_easy::rtcore::value::{Value, ValueSlice};
+use rt_easy::rtcore::value::{SignedValue, ValueSlice};
 use rt_easy::simulator::Error as SimulatorError;
 use wasm_bindgen::prelude::*;
 
@@ -41,16 +41,32 @@ impl ValueSliceExt for ValueSlice {
     }
 }
 
-pub trait ValueExt {
-    fn parse_with_base(value: &str, base: &str) -> Result<Value, JsError>;
+pub trait ValueExt: Sized {
+    fn parse_with_base(value: &str, base: &str) -> Result<Self, JsError>;
 }
 
-impl ValueExt for Value {
-    fn parse_with_base(value: &str, base: &str) -> Result<Value, JsError> {
+// impl ValueExt for Value {
+//     fn parse_with_base(value: &str, base: &str) -> Result<Self, JsError> {
+//         let parse_result = match base {
+//             "BIN" => Value::parse_bin(value),
+//             "DEC" => Value::parse_dec(value),
+//             "HEX" => Value::parse_hex(value),
+//             _ => return Err(JsError::from_str(&format!("invalid base: {}", base))),
+//         };
+//
+//         match parse_result {
+//             Ok(value) => Ok(value),
+//             Err(()) => Err(JsError::from_str(&format!("invalid value: {}", value))),
+//         }
+//     }
+// }
+
+impl ValueExt for SignedValue {
+    fn parse_with_base(value: &str, base: &str) -> Result<Self, JsError> {
         let parse_result = match base {
-            "BIN" => Value::parse_bin(value),
-            "DEC" => Value::parse_dec(value),
-            "HEX" => Value::parse_hex(value),
+            "BIN" => SignedValue::parse_bin(value),
+            "DEC" => SignedValue::parse_dec(value),
+            "HEX" => SignedValue::parse_hex(value),
             _ => return Err(JsError::from_str(&format!("invalid base: {}", base))),
         };
 

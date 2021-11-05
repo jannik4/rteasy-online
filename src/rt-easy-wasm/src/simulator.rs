@@ -1,7 +1,7 @@
 use crate::{util::*, Signals, Span, StepResult};
 use rt_easy::rtcore::{
     program::{BusKind, Ident, RegisterKind},
-    value::Value,
+    value::{SignedValue, Value},
 };
 use wasm_bindgen::prelude::*;
 
@@ -87,7 +87,7 @@ impl Simulator {
 
     pub fn write_register(&mut self, name: String, value: &str, base: &str) -> Result<()> {
         map_err(move || {
-            let value = Value::parse_with_base(value, base)?;
+            let value = SignedValue::parse_with_base(value, base)?;
             self.0.write_register(&Ident(name), value)?;
             Ok(())
         })
@@ -111,7 +111,7 @@ impl Simulator {
 
     pub fn write_bus(&mut self, name: String, value: &str, base: &str) -> Result<()> {
         map_err(move || {
-            let value = Value::parse_with_base(value, base)?;
+            let value = SignedValue::parse_with_base(value, base)?;
             self.0.write_bus(&Ident(name), value)?;
             Ok(())
         })
@@ -169,7 +169,7 @@ impl Simulator {
         base: &str,
     ) -> Result<()> {
         map_err(move || {
-            let value = Value::parse_with_base(value, base)?;
+            let value = SignedValue::parse_with_base(value, base)?;
             self.0.write_register_array(&Ident(name), idx, value)?;
             Ok(())
         })
@@ -253,7 +253,7 @@ impl Simulator {
     ) -> Result<()> {
         map_err(move || {
             let addr = Value::parse_hex(addr).map_err(|()| JsError::from_str("invalid addr"))?;
-            let value = Value::parse_with_base(value, base)?;
+            let value = SignedValue::parse_with_base(value, base)?;
             self.0.write_memory(&Ident(name), addr, value)?;
             Ok(())
         })
