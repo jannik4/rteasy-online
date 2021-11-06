@@ -119,7 +119,7 @@ impl Value {
         Ok(value)
     }
 
-    /// Parse from hexadecimal string. Leading zeros from input are retained.
+    /// Parse from hexadecimal string. The result will have no leading zeros.
     ///
     /// # Errors
     ///
@@ -139,7 +139,9 @@ impl Value {
             bits.push((val & 0b1000 != 0).into());
         }
 
-        Ok(Self { bits })
+        let mut value = Self { bits };
+        value.remove_leading_zeros();
+        Ok(value)
     }
 
     pub fn concat<'a, I>(slices: I) -> Self
@@ -231,6 +233,10 @@ mod tests {
             Value { bits: vec![Bit::One, Bit::Zero, Bit::One, Bit::Zero, Bit::Zero, Bit::Zero,] }
         );
 
+        assert_eq!(Value::parse_bin("01").unwrap().size(), 2);
+        assert_eq!(Value::parse_bin("0101").unwrap().size(), 4);
+        assert_eq!(Value::parse_bin("1010").unwrap().size(), 4);
+
         assert!(Value::parse_bin("-000101").is_err());
         assert!(Value::parse_bin("0b000101").is_err());
         assert!(Value::parse_bin("").is_err());
@@ -256,6 +262,9 @@ mod tests {
                 ]
             }
         );
+
+        assert_eq!(Value::parse_dec("7").unwrap().size(), 3);
+        assert_eq!(Value::parse_dec("007").unwrap().size(), 3);
 
         assert!(Value::parse_dec("-495783").is_err());
         assert!(Value::parse_dec("FFa").is_err());
@@ -289,6 +298,10 @@ mod tests {
                 ]
             }
         );
+
+        assert_eq!(Value::parse_hex("0").unwrap().size(), 1);
+        assert_eq!(Value::parse_hex("a").unwrap().size(), 4);
+        assert_eq!(Value::parse_hex("0a").unwrap().size(), 4);
 
         assert!(Value::parse_hex("-ff").is_err());
         assert!(Value::parse_hex("FFaG").is_err());

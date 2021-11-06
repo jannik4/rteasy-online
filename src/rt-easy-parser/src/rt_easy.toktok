@@ -308,10 +308,7 @@ fn parse_dec(s: &str, span: Range<usize>) -> Result<Number> {
 fn parse_hex(s: &str, span: Range<usize>) -> Result<Number> {
     let s = &s[2..]; // TODO: Check if s begins with 0x/0X/$
     match Value::parse_hex(s) {
-        Ok(mut value) => {
-          value.remove_leading_zeros();
-          Ok(Number { value, kind: NumberKind::Other })
-        },
+        Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
         Err(()) => Err(Error::new_custom(span, "invalid hexadecimal number".into())),
     }
 }
