@@ -179,9 +179,9 @@
     <span class="attribute">#[<span class="ident">token</span>(<span class="string">&quot;&lt;-&quot;</span>)]</span>
     <span class="ident">Assign</span>,
 
-    <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;0[bB][01]+&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;(%|0[bB])[01]+&quot;</span>)]</span>
     <span class="ident">LiteralNumberBin</span>,
-    <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;0[xX][0-9a-fA-F]+&quot;</span>)]</span>
+    <span class="attribute">#[<span class="ident">regex</span>(<span class="string">r&quot;(\$|0[xX])[0-9a-fA-F]+&quot;</span>)]</span>
     <span class="ident">LiteralNumberHex</span>,
     <span class="attribute">#[<span class="ident">regex</span>(<span class="string">&quot;[0-9]+&quot;</span>)]</span>
     <span class="ident">LiteralNumberDec</span>,
