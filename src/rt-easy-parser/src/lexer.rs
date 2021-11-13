@@ -27,9 +27,9 @@ pub enum Token {
     #[token("<-")]
     Assign,
 
-    #[regex("0[bB][01]+")]
+    #[regex("(%|0[bB])[01]+")]
     LiteralNumberBin,
-    #[regex("0[xX][0-9a-fA-F]+")]
+    #[regex(r"(\$|0[xX])[0-9a-fA-F]+")]
     LiteralNumberHex,
     #[regex("[0-9]+")]
     LiteralNumberDec,

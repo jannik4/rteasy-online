@@ -288,7 +288,12 @@ use std::ops::Range;
 type Result<T> = std::result::Result<T, Error<Token>>;
 
 fn parse_bin(s: &str, span: Range<usize>) -> Result<Number> {
-    let s = &s[2..]; // TODO: Check if s begins with 0b/0B/%
+    let s = match s.chars().next().unwrap() {
+        '0' => &s[2..], // 0b... or 0B...
+        '%' => &s[1..], // %...
+        _ => unreachable!(),
+    };
+
     match Value::parse_bin(s) {
         Ok(mut value) => {
           value.remove_leading_zeros();
@@ -306,7 +311,12 @@ fn parse_dec(s: &str, span: Range<usize>) -> Result<Number> {
 }
 
 fn parse_hex(s: &str, span: Range<usize>) -> Result<Number> {
-    let s = &s[2..]; // TODO: Check if s begins with 0x/0X/$
+    let s = match s.chars().next().unwrap() {
+        '0' => &s[2..], // 0x... or 0X...
+        '$' => &s[1..], // $...
+        _ => unreachable!(),
+    };
+
     match Value::parse_hex(s) {
         Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
         Err(()) => Err(Error::new_custom(span, "invalid hexadecimal number".into())),

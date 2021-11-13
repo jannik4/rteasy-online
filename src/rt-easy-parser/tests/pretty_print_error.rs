@@ -1,3 +1,5 @@
+mod util;
+
 #[test]
 fn pretty_print_error() {
     const SOURCE: &'static str = r#"declare register X["#;
@@ -24,9 +26,8 @@ fn pretty_print_error() {
            "assert" ...
            <ID> ..."#;
 
-    let error = match rt_easy_parser::parse(SOURCE) {
-        Ok(_) => panic!("expected error"),
-        Err(e) => rt_easy_parser::pretty_print_error(&e, SOURCE, None, false),
-    };
-    assert_eq!(error, EXPECTED_ERROR);
+    let error = util::parse_err(SOURCE);
+    let error_message = rt_easy_parser::pretty_print_error(&error, SOURCE, None, false);
+
+    assert_eq!(error_message, EXPECTED_ERROR);
 }
