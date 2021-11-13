@@ -84,7 +84,7 @@ operation -> Operation<'s>:
     | assert { Operation::Assert($1) } | assignment { Operation::Assignment($1) };
 operations -> Vec<Operation<'s>>: sep1(operation, ",") { $1 };
 
-// Expression, TODO: ...
+// Expression
 expression -> Expression<'s>:
       expression_or spanned("xor") expression {
         BinaryTerm { lhs: $1, rhs: $3, operator: sp(BinaryOperator::Xor, $2.span), span: $span.into() }.into()
