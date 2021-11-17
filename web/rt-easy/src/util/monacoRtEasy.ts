@@ -52,7 +52,7 @@ export function setUpRtEasyLang(monaco: Monaco) {
       root: [
         // identifiers and keywords
         [
-          /[a-zA-Z_$][\w$]*/,
+          /[a-zA-Z_][\w]*/,
           {
             cases: {
               "@typeKeywords": "keyword",
@@ -68,8 +68,8 @@ export function setUpRtEasyLang(monaco: Monaco) {
         { include: "@whitespace" },
 
         // numbers
-        [/0[xX][0-9a-fA-F]+/, "number.hex"], // hex
-        [/0[bB][01]+/, "number.hex"], // binary: use hex style
+        [/(\$|0[xX])[0-9a-fA-F]+/, "number.hex"], // hex
+        [/(%|0[bB])[01]+/, "number.hex"], // binary: use hex style
         [/[0-9_]+/, "number"],
 
         // strings
