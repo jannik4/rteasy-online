@@ -16,6 +16,12 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
+      - name: Cache cargo plugins
+        uses: actions/cache@v2
+        with:
+          path: ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-plugins
+
       - name: Cache crate
         uses: actions/cache@v2
         with:
@@ -42,6 +48,9 @@ jobs:
         with:
           node-version: "14"
 
+      - name: Install mdbook
+        run: cargo install mdbook --no-default-features --features search --vers "^0.4" --locked
+
       - name: Build Backend Api Docs
         run: cargo doc --no-deps
 
@@ -51,11 +60,18 @@ jobs:
           npm run build
         working-directory: web/rt-easy
 
+      - name: Build book
+        run: mdbook build
+        working-directory: web/book
+
       - name: Copy to dist
         run: |
           mkdir -p dist/docs/backend
           cp -r target/doc/* dist/docs/backend/
+          mkdir -p dist
           cp -r web/rt-easy/build/* dist/
+          mkdir -p dist/book
+          cp -r web/book/build/* dist/book/
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@4.1.5
