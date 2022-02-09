@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;rt-easy-compiler&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rt_easy_compiler/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;rt-easy-compiler&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rt_easy_compiler/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -217,9 +218,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Error</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">file_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">ansi_colors</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">file_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">ansi_colors</span>: <span class="ident">bool</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">Error::Errors</span>(<span class="ident">errors</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">Error::Errors</span>(<span class="ident">errors</span>) =&gt; {
                 <span class="comment">// Sort errors</span>
                 <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">errors</span> <span class="op">=</span> <span class="ident">errors</span>.<span class="ident">iter</span>().<span class="ident">collect</span>::<span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="kw">_</span><span class="op">&gt;</span><span class="op">&gt;</span>();
                 <span class="ident">errors</span>.<span class="ident">sort_by</span>(<span class="op">|</span><span class="ident">a</span>, <span class="ident">b</span><span class="op">|</span> <span class="ident">a</span>.<span class="ident">span</span>.<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="ident">b</span>.<span class="ident">span</span>));
@@ -234,20 +235,20 @@
                 }
                 <span class="ident">result</span>
             }
-            <span class="ident">Error::Internal</span>(<span class="ident">internal</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">internal</span>),
-            <span class="ident">Error::Backend</span>(<span class="ident">backend</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">backend</span>),
+            <span class="ident">Error::Internal</span>(<span class="ident">internal</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">internal</span>),
+            <span class="ident">Error::Backend</span>(<span class="ident">backend</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">backend</span>),
         }
     }
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompilerError</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">errors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompilerError</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">errors</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">CompilerError</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
         <span class="ident"><span class="self">Self</span>::Errors</span>(<span class="ident">errors</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">InternalError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Error</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">internal</span>: <span class="ident">InternalError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">internal</span>: <span class="ident">InternalError</span>) -&gt; <span class="self">Self</span> {
         <span class="ident"><span class="self">Self</span>::Internal</span>(<span class="ident">internal</span>)
     }
 }
@@ -259,11 +260,11 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CompilerError</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kind</span>: <span class="ident">CompilerErrorKind</span>, <span class="ident">span</span>: <span class="ident">Span</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">kind</span>: <span class="ident">CompilerErrorKind</span>, <span class="ident">span</span>: <span class="ident">Span</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">kind</span>, <span class="ident">span</span> }
     }
 
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">file_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">ansi_colors</span>: <span class="ident">bool</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">file_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">ansi_colors</span>: <span class="ident">bool</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kind</span>.<span class="ident">message</span>();
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">pretty_error::Error::new</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>)
             .<span class="ident">with_source</span>(<span class="ident">source</span>, <span class="ident">pretty_error::Span::Range</span>(<span class="self">self</span>.<span class="ident">span</span>.<span class="ident">range</span>()))
@@ -309,82 +310,82 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CompilerErrorKind</span> {
-    <span class="kw">fn</span> <span class="ident">message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
         <span class="kw">use</span> <span class="ident">CompilerErrorKind</span>::<span class="kw-2">*</span>;
 
-        <span class="kw">fn</span> <span class="ident">fmt_symbol_types</span>(<span class="ident">symbol_types</span>: <span class="kw-2">&amp;</span>[<span class="ident">SymbolType</span>]) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
+        <span class="kw">fn</span> <span class="ident">fmt_symbol_types</span>(<span class="ident">symbol_types</span>: <span class="kw-2">&amp;</span>[<span class="ident">SymbolType</span>]) -&gt; <span class="ident">String</span> {
             <span class="kw">match</span> <span class="ident">symbol_types</span> {
-                [] <span class="op">=</span><span class="op">&gt;</span> <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
-                [<span class="ident">curr</span>] <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">curr</span>),
-                [<span class="ident">curr</span>, <span class="ident">last</span>] <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{} or {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">last</span>),
-                [<span class="ident">curr</span>, <span class="ident">rest</span> @ ..] <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;{}, {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">rest</span>)),
+                [] =&gt; <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
+                [<span class="ident">curr</span>] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">curr</span>),
+                [<span class="ident">curr</span>, <span class="ident">last</span>] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{} or {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">last</span>),
+                [<span class="ident">curr</span>, <span class="ident">rest</span> @ ..] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}, {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">rest</span>)),
             }
         }
 
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DuplicateSymbol</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;duplicate symbol \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">RegArrayLenNotPowerOfTwo</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">DuplicateSymbol</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate symbol \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">RegArrayLenNotPowerOfTwo</span>(<span class="ident">name</span>) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;length of register array \&quot;{}\&quot; must be a power of two&quot;</span>, <span class="ident">name</span>)
             }
-            <span class="ident">RegArrayMissingIndex</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">RegArrayMissingIndex</span>(<span class="ident">name</span>) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;register array \&quot;{}\&quot; is missing index [...]&quot;</span>, <span class="ident">name</span>)
             }
-            <span class="ident">DuplicateLabel</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;duplicate label \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">SymbolNotFound</span>(<span class="ident">expected_symbol</span>, <span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">DuplicateLabel</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate label \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">SymbolNotFound</span>(<span class="ident">expected_symbol</span>, <span class="ident">name</span>) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;no {} named \&quot;{}\&quot; found&quot;</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">expected_symbol</span>), <span class="ident">name</span>)
             }
-            <span class="ident">LabelNotFound</span>(<span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;no label named \&quot;{}\&quot; found&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">ExpectedFixedSize</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;expected fixed size expression&quot;</span>),
-            <span class="ident">ExpectedConstantExpression</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;expected constant expression&quot;</span>),
-            <span class="ident">ExpectedExactlyOneDefaultClause</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;expected exactly one default clause&quot;</span>),
-            <span class="ident">ConcatContainsNumberNonBitString</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">LabelNotFound</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;no label named \&quot;{}\&quot; found&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">ExpectedFixedSize</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected fixed size expression&quot;</span>),
+            <span class="ident">ExpectedConstantExpression</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected constant expression&quot;</span>),
+            <span class="ident">ExpectedExactlyOneDefaultClause</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected exactly one default clause&quot;</span>),
+            <span class="ident">ConcatContainsNumberNonBitString</span> =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;concat must not contain numbers other than bit strings&quot;</span>)
             }
-            <span class="ident">AssignmentDoesNotFit</span> { <span class="ident">lhs_size</span>, <span class="ident">rhs_size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">AssignmentDoesNotFit</span> { <span class="ident">lhs_size</span>, <span class="ident">rhs_size</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;right-hand side is too wide: {} &gt; {}&quot;</span>, <span class="ident">rhs_size</span>, <span class="ident">lhs_size</span>)
             }
-            <span class="ident">RegArrayIndexDoesNotFit</span> { <span class="ident">index_size</span>, <span class="ident">index_expr_size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">RegArrayIndexDoesNotFit</span> { <span class="ident">index_size</span>, <span class="ident">index_expr_size</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;index expression is too wide: {} &gt; {}&quot;</span>, <span class="ident">index_expr_size</span>, <span class="ident">index_size</span>)
             }
-            <span class="ident">ConditionTooWide</span>(<span class="ident">condition_size</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">ConditionTooWide</span>(<span class="ident">condition_size</span>) =&gt; {
                 <span class="macro">format!</span>(
                     <span class="string">&quot;condition expression must be exactly one bit wide, but is: {}&quot;</span>,
                     <span class="ident">condition_size</span>
                 )
             }
-            <span class="ident">BitRangeTooWide</span> { <span class="ident">max_size</span>, <span class="ident">size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">BitRangeTooWide</span> { <span class="ident">max_size</span>, <span class="ident">size</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;bit range size exceeds max size: {} &gt; {}&quot;</span>, <span class="ident">size</span>, <span class="ident">max_size</span>)
             }
-            <span class="ident">CaseValueTooWide</span> { <span class="ident">expr_size</span>, <span class="ident">case_value_size</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">CaseValueTooWide</span> { <span class="ident">expr_size</span>, <span class="ident">case_value_size</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;case value is too wide: {} &gt; {}&quot;</span>, <span class="ident">case_value_size</span>, <span class="ident">expr_size</span>)
             }
-            <span class="ident">DuplicateCaseValue</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;duplicate case value&quot;</span>),
-            <span class="ident">AssignmentLhsContainsClockedAndUnclocked</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">DuplicateCaseValue</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate case value&quot;</span>),
+            <span class="ident">AssignmentLhsContainsClockedAndUnclocked</span> =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;the left-hand side of the assignment may contain either clocked or unclocked variables only&quot;</span>)
             }
-            <span class="ident">AssignmentLhsContainsANonLvalue</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">AssignmentLhsContainsANonLvalue</span> =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;the left-hand side of the assignment must be a variable&quot;</span>)
             }
-            <span class="ident">AssignmentLhsContainsInput</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;cannot assign to input (inputs are read-only)&quot;</span>),
-            <span class="ident">RangeMismatch</span> { <span class="ident">range</span>, <span class="ident">range_idx</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">AssignmentLhsContainsInput</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;cannot assign to input (inputs are read-only)&quot;</span>),
+            <span class="ident">RangeMismatch</span> { <span class="ident">range</span>, <span class="ident">range_idx</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;bit range {} exceeds declaration {}&quot;</span>, <span class="ident">range_idx</span>, <span class="ident">range</span>)
             }
-            <span class="ident">GotoBeforePipe</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;no goto statements are allowed before pipe (\&quot;|\&quot;)&quot;</span>),
-            <span class="ident">MutateAfterPipe</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;no mutating statements allowed after pipe (\&quot;|\&quot;)&quot;</span>),
-            <span class="ident">SxtTerm</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;sxt operator is not supported for terms&quot;</span>),
-            <span class="ident">WrongSymbolType</span> { <span class="ident">expected</span>, <span class="ident">found</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">GotoBeforePipe</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;no goto statements are allowed before pipe (\&quot;|\&quot;)&quot;</span>),
+            <span class="ident">MutateAfterPipe</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;no mutating statements allowed after pipe (\&quot;|\&quot;)&quot;</span>),
+            <span class="ident">SxtTerm</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;sxt operator is not supported for terms&quot;</span>),
+            <span class="ident">WrongSymbolType</span> { <span class="ident">expected</span>, <span class="ident">found</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;expected {}, found: {}&quot;</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">expected</span>), <span class="ident">found</span>)
             }
-            <span class="ident">DoubleAssign</span>(<span class="ident">symbol_type</span>, <span class="ident">name</span>) <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">DoubleAssign</span>(<span class="ident">symbol_type</span>, <span class="ident">name</span>) =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;{} \&quot;{}\&quot; is assigned more than once&quot;</span>, <span class="ident">symbol_type</span>, <span class="ident">name</span>)
             }
-            <span class="ident">DoubleGoto</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">DoubleGoto</span> =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;statement contains multiple gotos on at least one possible execution path&quot;</span>)
             }
-            <span class="ident">RegisterArrayTooManyReads</span> { <span class="ident">name</span>, <span class="ident">allowed</span> } <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="ident">RegisterArrayTooManyReads</span> { <span class="ident">name</span>, <span class="ident">allowed</span> } =&gt; {
                 <span class="macro">format!</span>(<span class="string">&quot;register array \&quot;{}\&quot; is read more than {} times&quot;</span>, <span class="ident">name</span>, <span class="ident">allowed</span>)
             }
-            <span class="ident">FeedbackLoop</span> <span class="op">=</span><span class="op">&gt;</span> <span class="macro">format!</span>(<span class="string">&quot;statement has a feedback loop&quot;</span>),
+            <span class="ident">FeedbackLoop</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;statement has a feedback loop&quot;</span>),
         }
     }
 }
@@ -393,13 +394,13 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">InternalError</span>(<span class="kw">pub</span> <span class="ident">String</span>);
 
 <span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">InternalError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
         <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;ICE: {}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 
 <span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">CompilerError</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">InternalError</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">CompilerError</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">err</span>: <span class="ident">CompilerError</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span>(<span class="macro">format!</span>(<span class="string">&quot;{:?}&quot;</span>, <span class="ident">err</span>))
     }
 }
@@ -408,11 +409,10 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BackendError</span>(<span class="kw">pub</span> <span class="ident">Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">std::error::Error</span> <span class="op">+</span> <span class="ident">Send</span> <span class="op">+</span> <span class="ident">Sync</span> <span class="op">+</span> <span class="lifetime">&#39;static</span><span class="op">&gt;</span>);
 
 <span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">BackendError</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
         <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;ICE (Backend): {}&quot;</span>, <span class="self">self</span>.<span class="number">0</span>)
     }
 }
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rt_easy_compiler" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
 </body></html>

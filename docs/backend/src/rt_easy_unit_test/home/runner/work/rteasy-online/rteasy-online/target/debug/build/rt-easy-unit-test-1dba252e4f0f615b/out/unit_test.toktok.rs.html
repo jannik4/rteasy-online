@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;home&#x2F;runner&#x2F;work&#x2F;rteasy-online&#x2F;rteasy-online&#x2F;target&#x2F;debug&#x2F;build&#x2F;rt-easy-unit-test-6caaae944e07038a&#x2F;out&#x2F;unit_test.toktok.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>unit_test.toktok.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../../../../../../../../storage.js"></script><script src="../../../../../../../../../../../../crates.js"></script><noscript><link rel="stylesheet" href="../../../../../../../../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../../../../../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../../../../../../../../rt_easy_unit_test/index.html'><div class='logo-container rust-logo'><img src='../../../../../../../../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../../../../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../../../../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../../../../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `&#x2F;home&#x2F;runner&#x2F;work&#x2F;rteasy-online&#x2F;rteasy-online&#x2F;target&#x2F;debug&#x2F;build&#x2F;rt-easy-unit-test-1dba252e4f0f615b&#x2F;out&#x2F;unit_test.toktok.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>unit_test.toktok.rs - source</title><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../../../../../../../../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../../../../../../../../../../../storage.js"></script><script src="../../../../../../../../../../../../crates.js"></script><script defer src="../../../../../../../../../../../../main.js"></script><script defer src="../../../../../../../../../../../../source-script.js"></script><script defer src="../../../../../../../../../../../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../../../../../../../../../../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../../../../../../../../../../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../../../../../../../../../../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../../../../../../../../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../../../../../../../../../../../rt_easy_unit_test/index.html'><div class='logo-container rust-logo'><img src='../../../../../../../../../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../../../../../../../../../../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../../../../../../../../../../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../../../../../../../../../../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -376,10 +377,10 @@
 
     <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">Error</span><span class="op">&lt;</span><span class="ident">Token</span><span class="op">&gt;</span><span class="op">&gt;</span>;
 
-    <span class="kw">fn</span> <span class="ident">parse_usize</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">span</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">parse_usize</span>(<span class="ident">s</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">span</span>: <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">match</span> <span class="ident">s</span>.<span class="ident">parse</span>() {
-            <span class="prelude-val">Ok</span>(<span class="ident">value</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">value</span>),
-            <span class="prelude-val">Err</span>(<span class="kw">_</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">Error::new_custom</span>(<span class="ident">span</span>, <span class="string">&quot;invalid number&quot;</span>.<span class="ident">into</span>())),
+            <span class="prelude-val">Ok</span>(<span class="ident">value</span>) =&gt; <span class="prelude-val">Ok</span>(<span class="ident">value</span>),
+            <span class="prelude-val">Err</span>(<span class="kw">_</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">Error::new_custom</span>(<span class="ident">span</span>, <span class="string">&quot;invalid number&quot;</span>.<span class="ident">into</span>())),
         }
     }
 
@@ -390,175 +391,175 @@
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">unit_test</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">UnitTest</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">UnitTest</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: delimited(         many0(exact(Token::Newline)),         sep0(operation, many1(exact(Token::Newline))),         many0(exact(Token::Newline))     ) eoi {         UnitTest { operations: $1 }     }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::pair</span>(<span class="ident">delimited</span>(<span class="ident">many0</span>(<span class="ident">exact</span>(<span class="ident">Token::Newline</span>,),),<span class="ident">sep0</span>(<span class="ident">operation</span>,<span class="ident">many1</span>(<span class="ident">exact</span>(<span class="ident">Token::Newline</span>,),),),<span class="ident">many0</span>(<span class="ident">exact</span>(<span class="ident">Token::Newline</span>,),),), <span class="ident">eoi</span>).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> {
                 <span class="ident">UnitTest</span> { <span class="ident">operations</span>: <span class="ident">__c_1__</span> }
             })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">step</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Step</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Step</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;step&quot; opt(number_usize) { Step { amount: $2 } }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordStep</span>), <span class="ident">opt</span>(<span class="ident">number_usize</span>,)).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Step</span> { <span class="ident">amount</span>: <span class="ident">__c_2__</span> } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">microStep</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">MicroStep</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">MicroStep</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;microStep&quot; opt(number_usize) { MicroStep { amount: $2 } }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordMicroStep</span>), <span class="ident">opt</span>(<span class="ident">number_usize</span>,)).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>))) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">MicroStep</span> { <span class="ident">amount</span>: <span class="ident">__c_2__</span> } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">run</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Run</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Run</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;run&quot; { Run }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordRun</span>).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Run</span> })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">reset</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Reset</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Reset</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;reset&quot; { Reset }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordReset</span>).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Reset</span> })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">setBreakpoint</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">SetBreakpoint</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">SetBreakpoint</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;set&quot; &quot;breakpoint&quot; label { SetBreakpoint { label: $3} }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordSet</span>), <span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordBreakpoint</span>)), <span class="ident">label</span>).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, ((<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>), <span class="ident">__c_3__</span>))) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, ((<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>), <span class="ident">__c_3__</span>))) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">SetBreakpoint</span> { <span class="ident">label</span>: <span class="ident">__c_3__</span>} })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">removeBreakpoint</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">RemoveBreakpoint</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">RemoveBreakpoint</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: &quot;remove&quot; &quot;breakpoint&quot; label { RemoveBreakpoint { label: $3} }</span>
         {
     
             <span class="kw">match</span> <span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::pair</span>(<span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordRemove</span>), <span class="ident">__intern__::c::exact</span>(<span class="ident">Token::KeywordBreakpoint</span>)), <span class="ident">label</span>).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, ((<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>), <span class="ident">__c_3__</span>))) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, ((<span class="ident">__c_1__</span>, <span class="ident">__c_2__</span>), <span class="ident">__c_3__</span>))) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">RemoveBreakpoint</span> { <span class="ident">label</span>: <span class="ident">__c_3__</span>} })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">assignment</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Assignment</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Assignment</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: exact(Token::OperationAssignment) { Assignment { assignment: $1.into() } }</span>
         {
     
             <span class="kw">match</span> <span class="ident">exact</span>(<span class="ident">Token::OperationAssignment</span>,).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Assignment</span> { <span class="ident">assignment</span>: <span class="ident">__c_1__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">assert</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Assert</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Assert</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: exact(Token::OperationAssert) { Assert { assert: $1.into() } }</span>
         {
     
             <span class="kw">match</span> <span class="ident">exact</span>(<span class="ident">Token::OperationAssert</span>,).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Assert</span> { <span class="ident">assert</span>: <span class="ident">__c_1__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">operation</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Operation</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Operation</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="kw">let</span> <span class="ident">__span_start__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_start</span>();
 
         <span class="comment">// Production 1: step { Operation { kind: OperationKind::Step($1), span: $span.into() } }</span>
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">step</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::Step</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -566,13 +567,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">microStep</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::MicroStep</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -580,13 +581,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">run</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::Run</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -594,13 +595,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">reset</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::Reset</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -608,13 +609,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">setBreakpoint</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::SetBreakpoint</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -622,13 +623,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">removeBreakpoint</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::RemoveBreakpoint</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -636,13 +637,13 @@
         <span class="kw">let</span> <span class="ident">__state__</span> <span class="op">=</span> {
             <span class="kw">let</span> <span class="ident">__input__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>();
             <span class="kw">match</span> <span class="ident">assignment</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::Assignment</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="ident">__e__</span>.<span class="ident">recover</span>(<span class="ident">__input__</span>)<span class="question-mark">?</span>,
             }
         };
 
@@ -650,53 +651,53 @@
         {
     
             <span class="kw">match</span> <span class="ident">assert</span>.<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Operation</span> { <span class="ident">kind</span>: <span class="ident">OperationKind::Assert</span>(<span class="ident">__c_1__</span>), <span class="ident">span</span>: <span class="ident">__span__</span>.<span class="ident">into</span>() } })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">number_usize</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">usize</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="kw">let</span> <span class="ident">__span_start__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_start</span>();
 
         <span class="comment">// Production 1: exact(Token::LiteralNumberDec) { parse_usize($1, $span) }?</span>
         {
     
             <span class="kw">match</span> <span class="ident">exact</span>(<span class="ident">Token::LiteralNumberDec</span>,).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
                     <span class="kw">let</span> <span class="ident">__span_end__</span> <span class="op">=</span> <span class="ident">__state__</span>.<span class="ident">input</span>().<span class="ident">positioned_end</span>(<span class="ident">__span_start__</span>);
                     <span class="kw">let</span> <span class="ident">__span__</span> <span class="op">=</span> <span class="ident">__span_start__</span>..<span class="ident">__span_end__</span>;
                     <span class="comment">// Closure is needed to ensure res_block errors are catched</span>
                     <span class="kw">match</span> (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">parse_usize</span>(<span class="ident">__c_1__</span>, <span class="ident">__span__</span>) })() {
-                        <span class="prelude-val">Ok</span>(<span class="ident">__ok__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__ok__</span>)),
-                        <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__state__</span>.<span class="ident">and_error</span>(<span class="ident">__e__</span>)),
+                        <span class="prelude-val">Ok</span>(<span class="ident">__ok__</span>) =&gt; <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__ok__</span>)),
+                        <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__state__</span>.<span class="ident">and_error</span>(<span class="ident">__e__</span>)),
                     }
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
 
     <span class="kw">fn</span> <span class="ident">label</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span><span class="op">&gt;</span>(
         <span class="ident">__state__</span>: <span class="ident">__intern__::State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span><span class="op">&gt;</span>
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Label</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
+    ) -&gt; <span class="ident">__intern__::PResult</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="lifetime">&#39;t</span>, <span class="ident">Token</span>, <span class="ident">Label</span><span class="op">&gt;</span> <span class="kw">where</span> <span class="lifetime">&#39;s</span>: <span class="lifetime">&#39;t</span> {
         <span class="comment">// Production 1: exact(Token::Identifier) { Label($1.to_string()) }</span>
         {
     
             <span class="kw">match</span> <span class="ident">exact</span>(<span class="ident">Token::Identifier</span>,).<span class="ident">parse</span>(<span class="ident">__state__</span>) {
-                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) <span class="op">=</span><span class="op">&gt;</span> <span class="kw">return</span> {
+                <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, <span class="ident">__c_1__</span>)) =&gt; <span class="kw">return</span> {
             
                     <span class="comment">// Closure is needed to ensure res_block does not return any errors</span>
                     <span class="prelude-val">Ok</span>((<span class="ident">__state__</span>, (<span class="kw">move</span> <span class="op">|</span><span class="op">|</span> { <span class="ident">Label</span>(<span class="ident">__c_1__</span>.<span class="ident">to_string</span>()) })()))
                 },
-                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
+                <span class="prelude-val">Err</span>(<span class="ident">__e__</span>) =&gt; <span class="prelude-val">Err</span>(<span class="ident">__e__</span>),
             }
         }
     }
@@ -715,5 +716,4 @@
 }
     </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../../../../../../../../../../../" data-current-crate="rt_easy_unit_test" data-search-index-js="../../../../../../../../../../../../search-index.js" data-search-js="../../../../../../../../../../../../search.js"></div>
-    <script src="../../../../../../../../../../../../main.js"></script><script src="../../../../../../../../../../../../source-script.js"></script><script src="../../../../../../../../../../../../source-files.js"></script>
 </body></html>
