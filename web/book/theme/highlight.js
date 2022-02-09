@@ -1113,3 +1113,18 @@ hljs.registerLanguage(
     };
   })()
 );
+hljs.registerLanguage(
+  "rteasy",
+  (function () {
+    "use strict";
+    return function (e) {
+      return {
+        name: "RTeasy",
+        aliases: ["rt"],
+        keywords:
+          "declare goto nop read write if then else fi switch case default assert input output register bus memory array",
+        contains: [e.QUOTE_STRING_MODE, e.HASH_COMMENT_MODE],
+      };
+    };
+  })()
+);
