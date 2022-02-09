@@ -6,6 +6,7 @@ pub fn map_err<T>(f: impl FnOnce() -> std::result::Result<T, JsError>) -> Result
     f().map_err(|e| e.0)
 }
 
+// TODO: Use wasm_bindgen::Error when SimulatorError implements StdError
 pub struct JsError(pub JsValue);
 
 impl JsError {

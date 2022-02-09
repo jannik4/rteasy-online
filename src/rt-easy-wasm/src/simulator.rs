@@ -1,4 +1,7 @@
-use crate::{util::*, Signals, Span, StepResult};
+use crate::{
+    util::{JsError, *},
+    Signals, Span, StepResult,
+};
 use rt_easy::rtcore::{
     program::{BusKind, Ident, RegisterKind},
     value::{SignedValue, Value},
