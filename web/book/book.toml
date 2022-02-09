@@ -1,0 +1,12 @@
+[book]
+authors = ["Jannik Obermann"]
+language = "en"
+multilingual = false
+src = "src"
+title = "RTeasy-Online"
+
+[output.html]
+site-url = "/rteasy-online/book/"
+
+[build]
+build-dir = "build"
