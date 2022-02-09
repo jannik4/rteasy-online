@@ -7,7 +7,7 @@
 
 [![Build Status](https://github.com/jannik4/rteasy-online/workflows/test-backend/badge.svg)](https://github.com/jannik4/rteasy-online/actions)
 [![dependency status](https://deps.rs/repo/github/jannik4/rteasy-online/status.svg)](https://deps.rs/repo/github/jannik4/rteasy-online)
-[![codecov](https://codecov.io/gh/jannik4/rteasy-online/branch/master/graph/badge.svg?token=XZSLPAm9rG)](https://codecov.io/gh/jannik4/rteasy-online)
+[![codecov](https://codecov.io/gh/jannik4/rteasy-online/branch/main/graph/badge.svg?token=XZSLPAm9rG)](https://codecov.io/gh/jannik4/rteasy-online)
 
 [API Docs](https://jannik4.github.io/rteasy-online/docs/backend/rt_easy)
 
