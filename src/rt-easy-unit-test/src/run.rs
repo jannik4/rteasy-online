@@ -144,7 +144,7 @@ fn build_test_program(
     };
 
     let backend = compiler_backend_simulator::BackendSimulator;
-    match compiler::compile(&backend, ast, &Default::default()) {
+    match compiler::compile(&backend, (), ast, &Default::default()) {
         Ok(program) => Ok(program),
         Err(_e) => Err(anyhow!("Failed to build test program")), // TODO: better error
     }

@@ -9,7 +9,7 @@ pub fn compile(source: &str) -> Program {
     };
 
     let backend = compiler_backend_simulator::BackendSimulator;
-    match compiler::compile(&backend, ast, &Default::default()) {
+    match compiler::compile(&backend, (), ast, &Default::default()) {
         Ok(program) => program,
         Err(e) => panic!("{}", e.pretty_print(source, None, false)),
     }

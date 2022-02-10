@@ -19,7 +19,7 @@ fn main() {
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
     let options = rt_easy::compiler::Options { print_mir_unordered: true, print_mir: true };
-    match rt_easy::compiler::compile(&backend, ast, &options) {
+    match rt_easy::compiler::compile(&backend, (), ast, &options) {
         Ok(_program) => (),
         Err(e) => panic!("{:#?}", e),
     }

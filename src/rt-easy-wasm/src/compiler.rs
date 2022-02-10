@@ -32,7 +32,7 @@ pub fn build(code: String) -> Result<Simulator, JsValue> {
     };
 
     let backend = rt_easy::compiler_backend_simulator::BackendSimulator;
-    let program = match rt_easy::compiler::compile(&backend, ast, &Default::default()) {
+    let program = match rt_easy::compiler::compile(&backend, (), ast, &Default::default()) {
         Ok(program) => program,
         Err(e) => return Err(JsValue::from_str(&e.pretty_print(&code, None, true))),
     };

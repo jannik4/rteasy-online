@@ -29,7 +29,7 @@ pub fn test(file: PathBuf, test_file: PathBuf, ansi_colors: bool) -> Result<()> 
         };
 
         let backend = compiler_backend_simulator::BackendSimulator;
-        match compiler::compile(&backend, ast, &Default::default()) {
+        match compiler::compile(&backend, (), ast, &Default::default()) {
             Ok(program) => program,
             Err(e) => bail!(e.pretty_print(&source, file_name, ansi_colors)),
         }

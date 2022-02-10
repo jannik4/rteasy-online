@@ -11,10 +11,11 @@ mod program;
 pub struct BackendSimulator;
 
 impl compiler::Backend for BackendSimulator {
+    type Args = ();
     type Output = rtcore::program::Program;
     type Error = std::convert::Infallible;
 
-    fn generate(&self, mir: compiler::mir::Mir<'_>) -> Result<Self::Output> {
+    fn generate(&self, mir: compiler::mir::Mir<'_>, _args: Self::Args) -> Result<Self::Output> {
         rtcore::program::Program::generate(mir)
     }
 }

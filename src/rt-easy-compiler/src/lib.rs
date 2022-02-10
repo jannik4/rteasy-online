@@ -12,10 +12,11 @@ pub use self::error::{BackendError, CompilerError, CompilerErrorKind, Error, Int
 pub use self::symbols::SymbolType;
 
 pub trait Backend {
+    type Args;
     type Output;
     type Error: std::error::Error + Send + Sync + 'static;
 
-    fn generate(&self, mir: mir::Mir<'_>) -> Result<Self::Output, Self::Error>;
+    fn generate(&self, mir: mir::Mir<'_>, args: Self::Args) -> Result<Self::Output, Self::Error>;
 }
 
 #[derive(Debug, Default)]
@@ -26,6 +27,7 @@ pub struct Options {
 
 pub fn compile<B>(
     backend: &B,
+    args: B::Args,
     ast: rtcore::ast::Ast<'_>,
     options: &Options,
 ) -> Result<B::Output, Error>
@@ -34,7 +36,7 @@ where
 {
     let (_symbols, mir) = check_(ast, options)?;
 
-    match backend.generate(mir) {
+    match backend.generate(mir, args) {
         Ok(output) => Ok(output),
         Err(e) => Err(Error::Backend(BackendError(e.into()))),
     }
