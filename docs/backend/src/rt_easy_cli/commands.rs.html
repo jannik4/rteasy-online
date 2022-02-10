@@ -91,7 +91,7 @@
         };
 
         <span class="kw">let</span> <span class="ident">backend</span> <span class="op">=</span> <span class="ident">compiler_backend_simulator::BackendSimulator</span>;
-        <span class="kw">match</span> <span class="ident">compiler::compile</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, <span class="ident">ast</span>, <span class="kw-2">&amp;</span><span class="ident">Default::default</span>()) {
+        <span class="kw">match</span> <span class="ident">compiler::compile</span>(<span class="kw-2">&amp;</span><span class="ident">backend</span>, (), <span class="ident">ast</span>, <span class="kw-2">&amp;</span><span class="ident">Default::default</span>()) {
             <span class="prelude-val">Ok</span>(<span class="ident">program</span>) =&gt; <span class="ident">program</span>,
             <span class="prelude-val">Err</span>(<span class="ident">e</span>) =&gt; <span class="macro">bail!</span>(<span class="ident">e</span>.<span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="ident">source</span>, <span class="ident">file_name</span>, <span class="ident">ansi_colors</span>)),
         }
