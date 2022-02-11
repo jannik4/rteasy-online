@@ -38,6 +38,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "autocfg"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
+
+[[package]]
 name = "beef"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -105,6 +111,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
+name = "hashbrown"
+version = "0.11.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
+
+[[package]]
 name = "heck"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -120,6 +132,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "62b467343b94ba476dcb2500d242dadbb39557df889310ac77c5d99100aaac33"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "indexmap"
+version = "1.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "282a6247722caba404c065016bbfa522806e51714c34f5dfc3e4a3a46fcb4223"
+dependencies = [
+ "autocfg",
+ "hashbrown",
 ]
 
 [[package]]
@@ -257,10 +279,10 @@ version = "0.1.0"
 dependencies = [
  "rt-easy-compiler",
  "rt-easy-compiler-backend-simulator",
+ "rt-easy-compiler-backend-vhdl",
  "rt-easy-core",
  "rt-easy-parser",
  "rt-easy-simulator",
- "rt-easy-vhdl",
 ]
 
 [[package]]
@@ -292,6 +314,18 @@ version = "0.1.0"
 dependencies = [
  "rt-easy-compiler",
  "rt-easy-core",
+]
+
+[[package]]
+name = "rt-easy-compiler-backend-vhdl"
+version = "0.1.0"
+dependencies = [
+ "indexmap",
+ "rt-easy-compiler",
+ "rt-easy-core",
+ "rt-easy-parser",
+ "temply",
+ "vec1",
 ]
 
 [[package]]
@@ -342,13 +376,6 @@ dependencies = [
  "rt-easy-simulator",
  "toktok",
  "toktok-generator",
-]
-
-[[package]]
-name = "rt-easy-vhdl"
-version = "0.1.0"
-dependencies = [
- "rt-easy-core",
 ]
 
 [[package]]
@@ -450,6 +477,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "temply"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6906a99c475b5ddd8d987fe705fa7b1e3e2578978ad97787e4a09ddaf19577d2"
+dependencies = [
+ "temply-derive",
+]
+
+[[package]]
+name = "temply-derive"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5696186bf6eb551b1498cba4b85c609f602e0192570623c6a60b88e8c93a76a5"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "textwrap"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -534,6 +581,12 @@ checksum = "b4ae116fef2b7fea257ed6440d3cfcff7f190865f170cdad00bb6465bf18ecba"
 [[package]]
 name = "value"
 version = "0.1.0"
+
+[[package]]
+name = "vec1"
+version = "1.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5fc1631c774f0f9570797191e01247cbefde789eebfbf128074cb934115a6133"
 
 [[package]]
 name = "vec_map"

@@ -1,1 +1,1 @@
-pub use {compiler, compiler_backend_simulator, parser, rtcore, simulator, vhdl};
+pub use {compiler, compiler_backend_simulator, compiler_backend_vhdl, parser, rtcore, simulator};

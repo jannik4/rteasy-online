@@ -11,7 +11,7 @@ members = [
     "src/rt-easy-parser",
     "src/rt-easy-compiler",
     "src/rt-easy-compiler-backend-simulator",
-    "src/rt-easy-vhdl",
+    "src/rt-easy-compiler-backend-vhdl",
     "src/rt-easy-simulator",
     "src/rt-easy-unit-test",
     "src/rt-easy",
