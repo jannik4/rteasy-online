@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>IDE User Guide - RTeasy-Online</title>
+        <title>Declarations - RTeasy-Online</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html" class="active"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html" class="active"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -142,18 +142,37 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="ide-user-guide"><a class="header" href="#ide-user-guide">IDE User Guide</a></h1>
-<p>TODO: ...</p>
+                        <h1 id="declarations"><a class="header" href="#declarations">Declarations</a></h1>
+<p>Before the actual algorithm, all items must first be defined. A declaration is composed of a <code>declare</code> followed by the type of the item, e.g. <code>register</code>, and finally the list of items you want to declare, separated by commas. All names may only contain uppercase letters, digits or underscores, whereby the first character may not be a digit.</p>
+<h2 id="registers"><a class="header" href="#registers">Registers</a></h2>
+<p>Declare two registers <code>R</code> and <code>C</code>. Register <code>R</code> is 8 bits wide and ranges from 7 (MSB) to 0 (LSB). The register <code>C</code> is 1 bit wide, with the bit at position 0.</p>
+<pre><code class="language-rteasy">declare register R(7:0), C
+</code></pre>
+<h2 id="buses"><a class="header" href="#buses">Buses</a></h2>
+<p>Declare two buses <code>B</code> and <code>SECOND_BUS</code>. Bus <code>B</code> is 8 bits wide and ranges from 7 (MSB) to 0 (LSB). The bus <code>SECOND_BUS</code> is 1 bit wide, with the bit at position 5.</p>
+<pre><code class="language-rteasy">declare bus B(7:0), SECOND_BUS(5)
+</code></pre>
+<h2 id="register-arrays"><a class="header" href="#register-arrays">Register Arrays</a></h2>
+<p>Declare a register array named <code>ARR</code>. As with registers and buses, a bit range can be specified. The length of the register array is specified in brackets. The length must be a power of two.</p>
+<pre><code class="language-rteasy">declare register array ARR(7:0)[4]
+</code></pre>
+<h2 id="memories"><a class="header" href="#memories">Memories</a></h2>
+<p>Declare a memory named <code>MEM</code>. Memories require two registers, whereby the first is the address register and the second is the data register. So in this case <code>AR</code> is the address register and <code>DR</code> is the data register. Thus the memory is of size 2^16 = 64 KByte and 1 byte wide.</p>
+<pre><code class="language-rteasy">declare register AR(15:0), DR(7:0)
+declare memory MEM(AR, DR)
+</code></pre>
+<h2 id="inputsoutputs"><a class="header" href="#inputsoutputs">Inputs/Outputs</a></h2>
+<p>...</p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../tutorial/lang/expressions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../tutorial/lang/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../../tutorial/examples/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../tutorial/lang/algorithm.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -163,11 +182,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../tutorial/lang/expressions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../tutorial/lang/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../../tutorial/examples/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../tutorial/lang/algorithm.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

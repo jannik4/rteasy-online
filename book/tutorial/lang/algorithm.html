@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>IDE User Guide - RTeasy-Online</title>
+        <title>Algorithm - RTeasy-Online</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html" class="active"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html" class="active"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -142,18 +142,52 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="ide-user-guide"><a class="header" href="#ide-user-guide">IDE User Guide</a></h1>
-<p>TODO: ...</p>
+                        <h1 id="algorithm"><a class="header" href="#algorithm">Algorithm</a></h1>
+<p>The declarations are followed by the actual algorithm. The algorithm consists of a list of states that are executed sequentially. A state represents a clock cycle in which several <em>micro operations</em> are executed in parallel. Each state is terminated by a semicolon.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register A(3:0), B(3:0), REG(3:0)
+</span><span class="boring">
+</span># A simple state with two micro operations executed in parallel.
+A &lt;- A + 1, B &lt;- B - 1;
+
+# Another state with only one micro operation.
+REG &lt;- A and B;
+</code></pre>
+<h2 id="label"><a class="header" href="#label">Label</a></h2>
+<p>In addition to the micro operations, a state can receive a label to which it can be jumped to:</p>
+<pre><code class="language-rteasy"><span class="boring">declare register A(3:0)
+</span><span class="boring">
+</span># A state with the label MY_LABEL.
+MY_LABEL: A &lt;- A + 1;
+
+# ...
+
+# Resume execution at MY_LABEL
+goto MY_LABEL;
+</code></pre>
+<h2 id="conditional-branch"><a class="header" href="#conditional-branch">Conditional Branch</a></h2>
+<p>Since registers are clocked, it is not possible to jump in one cycle depending on the result of a register assignment. Instead two cycles are needed. For this purpose, a state can have a conditional branch separated by the pipe symbol. After the pipe, all assignments have already taken place. The conditional branch may only contain if, switch and goto operations. With this, it is possible in some cases to save a clock cycle by writing:</p>
+<pre><code class="language-rteasy"><span class="boring">declare register COUNTER(7:0)
+</span><span class="boring">
+</span>LOOP:  nop; # do something
+CHECK: COUNTER &lt;- COUNTER + 1 | if COUNTER &lt; 20 then goto LOOP fi;
+</code></pre>
+<p>instead of:</p>
+<pre><code class="language-rteasy"><span class="boring">declare register COUNTER(7:0)
+</span><span class="boring">
+</span>LOOP:  nop; # do something
+INC:   COUNTER &lt;- COUNTER + 1;
+CHECK: if COUNTER &lt; 20 then goto LOOP fi;
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../tutorial/lang/expressions.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../tutorial/lang/declarations.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../../tutorial/examples/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../tutorial/lang/micro-operations.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -163,11 +197,11 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../tutorial/lang/expressions.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../tutorial/lang/declarations.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../../tutorial/examples/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../tutorial/lang/micro-operations.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>

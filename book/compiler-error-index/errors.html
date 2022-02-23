@@ -4,7 +4,10 @@
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
         <title>Errors - RTeasy-Online</title>
+
+
         <!-- Custom HTML head -->
+        
         <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -16,15 +19,18 @@
         <link rel="stylesheet" href="../css/general.css">
         <link rel="stylesheet" href="../css/chrome.css">
         <link rel="stylesheet" href="../css/print.css" media="print">
+
         <!-- Fonts -->
         <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
         <link rel="stylesheet" href="../fonts/fonts.css">
+
         <!-- Highlight.js Stylesheets -->
         <link rel="stylesheet" href="../highlight.css">
         <link rel="stylesheet" href="../tomorrow-night.css">
         <link rel="stylesheet" href="../ayu-highlight.css">
 
         <!-- Custom theme stylesheets -->
+
     </head>
     <body>
         <!-- Provide site root to javascript -->
@@ -75,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">1.1.</strong> Declarations</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">1.2.</strong> Unconditional Operations</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">1.3.</strong> Conditional Operations</div></li></ol></li><li class="chapter-item expanded "><a href="../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../compiler-error-index/errors.html" class="active"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded affix "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../compiler-error-index/errors.html" class="active"><strong aria-hidden="true">4.</strong> Errors</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -83,7 +89,7 @@
         <div id="page-wrapper" class="page-wrapper">
 
             <div class="page">
-                <div id="menu-bar-hover-placeholder"></div>
+                                <div id="menu-bar-hover-placeholder"></div>
                 <div id="menu-bar" class="menu-bar sticky bordered">
                     <div class="left-buttons">
                         <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
@@ -110,6 +116,7 @@
                         <a href="../print.html" title="Print this book" aria-label="Print this book">
                             <i id="print-button" class="fa fa-print"></i>
                         </a>
+
                     </div>
                 </div>
 
@@ -123,6 +130,7 @@
                         </ul>
                     </div>
                 </div>
+
                 <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
                 <script type="text/javascript">
                     document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
@@ -139,11 +147,11 @@
 <h2 id="e001"><a class="header" href="#e001">E001</a></h2>
 <p>This error indicates that a register, bus or memory is assigned more than once in a cycle. Only one assignment to an item may be executed per execution path and cycle.</p>
 <h3 id="examples"><a class="header" href="#examples">Examples</a></h3>
-<pre><code class="language-rteasy">declare register X(3:0)
+<pre><code class="language-rteasy compile_fail">declare register X(3:0)
 
 X &lt;- 2, X &lt;- 1; # error: register &quot;X&quot; is assigned more than once
 </code></pre>
-<pre><code class="language-rteasy">declare register AR(3:0), DR(3:0)
+<pre><code class="language-rteasy compile_fail">declare register AR(3:0), DR(3:0)
 declare memory MEM(AR, DR)
 
 read MEM, read MEM; # error: register &quot;DR&quot; is assigned more than once
@@ -169,6 +177,8 @@ write MEM, write MEM; # error: memory &quot;MEM&quot; is assigned more than once
                             <a rel="prev" href="../tutorial/examples/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
+
+
                         <div style="clear: both"></div>
                     </nav>
                 </div>
@@ -178,20 +188,29 @@ write MEM, write MEM; # error: memory &quot;MEM&quot; is assigned more than once
                     <a rel="prev" href="../tutorial/examples/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
+
             </nav>
 
         </div>
 
+
+
+
         <script type="text/javascript">
             window.playground_copyable = true;
         </script>
+
+
         <script src="../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../mark.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../searcher.js" type="text/javascript" charset="utf-8"></script>
+
         <script src="../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
         <script src="../highlight.js" type="text/javascript" charset="utf-8"></script>
         <script src="../book.js" type="text/javascript" charset="utf-8"></script>
 
         <!-- Custom JS scripts -->
+
+
     </body>
 </html>
