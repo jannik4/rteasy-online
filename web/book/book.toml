@@ -8,5 +8,8 @@ title = "RTeasy-Online"
 [output.html]
 site-url = "/rteasy-online/book/"
 
+[output.html.code.hidelines]
+rteasy = "~"
+
 [build]
 build-dir = "build"

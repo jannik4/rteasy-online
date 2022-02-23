@@ -5,9 +5,10 @@
 # Tutorial
 
 - [The Register Transfer Language RTeasy](tutorial/lang/README.md)
-  - [Declarations]()
-  - [Unconditional Operations]()
-  - [Conditional Operations]()
+  - [Declarations](tutorial/lang/declarations.md)
+  - [Algorithm](tutorial/lang/algorithm.md)
+    - [Micro Operations](tutorial/lang/micro-operations.md)
+    - [Expressions](tutorial/lang/expressions.md)
 - [IDE User Guide](tutorial/ide/README.md)
   - [Editing Mode]()
   - [Simulation Mode]()
