@@ -8,13 +8,13 @@ This error indicates that a register, bus or memory is assigned more than once i
 
 ### Examples
 
-```rteasy
+```rteasy,compile_fail
 declare register X(3:0)
 
 X <- 2, X <- 1; # error: register "X" is assigned more than once
 ```
 
-```rteasy
+```rteasy,compile_fail
 declare register AR(3:0), DR(3:0)
 declare memory MEM(AR, DR)
 

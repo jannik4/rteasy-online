@@ -49,7 +49,8 @@ jobs:
           node-version: "14"
 
       - name: Install mdbook
-        run: cargo install mdbook --no-default-features --features search --vers "^0.4" --locked
+        # run: cargo install mdbook --no-default-features --features search --vers "^0.4" --locked
+        run: cargo install mdbook --no-default-features --features search --git https://github.com/jannik4/mdBook
 
       - name: Build Backend Api Docs
         run: cargo doc --no-deps
