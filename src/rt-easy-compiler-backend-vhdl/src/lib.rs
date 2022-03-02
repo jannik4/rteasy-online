@@ -23,6 +23,7 @@
 mod generate;
 mod impl_render;
 mod signals;
+mod transform;
 
 pub mod vhdl;
 
@@ -46,6 +47,12 @@ impl<'s> compiler::Backend<'s> for BackendVhdl {
         mir: compiler::mir::Mir<'s>,
         args: Self::Args,
     ) -> Result<Self::Output, Self::Error> {
-        Ok(generate::generate(mir, args.module_name))
+        // Transform
+        let mir = transform::transform(mir);
+
+        // Generate
+        let vhdl = generate::generate(mir, args.module_name);
+
+        Ok(vhdl)
     }
 }
