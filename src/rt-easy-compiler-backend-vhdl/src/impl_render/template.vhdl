@@ -146,6 +146,9 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
+LIBRARY work;
+USE work.HELPER_{{ module_name }}.ALL;
+
 ENTITY CU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
@@ -236,6 +239,9 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
+LIBRARY work;
+USE work.HELPER_{{ module_name }}.ALL;
+
 ENTITY EU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
@@ -259,7 +265,7 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     -- TODO: Generate memories
 BEGIN
-    BusMux : PROCESS ( *)
+    BusMux : PROCESS ( *) -- TODO: List deps
     BEGIN
         -- TODO: Set all internal buses to zero
         
@@ -285,7 +291,7 @@ BEGIN
         END IF;
     END PROCESS;
     
-    ConditionGen : PROCESS ( *)
+    ConditionGen : PROCESS ( *) -- TODO: List deps
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
         -- criterion {{ idx }}: {{ Fmt(expression) }}
