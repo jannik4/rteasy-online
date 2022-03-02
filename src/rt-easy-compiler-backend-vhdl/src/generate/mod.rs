@@ -18,10 +18,22 @@ mod operation;
 mod vhdl;
 
 /*
-TODO: canonicalize common::BitRange to BitRange {msb: usize,lsb: usize,}
-    - full => None
-    - (x) => (x:x)
-    - _ -> _
+TODO: canonicalize common::BitRange to BitRange see below
+    - in declaration:
+        - None => BitRange::Downto(0, 0)
+        - (x) => (x:x)  [Downto/To]
+        - _ -> _        [Downto/To]
+    - in expr:
+        - None => BitRange::Full
+        - full range of declaration => BitRange::Full
+        - (x) => (x:x)  [Downto/To]
+        - _ -> _        [Downto/To]
+
+    enum BitRange {
+        Full, // Render: ""
+        Downto(usize, usize), // Render: "({} DOWNTO {})"
+        To(usize, usize), // Render: "({} TO {})"
+    }
 
 TODO: REMOVE (PartialEq, Eq, Hash) from common::BitRange
 */
