@@ -246,7 +246,7 @@ ENTITY EU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
         c : IN STD_LOGIC_VECTOR({{ operations.len() }} DOWNTO 0);
-        k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0);
+        k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0)
         -- TODO: Generate all inputs
         -- TODO: Generate all outputs
     );
@@ -257,15 +257,23 @@ END EU_{{ module_name }};
 ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     ATTRIBUTE KEEP : STRING;
 
-    -- TODO: Generate (only intern?) registers
+    {% for register in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Intern) %}
 
-    -- TODO: Generate intern buses
+    signal register_{{ register.ident.0 }} : unsigned{{ RenderBitRange(register.range.or(Some(BitRange::default()))) }} := (others => '0');
+    attribute KEEP of register_{{ register.ident.0 }} : signal is "TRUE";
+    {% endfor %}
+
+    {% for bus in declarations.buses.iter().filter(|reg| reg.kind == BusKind::Intern) %}
+
+    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderBitRange(bus.range.or(Some(BitRange::default()))) }} := (others => '0');
+    attribute KEEP of bus_{{ bus.ident.0 }} : signal is "TRUE";
+    {% endfor %}
 
     -- TODO: Generate reg arrays
 
     -- TODO: Generate memories
 BEGIN
-    BusMux : PROCESS ( *) -- TODO: List deps
+    BusMux : PROCESS -- TODO: List deps (...)
     BEGIN
         -- TODO: Set all internal buses to zero
         
@@ -291,11 +299,11 @@ BEGIN
         END IF;
     END PROCESS;
     
-    ConditionGen : PROCESS ( *) -- TODO: List deps
+    ConditionGen : PROCESS -- TODO: List deps (...)
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
         -- criterion {{ idx }}: {{ Fmt(expression) }}
-        k({{ idx }}) <= to_std_logic({{ RenderExpression { expression, ctx_size: 1 } }});
+        k({{ idx }}) <= to_std_logic({{ RenderExpression { expression, ctx_size: 1 } }} = "1");
         {% endfor %}
     END PROCESS;
 END Behavioral;

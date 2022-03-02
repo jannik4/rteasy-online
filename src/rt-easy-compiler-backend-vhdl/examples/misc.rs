@@ -12,7 +12,7 @@ fn main() {
 }
 
 const SOURCE: &'static str = r#"
-declare register A(3:0), B(3:0), C(7:0), D(0:12)
+declare register A(3:0), B(3:0), C(7:0), D(0:12), XX
 declare bus BUS(7:0)
 
 if A + B = 2 then nop, A <- A + B fi;

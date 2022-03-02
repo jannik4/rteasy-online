@@ -4,13 +4,15 @@ mod expression;
 mod label;
 mod operation;
 
-use crate::vhdl::{Expression, Operation, Statement, Vhdl};
+use crate::vhdl::{
+    BitRange, BusKind, Declarations, Expression, Operation, RegisterKind, Statement, Vhdl,
+};
 use indexmap::IndexSet;
 use temply::Template;
 
 use self::{
-    criteria_expr::RenderCriteriaExpr, expression::RenderExpression, label::RenderLabel,
-    operation::RenderOperation,
+    bit_range::RenderBitRange, criteria_expr::RenderCriteriaExpr, expression::RenderExpression,
+    label::RenderLabel, operation::RenderOperation,
 };
 use crate::signals::Fmt;
 
@@ -35,5 +37,5 @@ struct VhdlTemplate<'a> {
     criteria: &'a IndexSet<Expression<'a>>, // Index = CriterionId
     operations: &'a IndexSet<Operation<'a>>, // Index = OperationId
 
-    declarations: &'a [compiler::mir::Declaration<'a>], // TODO: ???
+    declarations: &'a Declarations<'a>,
 }

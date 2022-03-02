@@ -1,4 +1,7 @@
-use super::{expression::generate_expression, operation::generate_assignment};
+use super::{
+    declarations::generate_declarations, expression::generate_expression,
+    operation::generate_assignment,
+};
 use crate::vhdl::*;
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
@@ -13,7 +16,7 @@ pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
         criteria: IndexSet::new(),
         operations: IndexSet::new(),
 
-        declarations: mir.declarations,
+        declarations: generate_declarations(&mir.declarations),
     };
 
     // Generate statements

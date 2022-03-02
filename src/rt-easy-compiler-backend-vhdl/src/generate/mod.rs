@@ -12,6 +12,7 @@
 // TODO: Fix text above
 
 mod concat;
+mod declarations;
 mod expression;
 mod operation;
 mod vhdl;

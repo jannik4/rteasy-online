@@ -20,10 +20,10 @@ pub struct Vhdl<'s> {
     pub criteria: IndexSet<Expression<'s>>, // Index = CriterionId
     pub operations: IndexSet<Operation<'s>>, // Index = OperationId
 
-    pub declarations: Vec<compiler::mir::Declaration<'s>>, // TODO: ???
+    pub declarations: Declarations<'s>,
 }
 
-impl Vhdl<'_> {
+impl<'s> Vhdl<'s> {
     pub fn signals(&self) -> Signals {
         Signals::new(self)
     }
@@ -31,7 +31,38 @@ impl Vhdl<'_> {
     pub fn render(&self) -> Result<String, std::fmt::Error> {
         crate::impl_render::render(self)
     }
+
+    // pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Register<'s>> {
+    //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
+    // }
+    //
+    // pub fn buses(&self, kind: RegisterKind) -> impl Iterator<Item = &Register<'s>> {
+    //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
+    // }
 }
+
+// -------------------------------------------------------------------------------------------------
+// Declarations
+// -------------------------------------------------------------------------------------------------
+
+#[derive(Debug)]
+pub struct Declarations<'s> {
+    pub registers: Vec<Register<'s>>,
+    pub buses: Vec<Bus<'s>>,
+    pub memories: Vec<Memory<'s>>,
+    pub register_arrays: Vec<RegisterArray<'s>>,
+}
+
+#[derive(Debug)]
+pub struct Memory<'s> {
+    pub ident: Ident<'s>,
+    pub address_register: Ident<'s>,
+    pub data_register: Ident<'s>,
+}
+
+// -------------------------------------------------------------------------------------------------
+// Statement
+// -------------------------------------------------------------------------------------------------
 
 #[derive(Debug)]
 pub struct Statement<'s> {
