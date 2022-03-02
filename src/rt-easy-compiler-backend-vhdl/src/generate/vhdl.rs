@@ -5,14 +5,7 @@ use indexmap::{IndexMap, IndexSet};
 use std::collections::HashMap;
 use vec1::{vec1, Vec1};
 
-// TODO: ar, dr in read/write ops rein von declarations
-// TODO: pipe operator
-
-// Generate VHDL from MIR.
-// The criteria of the individual states are combined in a global set.
-// The same happens with all operations. Nop and assert are discarded.
-// Goto operations go into next_state_conditional/next_state_default.
-pub fn generate<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
+pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
     // Create vhdl
     let mut vhdl = Vhdl {
         module_name,

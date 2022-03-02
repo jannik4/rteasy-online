@@ -1,6 +1,30 @@
+//! TODO: ar, dr in read/write ops rein von declarations
+//! TODO: pipe operator
+//!
+//! Generate VHDL from MIR.
+//!
+//! The criteria of the individual states are combined in a global set.
+//!
+//! The same happens with all operations. Nop and assert are discarded.
+//!
+//! Goto operations go into next_state_conditional/next_state_default.
+
+// TODO: Fix text above
+
 mod concat;
 mod expression;
 mod operation;
 mod vhdl;
 
-pub use self::vhdl::generate;
+/*
+TODO: canonicalize common::BitRange to BitRange {msb: usize,lsb: usize,}
+    - full => None
+    - (x) => (x:x)
+    - _ -> _
+
+TODO: REMOVE (PartialEq, Eq, Hash) from common::BitRange
+*/
+
+pub fn generate<'s>(mir: compiler::mir::Mir<'s>, module_name: String) -> crate::vhdl::Vhdl<'s> {
+    self::vhdl::generate_vhdl(mir, module_name)
+}
