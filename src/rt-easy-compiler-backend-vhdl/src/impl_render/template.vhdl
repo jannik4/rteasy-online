@@ -2,8 +2,6 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-LIBRARY work;
-
 PACKAGE HELPER_{{ module_name }} IS
     -- helper
     FUNCTION to_std_logic(x : BOOLEAN) RETURN STD_LOGIC;
@@ -145,8 +143,6 @@ END PACKAGE BODY HELPER_{{ module_name }};
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
-
-LIBRARY work;
 USE work.HELPER_{{ module_name }}.ALL;
 
 ENTITY CU_{{ module_name }} IS
@@ -267,8 +263,6 @@ END Behavioral;
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
-
-LIBRARY work;
 USE work.HELPER_{{ module_name }}.ALL;
 
 ENTITY EU_{{ module_name }} IS
