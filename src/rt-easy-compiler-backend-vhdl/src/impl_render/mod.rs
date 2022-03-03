@@ -5,14 +5,15 @@ mod label;
 mod operation;
 
 use crate::vhdl::{
-    BitRange, BusKind, Declarations, Expression, Operation, RegisterKind, Statement, Vhdl,
+    BitRange, BusKind, Declarations, Expression, NextStateLogic, Operation, RegisterKind,
+    Statement, Vhdl,
 };
 use indexmap::IndexSet;
 use temply::Template;
 
 use self::{
     bit_range::RenderBitRange, criteria_expr::RenderCriteriaExpr, expression::RenderExpression,
-    label::RenderLabel, operation::RenderOperation,
+    operation::RenderOperation,
 };
 use crate::signals::Fmt;
 
@@ -33,7 +34,7 @@ pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
 #[template = "./impl_render/template.vhdl"]
 struct VhdlTemplate<'a> {
     module_name: &'a str,
-    statements: &'a [Statement<'a>],
+    statements: &'a [Statement],
     criteria: &'a IndexSet<Expression<'a>>, // Index = CriterionId
     operations: &'a IndexSet<Operation<'a>>, // Index = OperationId
 

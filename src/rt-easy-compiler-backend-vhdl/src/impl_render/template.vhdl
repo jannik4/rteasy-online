@@ -163,15 +163,15 @@ END CU_{{ module_name }};
 ARCHITECTURE Behavioral OF CU_{{ module_name }} IS
     TYPE state_type IS (
         {% for (idx, statement) in statements.iter().enumerate() %}
-        {{ RenderLabel(&statement.label) }}{% if idx != statements.len() - 1 %},{% endif %}
+        {{ statement.label }}{% if idx != statements.len() - 1 %},{% endif %}
         {% endfor %}
     );
-    SIGNAL state, next_state : state_type := {{ RenderLabel(&statements[0].label) }};
+    SIGNAL state, next_state : state_type := {{ statements[0].label }};
 BEGIN
     StateReg : PROCESS (clock, reset)
     BEGIN
         IF reset = '1' THEN
-            state <= {{ RenderLabel(&statements[0].label) }};
+            state <= {{ statements[0].label }};
         ELSE
             IF rising_edge(clock) THEN
                 state <= next_state;
@@ -184,23 +184,52 @@ BEGIN
         CASE state IS
             {% for statement in statements.iter() %}
 
-            WHEN {{ RenderLabel(&statement.label) }} =>
-                {% if statement.next_state_conditional.is_empty() %}
-                next_state <= {{ RenderLabel(&statement.next_state_default) }};
-                {% else %}
-                {% for (idx, (label, criteria_expr)) in statement.next_state_conditional.iter().enumerate() %}
+            WHEN {{ &statement.label }} =>
+                {% match &statement.next_state_logic %}
+                {% where NextStateLogic::Label(label) %}
+                next_state <= {{ label }};
+                {% endwhere %}
+                {% where NextStateLogic::Cond { conditional, default } %}
+                {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
                 {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
-                    next_state <= {{ RenderLabel(label) }};
+                    {% match &logic %}
+                    {% where NextStateLogic::Label(label) %}
+                    next_state <= {{ label }};
+                    {% endwhere %}
+                    {% where NextStateLogic::Cond { conditional, default } %}
+                    {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
+                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
+                        next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
+                    {% endfor %}
+                    ELSE
+                        next_state <= {{ default.as_label().unwrap() /* TODO: ... */ }};
+                    END IF;
+                    {% endwhere %}
+                    {% endmatch %}
                 {% endfor %}
                 ELSE
-                    next_state <= {{ RenderLabel(&statement.next_state_default) }};
+                    {% match &**default %}
+                    {% where NextStateLogic::Label(label) %}
+                    next_state <= {{ label }};
+                    {% endwhere %}
+                    {% where NextStateLogic::Cond { conditional, default } %}
+                    {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
+                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
+                        next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
+                    {% endfor %}
+                    ELSE
+                        next_state <= {{ default.as_label().unwrap() /* TODO: ... */ }};
+                    END IF;
+                    {% endwhere %}
+                    {% endmatch %}
                 END IF;
-                {% endif %}
+                {% endwhere %}
+                {% endmatch %}
             {% endfor %}
 
             -- reset on error
             WHEN OTHERS =>
-                next_state <= {{ RenderLabel(&statements[0].label) }};
+                next_state <= {{ statements[0].label }};
         END CASE;
     END PROCESS;
 
@@ -210,7 +239,7 @@ BEGIN
         CASE state IS
             {% for statement in statements.iter() %}
 
-            WHEN {{ RenderLabel(&statement.label) }} =>
+            WHEN {{ statement.label }} =>
                 {% if statement.operations.is_empty() %}
                 NULL;
                 {% else %}

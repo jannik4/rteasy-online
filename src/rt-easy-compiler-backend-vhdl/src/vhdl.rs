@@ -6,7 +6,7 @@ use vec1::Vec1;
 // Re-export
 // -------------------------------------------------------------------------------------------------
 
-pub use rtcore::ast::{Ident, Label as LabelNamed};
+pub use rtcore::ast::Ident;
 pub use rtcore::common::{BinaryOperator, BitRange, BusKind, CtxSize, RegisterKind, UnaryOperator};
 
 // -------------------------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ pub use rtcore::common::{BinaryOperator, BitRange, BusKind, CtxSize, RegisterKin
 #[derive(Debug)]
 pub struct Vhdl<'s> {
     pub module_name: String,
-    pub statements: Vec<Statement<'s>>,
+    pub statements: Vec<Statement>,
     pub criteria: IndexSet<Expression<'s>>, // Index = CriterionId
     pub operations: IndexSet<Operation<'s>>, // Index = OperationId
 
@@ -65,18 +65,32 @@ pub struct Memory<'s> {
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct Statement<'s> {
-    pub label: Label<'s>,
-
-    pub next_state_conditional: IndexMap<Label<'s>, Or<And<Criterion>>>,
-    pub next_state_default: Label<'s>,
+pub struct Statement {
+    pub label: Label,
+    pub next_state_logic: NextStateLogic,
     pub operations: IndexMap<OperationId, Option<Or<And<Criterion>>>>,
 }
 
 #[derive(Debug)]
+pub enum NextStateLogic {
+    Label(Label),
+    Cond { conditional: Vec1<(Or<And<Criterion>>, NextStateLogic)>, default: Box<NextStateLogic> },
+}
+
+impl NextStateLogic {
+    pub fn as_label(&self) -> Option<&Label> {
+        if let Self::Label(v) = self {
+            Some(v)
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug, Clone)]
 pub struct Or<T>(pub Vec1<T>);
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct And<T>(pub Vec1<T>);
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -91,11 +105,36 @@ pub enum Criterion {
     False(CriterionId),
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Label<'s> {
-    Named(LabelNamed<'s>),
-    Unnamed(usize),
-    End,
+impl Criterion {
+    pub fn id(self) -> CriterionId {
+        match self {
+            Criterion::True(id) => id,
+            Criterion::False(id) => id,
+        }
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Label(pub String);
+
+impl Label {
+    pub fn terminated() -> Self {
+        Self("TERMINATED".to_string())
+    }
+
+    pub fn named(name: &str) -> Self {
+        Self(format!("NAMED_{}", name))
+    }
+
+    pub fn unnamed(idx: usize) -> Self {
+        Self(format!("UNNAMED_{}", idx))
+    }
+}
+
+impl std::fmt::Display for Label {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
 }
 
 // -------------------------------------------------------------------------------------------------

@@ -15,6 +15,7 @@ mod concat;
 mod declarations;
 mod expression;
 mod operation;
+mod statement;
 mod vhdl;
 
 /*
