@@ -6,6 +6,8 @@ use crate::vhdl::*;
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
 
+// TODO: conditional goto to self is possibly incorrect, test+fix
+
 pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
     // Create vhdl
     let mut vhdl = Vhdl {
