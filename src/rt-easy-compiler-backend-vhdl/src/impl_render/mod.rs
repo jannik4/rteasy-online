@@ -4,6 +4,9 @@ mod expression;
 mod label;
 mod operation;
 
+// TODO: Display instead of all RenderXXXX
+// --> add necessary data in generate, e.g. add ctx_size for expressions
+
 use crate::vhdl::{
     BitRange, BusKind, Declarations, Expression, NextStateLogic, Operation, RegisterKind,
     Statement, Vhdl,
