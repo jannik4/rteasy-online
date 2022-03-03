@@ -24,7 +24,7 @@ LOGIC:
     X <- B + B, B <- X, Y <- 0, if Y then goto OUTPUT fi;
 
 LOOP:
-    goto LOOP;
+    if 1 then B_2 <- 1 fi, goto LOOP;
 
 OUTPUT:
     OUT_A <- 1, OUT_B <- X;
