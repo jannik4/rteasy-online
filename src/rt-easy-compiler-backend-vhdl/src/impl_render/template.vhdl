@@ -272,14 +272,14 @@ ENTITY EU_{{ module_name }} IS
         k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0);
 
         {% for input in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Input) %}
-        input_{{ input.ident.0 }} : in unsigned{{ RenderBitRange(input.range.or(Some(BitRange::default()))) }};
+        input_{{ input.ident.0 }} : IN unsigned{{ RenderBitRange(input.range.or(Some(BitRange::default()))) }};
         {% endfor %}
 
         {% for output in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Output) %}
-        output_{{ output.ident.0 }} : out unsigned{{ RenderBitRange(output.range.or(Some(BitRange::default()))) }};
+        output_{{ output.ident.0 }} : OUT unsigned{{ RenderBitRange(output.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
         {% endfor %}
         
-        dummy : out unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
+        dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
     ATTRIBUTE KEEP_HIERARCHY OF EU_{{ module_name }} : ENTITY IS "YES";
