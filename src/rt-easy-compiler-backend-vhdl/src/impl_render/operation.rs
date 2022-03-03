@@ -48,10 +48,18 @@ impl Display for RenderOperation<'_, &vhdl::Assignment<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match &self.operation.lhs {
             vhdl::Lvalue::Register(reg) => {
-                write!(f, "register_{}{}", reg.ident.0, RenderBitRange(reg.range),)?;
+                let prefix = match reg.kind {
+                    vhdl::RegisterKind::Intern => "register",
+                    vhdl::RegisterKind::Output => "output",
+                };
+                write!(f, "{}_{}{}", prefix, reg.ident.0, RenderBitRange(reg.range),)?;
             }
             vhdl::Lvalue::Bus(bus) => {
-                write!(f, "bus_{}{}", bus.ident.0, RenderBitRange(bus.range),)?;
+                let prefix = match bus.kind {
+                    vhdl::BusKind::Intern => "bus",
+                    vhdl::BusKind::Input => "input",
+                };
+                write!(f, "{}_{}{}", prefix, bus.ident.0, RenderBitRange(bus.range),)?;
             }
             vhdl::Lvalue::RegisterArray(_lvalue) => todo!(),
             vhdl::Lvalue::ConcatClocked(_lvalue) => todo!(),

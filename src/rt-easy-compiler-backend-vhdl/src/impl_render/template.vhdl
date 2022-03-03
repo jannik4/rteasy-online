@@ -275,9 +275,17 @@ ENTITY EU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
         c : IN STD_LOGIC_VECTOR({{ operations.len() }} DOWNTO 0);
-        k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0)
-        -- TODO: Generate all inputs
-        -- TODO: Generate all outputs
+        k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0);
+
+        {% for input in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Input) %}
+        input_{{ input.ident.0 }} : in unsigned{{ RenderBitRange(input.range.or(Some(BitRange::default()))) }};
+        {% endfor %}
+
+        {% for output in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Output) %}
+        output_{{ output.ident.0 }} : out unsigned{{ RenderBitRange(output.range.or(Some(BitRange::default()))) }};
+        {% endfor %}
+        
+        dummy : out unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
     ATTRIBUTE KEEP_HIERARCHY OF EU_{{ module_name }} : ENTITY IS "YES";
@@ -288,13 +296,13 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     {% for register in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Intern) %}
 
-    signal register_{{ register.ident.0 }} : unsigned{{ RenderBitRange(register.range.or(Some(BitRange::default()))) }} := (others => '0');
+    signal register_{{ register.ident.0 }} : unsigned{{ RenderBitRange(register.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
     attribute KEEP of register_{{ register.ident.0 }} : signal is "TRUE";
     {% endfor %}
 
-    {% for bus in declarations.buses.iter().filter(|reg| reg.kind == BusKind::Intern) %}
+    {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
 
-    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderBitRange(bus.range.or(Some(BitRange::default()))) }} := (others => '0');
+    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderBitRange(bus.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
     attribute KEEP of bus_{{ bus.ident.0 }} : signal is "TRUE";
     {% endfor %}
 
@@ -304,7 +312,10 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 BEGIN
     BusMux : PROCESS -- TODO: List deps (...)
     BEGIN
-        -- TODO: Set all internal buses to zero
+        -- Set buses to zero
+        {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
+        bus_{{ bus.ident.0 }} <= (OTHERS => '0');
+        {% endfor %}
         
         {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| !op.is_clocked()) %}
 

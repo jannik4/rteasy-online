@@ -85,10 +85,16 @@ impl Display for RenderExpression<&vhdl::UnaryTerm<'_>> {
 
 impl Display for RenderExpression<&vhdl::Register<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let prefix = match self.expression.kind {
+            vhdl::RegisterKind::Intern => "register",
+            vhdl::RegisterKind::Output => "output",
+        };
+
         write!(
             f,
-            "{}(register_{}{}, {})",
+            "{}({}_{}{}, {})",
             ZERO_EXTEND,
+            prefix,
             self.expression.ident.0,
             RenderBitRange(self.expression.range),
             self.ctx_size
@@ -98,10 +104,16 @@ impl Display for RenderExpression<&vhdl::Register<'_>> {
 
 impl Display for RenderExpression<&vhdl::Bus<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        let prefix = match self.expression.kind {
+            vhdl::BusKind::Intern => "bus",
+            vhdl::BusKind::Input => "input",
+        };
+
         write!(
             f,
-            "{}(bus_{}{}, {})",
+            "{}({}_{}{}, {})",
             ZERO_EXTEND,
+            prefix,
             self.expression.ident.0,
             RenderBitRange(self.expression.range),
             self.ctx_size
