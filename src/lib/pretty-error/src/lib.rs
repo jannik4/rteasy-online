@@ -13,6 +13,7 @@ pub enum Span {
 #[derive(Debug)]
 pub struct Error<'a> {
     message: &'a str,
+    error_code: Option<&'a str>,
     source: Option<(&'a str, Span)>,
     file_name: Option<&'a str>,
     ansi_colors: bool,
@@ -20,7 +21,12 @@ pub struct Error<'a> {
 
 impl<'a> Error<'a> {
     pub fn new(message: &'a str) -> Self {
-        Self { message, source: None, file_name: None, ansi_colors: false }
+        Self { message, error_code: None, source: None, file_name: None, ansi_colors: false }
+    }
+
+    pub fn with_error_code(mut self, error_code: &'a str) -> Self {
+        self.error_code = Some(error_code);
+        self
     }
 
     pub fn with_source(mut self, source: &'a str, span: Span) -> Self {
@@ -104,6 +110,10 @@ impl fmt::Display for Error<'_> {
             write!(f, "= {}", Red.paint(indent_str(self.message, indent + 2)))?;
         } else {
             write!(f, "= {}", indent_str(self.message, indent + 2))?;
+        }
+
+        if let Some(error_code) = self.error_code {
+            write!(f, " {}", error_code)?;
         }
 
         Ok(())

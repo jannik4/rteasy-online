@@ -1,5 +1,4 @@
 import React, { useContext, useMemo } from "react";
-import Anser from "anser";
 
 import { RtEasyContext } from "../wasm/context";
 import { GlobalContext } from "../global/context";
@@ -15,11 +14,12 @@ const LogView: React.FC<Props> = () => {
     100
   );
   const log = useMemo(() => {
-    try {
-      rtEasy.check(debouncedSourceCode);
-      return "\u001b[32mCode is syntactically valid.\u001b[0m";
-    } catch (e) {
-      return e as string;
+    const res = rtEasy.check(debouncedSourceCode);
+    switch (res.tag) {
+      case "Ok":
+        return res.value;
+      case "Error":
+        return res.error_html;
     }
   }, [rtEasy, debouncedSourceCode]);
 
@@ -35,7 +35,7 @@ const LogView: React.FC<Props> = () => {
     >
       <pre
         dangerouslySetInnerHTML={{
-          __html: Anser.ansiToHtml(Anser.escapeForHtml(log)),
+          __html: log,
         }}
         style={{ margin: 0 }}
       ></pre>

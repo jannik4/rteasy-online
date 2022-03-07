@@ -13,21 +13,24 @@ export function model(
   editorModel: editor.IModel
 ): GlobalModelEdit {
   const build = () => {
-    try {
-      const onChange = () =>
-        setState((prev) => {
-          return { ...prev };
-        });
-      const simulator = rtEasy.build(editorModel.getValue(), onChange);
-      setState({
-        tag: "Run",
-        editor: state.editor,
-        base: state.base,
-        clockRate: state.clockRate,
-        simulator,
+    const onChange = () =>
+      setState((prev) => {
+        return { ...prev };
       });
-    } catch (_e) {
-      alert("Code has errors");
+    const buildRes = rtEasy.build(editorModel.getValue(), onChange);
+    switch (buildRes.tag) {
+      case "Ok":
+        setState({
+          tag: "Run",
+          editor: state.editor,
+          base: state.base,
+          clockRate: state.clockRate,
+          simulator: buildRes.value,
+        });
+        break;
+      case "Error":
+        alert("Code has errors");
+        break;
     }
   };
 

@@ -1,6 +1,7 @@
 import * as wasm from "./pkg";
 import { Range } from "monaco-editor";
 import { showErrorToast } from "../toaster";
+import Anser from "anser";
 
 type RtEasyWasm = typeof import("./pkg");
 
@@ -17,14 +18,31 @@ export class RtEasy {
     this.rtEasyWasm = rtEasyWasm;
   }
 
-  check(code: string) {
-    this.rtEasyWasm.check(code);
+  check(code: string): CompilerResult<string> {
+    try {
+      this.rtEasyWasm.check(code);
+      return {
+        tag: "Ok",
+        value: errorToHtml("\u001b[32mCode is syntactically valid.\u001b[0m"),
+      };
+    } catch (e) {
+      return { tag: "Error", error_html: errorToHtml(e as string) };
+    }
   }
 
-  build(code: string, onChange?: () => void): Simulator {
-    return new Simulator(this.rtEasyWasm.build(code), code, onChange);
+  build(code: string, onChange?: () => void): CompilerResult<Simulator> {
+    try {
+      const simulatorWasm = this.rtEasyWasm.build(code);
+      return { tag: "Ok", value: new Simulator(simulatorWasm, code, onChange) };
+    } catch (e) {
+      return { tag: "Error", error_html: errorToHtml(e as string) };
+    }
   }
 }
+
+export type CompilerResult<T> =
+  | { tag: "Ok"; value: T }
+  | { tag: "Error"; error_html: string };
 
 export class Simulator {
   private simulatorWasm: wasm.Simulator;
@@ -324,6 +342,19 @@ export interface Changed {
 }
 
 // ------------ HELPER ------------
+
+function errorToHtml(error: string): string {
+  // Ansi to html
+  error = Anser.ansiToHtml(Anser.escapeForHtml(error));
+
+  // Error links
+  error = error.replaceAll(
+    /\[E(\d+)\]/g,
+    '<a href="/rteasy-online/book/compiler-error-index/errors.html#e$1" target="_blank" style="text-decoration: underline;">$&</a>'
+  );
+
+  return error;
+}
 
 function getSignals(simulatorWasm: wasm.Simulator): Signals {
   const signalsWasm = simulatorWasm.signals();
