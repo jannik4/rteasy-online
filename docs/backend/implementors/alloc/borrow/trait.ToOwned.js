@@ -1,3 +1,3 @@
 (function() {var implementors = {};
-implementors["value"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.58.1/alloc/borrow/trait.ToOwned.html\" title=\"trait alloc::borrow::ToOwned\">ToOwned</a> for <a class=\"struct\" href=\"value/struct.ValueSlice.html\" title=\"struct value::ValueSlice\">ValueSlice</a>","synthetic":false,"types":["value::slice::ValueSlice"]}];
+implementors["value"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.59.0/alloc/borrow/trait.ToOwned.html\" title=\"trait alloc::borrow::ToOwned\">ToOwned</a> for <a class=\"struct\" href=\"value/struct.ValueSlice.html\" title=\"struct value::ValueSlice\">ValueSlice</a>","synthetic":false,"types":["value::slice::ValueSlice"]}];
 if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

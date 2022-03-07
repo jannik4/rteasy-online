@@ -1,5 +1,6 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;rt-easy-compiler&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
-    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../rt_easy_compiler/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;rt-easy-compiler&#x2F;src&#x2F;error.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>error.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../../dark.css" disabled><link rel="stylesheet" type="text/css" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><script defer src="../../main.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script>
+    <noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a class="sidebar-logo" href="../../rt_easy_compiler/index.html"><div class="logo-container"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></div>
+        </a></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../../rt_easy_compiler/index.html"><img class="rust-logo" src="../../rust-logo.png" alt="logo"></a><nav class="sub"><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav></div><section id="main-content" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
 <span id="4">  4</span>
@@ -206,6 +207,56 @@
 <span id="205">205</span>
 <span id="206">206</span>
 <span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
+<span id="213">213</span>
+<span id="214">214</span>
+<span id="215">215</span>
+<span id="216">216</span>
+<span id="217">217</span>
+<span id="218">218</span>
+<span id="219">219</span>
+<span id="220">220</span>
+<span id="221">221</span>
+<span id="222">222</span>
+<span id="223">223</span>
+<span id="224">224</span>
+<span id="225">225</span>
+<span id="226">226</span>
+<span id="227">227</span>
+<span id="228">228</span>
+<span id="229">229</span>
+<span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::SymbolType</span>;
 <span class="kw">use</span> <span class="ident">rtcore::program</span>::{<span class="ident">BitRange</span>, <span class="ident">Span</span>};
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
@@ -265,8 +316,11 @@
     }
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pretty_print</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">source</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">file_name</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>, <span class="ident">ansi_colors</span>: <span class="ident">bool</span>) -&gt; <span class="ident">String</span> {
-        <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kind</span>.<span class="ident">message</span>();
+        <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">kind</span>.<span class="ident">to_string</span>();
+        <span class="kw">let</span> <span class="ident">error_code</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;[E{:03}]&quot;</span>, <span class="self">self</span>.<span class="ident">kind</span>.<span class="ident">idx</span>());
+
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">error</span> <span class="op">=</span> <span class="ident">pretty_error::Error::new</span>(<span class="kw-2">&amp;</span><span class="ident">message</span>)
+            .<span class="ident">with_error_code</span>(<span class="kw-2">&amp;</span><span class="ident">error_code</span>)
             .<span class="ident">with_source</span>(<span class="ident">source</span>, <span class="ident">pretty_error::Span::Range</span>(<span class="self">self</span>.<span class="ident">span</span>.<span class="ident">range</span>()))
             .<span class="ident">with_ansi_colors</span>(<span class="ident">ansi_colors</span>);
         <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">file_name</span>) <span class="op">=</span> <span class="ident">file_name</span> {
@@ -310,82 +364,129 @@
 }
 
 <span class="kw">impl</span> <span class="ident">CompilerErrorKind</span> {
-    <span class="kw">fn</span> <span class="ident">message</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">String</span> {
+    <span class="kw">fn</span> <span class="ident">idx</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="ident">usize</span> {
         <span class="kw">use</span> <span class="ident">CompilerErrorKind</span>::<span class="kw-2">*</span>;
 
-        <span class="kw">fn</span> <span class="ident">fmt_symbol_types</span>(<span class="ident">symbol_types</span>: <span class="kw-2">&amp;</span>[<span class="ident">SymbolType</span>]) -&gt; <span class="ident">String</span> {
-            <span class="kw">match</span> <span class="ident">symbol_types</span> {
-                [] =&gt; <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
-                [<span class="ident">curr</span>] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}&quot;</span>, <span class="ident">curr</span>),
-                [<span class="ident">curr</span>, <span class="ident">last</span>] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{} or {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">last</span>),
-                [<span class="ident">curr</span>, <span class="ident">rest</span> @ ..] =&gt; <span class="macro">format!</span>(<span class="string">&quot;{}, {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">rest</span>)),
+        <span class="kw">match</span> <span class="self">self</span> {
+            <span class="ident">DuplicateSymbol</span>(<span class="kw">_</span>) =&gt; <span class="number">1</span>,
+            <span class="ident">RegArrayLenNotPowerOfTwo</span>(<span class="kw">_</span>) =&gt; <span class="number">2</span>,
+            <span class="ident">RegArrayMissingIndex</span>(<span class="kw">_</span>) =&gt; <span class="number">3</span>,
+            <span class="ident">DuplicateLabel</span>(<span class="kw">_</span>) =&gt; <span class="number">4</span>,
+            <span class="ident">SymbolNotFound</span>(<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="number">5</span>,
+            <span class="ident">LabelNotFound</span>(<span class="kw">_</span>) =&gt; <span class="number">6</span>,
+            <span class="ident">ExpectedFixedSize</span> =&gt; <span class="number">7</span>,
+            <span class="ident">ExpectedConstantExpression</span> =&gt; <span class="number">8</span>,
+            <span class="ident">ExpectedExactlyOneDefaultClause</span> =&gt; <span class="number">9</span>,
+            <span class="ident">ConcatContainsNumberNonBitString</span> =&gt; <span class="number">10</span>,
+            <span class="ident">AssignmentDoesNotFit</span> { .. } =&gt; <span class="number">11</span>,
+            <span class="ident">RegArrayIndexDoesNotFit</span> { .. } =&gt; <span class="number">12</span>,
+            <span class="ident">ConditionTooWide</span>(<span class="kw">_</span>) =&gt; <span class="number">13</span>,
+            <span class="ident">BitRangeTooWide</span> { .. } =&gt; <span class="number">14</span>,
+            <span class="ident">CaseValueTooWide</span> { .. } =&gt; <span class="number">15</span>,
+            <span class="ident">DuplicateCaseValue</span> =&gt; <span class="number">16</span>,
+            <span class="ident">AssignmentLhsContainsClockedAndUnclocked</span> =&gt; <span class="number">17</span>,
+            <span class="ident">AssignmentLhsContainsANonLvalue</span> =&gt; <span class="number">18</span>,
+            <span class="ident">AssignmentLhsContainsInput</span> =&gt; <span class="number">19</span>,
+            <span class="ident">RangeMismatch</span> { .. } =&gt; <span class="number">20</span>,
+            <span class="ident">GotoBeforePipe</span> =&gt; <span class="number">21</span>,
+            <span class="ident">MutateAfterPipe</span> =&gt; <span class="number">22</span>,
+            <span class="ident">SxtTerm</span> =&gt; <span class="number">23</span>,
+            <span class="ident">WrongSymbolType</span> { .. } =&gt; <span class="number">24</span>,
+            <span class="ident">DoubleAssign</span>(<span class="kw">_</span>, <span class="kw">_</span>) =&gt; <span class="number">25</span>,
+            <span class="ident">DoubleGoto</span> =&gt; <span class="number">26</span>,
+            <span class="ident">RegisterArrayTooManyReads</span> { .. } =&gt; <span class="number">27</span>,
+            <span class="ident">FeedbackLoop</span> =&gt; <span class="number">28</span>,
+        }
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">CompilerErrorKind</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+        <span class="kw">use</span> <span class="ident">CompilerErrorKind</span>::<span class="kw-2">*</span>;
+
+        <span class="kw">struct</span> <span class="ident">DisplaySymbolTypes</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> [<span class="ident">SymbolType</span>]);
+
+        <span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">DisplaySymbolTypes</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span> {
+            <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+                <span class="kw">match</span> <span class="self">self</span>.<span class="number">0</span> {
+                    [] =&gt; <span class="prelude-val">Ok</span>(()),
+                    [<span class="ident">curr</span>] =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">curr</span>),
+                    [<span class="ident">curr</span>, <span class="ident">last</span>] =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{} or {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">last</span>),
+                    [<span class="ident">curr</span>, <span class="ident">rest</span> @ ..] =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}, {}&quot;</span>, <span class="ident">curr</span>, <span class="ident">DisplaySymbolTypes</span>(<span class="ident">rest</span>)),
+                }
             }
         }
 
         <span class="kw">match</span> <span class="self">self</span> {
-            <span class="ident">DuplicateSymbol</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate symbol \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">DuplicateSymbol</span>(<span class="ident">name</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;duplicate symbol \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
             <span class="ident">RegArrayLenNotPowerOfTwo</span>(<span class="ident">name</span>) =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;length of register array \&quot;{}\&quot; must be a power of two&quot;</span>, <span class="ident">name</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;length of register array \&quot;{}\&quot; must be a power of two&quot;</span>, <span class="ident">name</span>)
             }
             <span class="ident">RegArrayMissingIndex</span>(<span class="ident">name</span>) =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;register array \&quot;{}\&quot; is missing index [...]&quot;</span>, <span class="ident">name</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;register array \&quot;{}\&quot; is missing index [...]&quot;</span>, <span class="ident">name</span>)
             }
-            <span class="ident">DuplicateLabel</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate label \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">DuplicateLabel</span>(<span class="ident">name</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;duplicate label \&quot;{}\&quot;&quot;</span>, <span class="ident">name</span>),
             <span class="ident">SymbolNotFound</span>(<span class="ident">expected_symbol</span>, <span class="ident">name</span>) =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;no {} named \&quot;{}\&quot; found&quot;</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">expected_symbol</span>), <span class="ident">name</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;no {} named \&quot;{}\&quot; found&quot;</span>, <span class="ident">DisplaySymbolTypes</span>(<span class="ident">expected_symbol</span>), <span class="ident">name</span>)
             }
-            <span class="ident">LabelNotFound</span>(<span class="ident">name</span>) =&gt; <span class="macro">format!</span>(<span class="string">&quot;no label named \&quot;{}\&quot; found&quot;</span>, <span class="ident">name</span>),
-            <span class="ident">ExpectedFixedSize</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected fixed size expression&quot;</span>),
-            <span class="ident">ExpectedConstantExpression</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected constant expression&quot;</span>),
-            <span class="ident">ExpectedExactlyOneDefaultClause</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;expected exactly one default clause&quot;</span>),
+            <span class="ident">LabelNotFound</span>(<span class="ident">name</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;no label named \&quot;{}\&quot; found&quot;</span>, <span class="ident">name</span>),
+            <span class="ident">ExpectedFixedSize</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;expected fixed size expression&quot;</span>),
+            <span class="ident">ExpectedConstantExpression</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;expected constant expression&quot;</span>),
+            <span class="ident">ExpectedExactlyOneDefaultClause</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;expected exactly one default clause&quot;</span>),
             <span class="ident">ConcatContainsNumberNonBitString</span> =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;concat must not contain numbers other than bit strings&quot;</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;concat must not contain numbers other than bit strings&quot;</span>)
             }
             <span class="ident">AssignmentDoesNotFit</span> { <span class="ident">lhs_size</span>, <span class="ident">rhs_size</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;right-hand side is too wide: {} &gt; {}&quot;</span>, <span class="ident">rhs_size</span>, <span class="ident">lhs_size</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;right-hand side is too wide: {} &gt; {}&quot;</span>, <span class="ident">rhs_size</span>, <span class="ident">lhs_size</span>)
             }
             <span class="ident">RegArrayIndexDoesNotFit</span> { <span class="ident">index_size</span>, <span class="ident">index_expr_size</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;index expression is too wide: {} &gt; {}&quot;</span>, <span class="ident">index_expr_size</span>, <span class="ident">index_size</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;index expression is too wide: {} &gt; {}&quot;</span>, <span class="ident">index_expr_size</span>, <span class="ident">index_size</span>)
             }
             <span class="ident">ConditionTooWide</span>(<span class="ident">condition_size</span>) =&gt; {
-                <span class="macro">format!</span>(
+                <span class="macro">write!</span>(
+                    <span class="ident">f</span>,
                     <span class="string">&quot;condition expression must be exactly one bit wide, but is: {}&quot;</span>,
                     <span class="ident">condition_size</span>
                 )
             }
             <span class="ident">BitRangeTooWide</span> { <span class="ident">max_size</span>, <span class="ident">size</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;bit range size exceeds max size: {} &gt; {}&quot;</span>, <span class="ident">size</span>, <span class="ident">max_size</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;bit range size exceeds max size: {} &gt; {}&quot;</span>, <span class="ident">size</span>, <span class="ident">max_size</span>)
             }
             <span class="ident">CaseValueTooWide</span> { <span class="ident">expr_size</span>, <span class="ident">case_value_size</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;case value is too wide: {} &gt; {}&quot;</span>, <span class="ident">case_value_size</span>, <span class="ident">expr_size</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;case value is too wide: {} &gt; {}&quot;</span>, <span class="ident">case_value_size</span>, <span class="ident">expr_size</span>)
             }
-            <span class="ident">DuplicateCaseValue</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;duplicate case value&quot;</span>),
+            <span class="ident">DuplicateCaseValue</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;duplicate case value&quot;</span>),
             <span class="ident">AssignmentLhsContainsClockedAndUnclocked</span> =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;the left-hand side of the assignment may contain either clocked or unclocked variables only&quot;</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;the left-hand side of the assignment may contain either clocked or unclocked variables only&quot;</span>)
             }
             <span class="ident">AssignmentLhsContainsANonLvalue</span> =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;the left-hand side of the assignment must be a variable&quot;</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;the left-hand side of the assignment must be a variable&quot;</span>)
             }
-            <span class="ident">AssignmentLhsContainsInput</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;cannot assign to input (inputs are read-only)&quot;</span>),
+            <span class="ident">AssignmentLhsContainsInput</span> =&gt; {
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;cannot assign to input (inputs are read-only)&quot;</span>)
+            }
             <span class="ident">RangeMismatch</span> { <span class="ident">range</span>, <span class="ident">range_idx</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;bit range {} exceeds declaration {}&quot;</span>, <span class="ident">range_idx</span>, <span class="ident">range</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;bit range {} exceeds declaration {}&quot;</span>, <span class="ident">range_idx</span>, <span class="ident">range</span>)
             }
-            <span class="ident">GotoBeforePipe</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;no goto statements are allowed before pipe (\&quot;|\&quot;)&quot;</span>),
-            <span class="ident">MutateAfterPipe</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;no mutating statements allowed after pipe (\&quot;|\&quot;)&quot;</span>),
-            <span class="ident">SxtTerm</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;sxt operator is not supported for terms&quot;</span>),
+            <span class="ident">GotoBeforePipe</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;no goto statements are allowed before pipe (\&quot;|\&quot;)&quot;</span>),
+            <span class="ident">MutateAfterPipe</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;no mutating statements allowed after pipe (\&quot;|\&quot;)&quot;</span>),
+            <span class="ident">SxtTerm</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;sxt operator is not supported for terms&quot;</span>),
             <span class="ident">WrongSymbolType</span> { <span class="ident">expected</span>, <span class="ident">found</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;expected {}, found: {}&quot;</span>, <span class="ident">fmt_symbol_types</span>(<span class="ident">expected</span>), <span class="ident">found</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;expected {}, found: {}&quot;</span>, <span class="ident">DisplaySymbolTypes</span>(<span class="ident">expected</span>), <span class="ident">found</span>)
             }
             <span class="ident">DoubleAssign</span>(<span class="ident">symbol_type</span>, <span class="ident">name</span>) =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;{} \&quot;{}\&quot; is assigned more than once&quot;</span>, <span class="ident">symbol_type</span>, <span class="ident">name</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{} \&quot;{}\&quot; is assigned more than once&quot;</span>, <span class="ident">symbol_type</span>, <span class="ident">name</span>)
             }
             <span class="ident">DoubleGoto</span> =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;statement contains multiple gotos on at least one possible execution path&quot;</span>)
+                <span class="macro">write!</span>(
+                    <span class="ident">f</span>,
+                    <span class="string">&quot;statement contains multiple gotos on at least one possible execution path&quot;</span>
+                )
             }
             <span class="ident">RegisterArrayTooManyReads</span> { <span class="ident">name</span>, <span class="ident">allowed</span> } =&gt; {
-                <span class="macro">format!</span>(<span class="string">&quot;register array \&quot;{}\&quot; is read more than {} times&quot;</span>, <span class="ident">name</span>, <span class="ident">allowed</span>)
+                <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;register array \&quot;{}\&quot; is read more than {} times&quot;</span>, <span class="ident">name</span>, <span class="ident">allowed</span>)
             }
-            <span class="ident">FeedbackLoop</span> =&gt; <span class="macro">format!</span>(<span class="string">&quot;statement has a feedback loop&quot;</span>),
+            <span class="ident">FeedbackLoop</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;statement has a feedback loop&quot;</span>),
         }
     }
 }
@@ -414,5 +515,5 @@
     }
 }
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rt_easy_compiler" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
+</section><section id="search" class="content hidden"></section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="rt_easy_compiler" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.59.0 (9d1b2106e 2022-02-23)" ></div>
 </body></html>
