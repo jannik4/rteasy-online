@@ -291,29 +291,184 @@ fi;
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errors"><a class="header" href="#errors">Errors</a></h1>
 <p>An overview of all possible errors that can occur during compilation.</p>
 <h2 id="e001"><a class="header" href="#e001">E001</a></h2>
-<p>This error indicates that a register, bus or memory is assigned more than once in a cycle. Only one assignment to an item may be executed per execution path and cycle.</p>
+<p>This error indicates that a symbol is declared more than once.</p>
 <h3 id="examples-1"><a class="header" href="#examples-1">Examples</a></h3>
-<pre><code class="language-rteasy compile_fail">declare register X(3:0)
-
-X &lt;- 2, X &lt;- 1; # error: register &quot;X&quot; is assigned more than once
+<pre><code class="language-rteasy compile_fail(E001)">declare register X(3:0)
+declare register X # error: duplicate symbol &quot;X&quot;
 </code></pre>
-<pre><code class="language-rteasy compile_fail">declare register AR(3:0), DR(3:0)
-declare memory MEM(AR, DR)
-
-read MEM, read MEM; # error: register &quot;DR&quot; is assigned more than once
-write MEM, write MEM; # error: memory &quot;MEM&quot; is assigned more than once
+<pre><code class="language-rteasy compile_fail(E001)">declare register X(3:0)
+declare bus X # error: duplicate symbol &quot;X&quot;
 </code></pre>
 <h2 id="e002"><a class="header" href="#e002">E002</a></h2>
-<p>TODO: ...</p>
+<p>This error indicates that the length of a register array is not a power of two. The length must always be a power of two.</p>
+<h3 id="examples-2"><a class="header" href="#examples-2">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E002)"># error: length of register array &quot;ARR&quot; must be a power of two
+declare register array ARR(7:0)[3]
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E002)"># error: length of register array &quot;ARR&quot; must be a power of two
+declare register array ARR(7:0)[0]
+</code></pre>
 <h2 id="e003"><a class="header" href="#e003">E003</a></h2>
-<p>TODO: ...</p>
+<p>This error occurs when a register array is used without an index expression.</p>
+<h3 id="examples-3"><a class="header" href="#examples-3">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E003)"><span class="boring">declare register X(7:0)
+</span><span class="boring">declare register array ARR(7:0)[4]
+</span><span class="boring">
+</span>X &lt;- ARR[0] + 1; # ok
+X &lt;- ARR + 1;    # error: register array &quot;ARR&quot; is missing index [...]
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E003)"><span class="boring">declare register array ARR(7:0)[4]
+</span><span class="boring">
+</span>ARR[3] &lt;- 1 + 1; # ok
+ARR &lt;- 1 + 1;    # error: register array &quot;ARR&quot; is missing index [...]
+</code></pre>
 <h2 id="e004"><a class="header" href="#e004">E004</a></h2>
-<p>TODO: ...</p>
+<p>This error indicates that a label is declared more than once. Labels are used as goto marks and must therefore be unique.</p>
+<h3 id="examples-4"><a class="header" href="#examples-4">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E004)"><span class="boring">declare register X(3:0), Y(3:0)
+</span><span class="boring">
+</span>MY_LABEL: X &lt;- Y;
+MY_LABEL: X &lt;- X + 1; # error: duplicate label &quot;MY_LABEL&quot;
+</code></pre>
 <h2 id="e005"><a class="header" href="#e005">E005</a></h2>
-<p>TODO: ...</p>
+<p>This error occurs when a symbol can not be found.</p>
+<h3 id="examples-5"><a class="header" href="#examples-5">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E005)">declare register AR(3:0)
+declare memory MEM(AR, DR) # error: no register named &quot;DR&quot; found
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E005)">X &lt;- 42 + 2; # error: no register or bus named &quot;X&quot; found
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E005)">declare register X(3:0)
+X &lt;- ARR[0]; # error: no register array named &quot;ARR&quot; found
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E005)">read MEM; # error: no memory named &quot;MEM&quot; found
+</code></pre>
 <h2 id="e006"><a class="header" href="#e006">E006</a></h2>
+<p>This error occurs when a label can not be found.</p>
+<h3 id="examples-6"><a class="header" href="#examples-6">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E006)">LABEL_A: goto LABEL_B; # error: no label named &quot;LABEL_B&quot; found
+</code></pre>
+<h2 id="e007"><a class="header" href="#e007">E007</a></h2>
+<p>This error occurs when an expression without a fixed size is used in a switch operation. This requirement is necessary to have a well defined size in which to evaluate. Fixed size expression are: comparisons, concatenations, registers, buses, register arrays and bit strings.</p>
+<h3 id="examples-7"><a class="header" href="#examples-7">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E007)"><span class="boring">declare register X(3:0), Y(3:0)
+</span><span class="boring">
+</span>switch X + Y { # error: expected fixed size expression
+    case 1: nop
+    default: nop
+};
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E007)">switch 12 { # error: expected fixed size expression
+    case 1: nop
+    default: nop
+};
+</code></pre>
+<pre><code class="language-rteasy"><span class="boring">declare register X(3:0), Y(3:0)
+</span><span class="boring">
+</span>switch X = Y { # ok
+    case 1: nop
+    default: nop
+};
+</code></pre>
+<pre><code class="language-rteasy">switch &quot;1100&quot; { # ok
+    case 1: nop
+    default: nop
+};
+</code></pre>
+<h2 id="e008"><a class="header" href="#e008">E008</a></h2>
+<p>This error occurs when a non-constant expression used in a case clause. Constant expression are: literals, concatenations only containing constants and terms only containing constants.</p>
+<h3 id="examples-8"><a class="header" href="#examples-8">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E008)"><span class="boring">declare register X(3:0), Y(3:0)
+</span><span class="boring">
+</span>switch &quot;0101&quot; {
+    case X + Y: nop # error: expected constant expression
+    default: nop
+};
+</code></pre>
+<pre><code class="language-rteasy">switch &quot;0101&quot; {
+    case 7: nop # ok
+    default: nop
+};
+</code></pre>
+<pre><code class="language-rteasy">switch &quot;0101&quot; {
+    case 3 + 4: nop # ok
+    default: nop
+};
+</code></pre>
+<h2 id="e009"><a class="header" href="#e009">E009</a></h2>
+<p>This error indicates a switch operation with zero or more than one default clause. Switch operations must always have exactly one default clause.</p>
+<h3 id="examples-9"><a class="header" href="#examples-9">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E009)"># error: expected exactly one default clause
+switch &quot;0101&quot; {
+    case 1: nop
+};
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E009)"># error: expected exactly one default clause
+switch &quot;0101&quot; {
+    case 1: nop
+    default: nop
+    default: nop
+};
+</code></pre>
+<h2 id="e010"><a class="header" href="#e010">E010</a></h2>
+<p>This error occurs when a literal other than the bit string is used in a concatenation. Concatenations may only contain elements of fixed size, thus only registers, buses, register arrays and bit strings.</p>
+<h3 id="examples-10"><a class="header" href="#examples-10">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E010)"><span class="boring">declare register X(7:0), Y(3:0)
+</span><span class="boring">
+</span>X &lt;- Y.&quot;101&quot;.Y(0); # ok
+X &lt;- Y.5.Y(0);     # error: concat must not contain numbers other than bit strings
+</code></pre>
+<h2 id="e011"><a class="header" href="#e011">E011</a></h2>
 <p>TODO: ...</p>
-<p>...</p>
+<h2 id="e012"><a class="header" href="#e012">E012</a></h2>
+<p>TODO: ...</p>
+<h2 id="e013"><a class="header" href="#e013">E013</a></h2>
+<p>TODO: ...</p>
+<h2 id="e014"><a class="header" href="#e014">E014</a></h2>
+<p>TODO: ...</p>
+<h2 id="e015"><a class="header" href="#e015">E015</a></h2>
+<p>TODO: ...</p>
+<h2 id="e016"><a class="header" href="#e016">E016</a></h2>
+<p>TODO: ...</p>
+<h2 id="e017"><a class="header" href="#e017">E017</a></h2>
+<p>TODO: ...</p>
+<h2 id="e018"><a class="header" href="#e018">E018</a></h2>
+<p>TODO: ...</p>
+<h2 id="e019"><a class="header" href="#e019">E019</a></h2>
+<p>TODO: ...</p>
+<h2 id="e020"><a class="header" href="#e020">E020</a></h2>
+<p>TODO: ...</p>
+<h2 id="e021"><a class="header" href="#e021">E021</a></h2>
+<p>TODO: ...</p>
+<h2 id="e022"><a class="header" href="#e022">E022</a></h2>
+<p>TODO: ...</p>
+<h2 id="e023"><a class="header" href="#e023">E023</a></h2>
+<p>TODO: ...</p>
+<h2 id="e024"><a class="header" href="#e024">E024</a></h2>
+<p>TODO: ...</p>
+<h2 id="e025"><a class="header" href="#e025">E025</a></h2>
+<p>This error indicates that a register, bus, register array or memory is assigned more than once in a cycle. Only one assignment to an item may be executed per execution path and cycle.</p>
+<h3 id="examples-11"><a class="header" href="#examples-11">Examples</a></h3>
+<pre><code class="language-rteasy compile_fail(E025)"><span class="boring">declare register X(3:0)
+</span><span class="boring">
+</span>X &lt;- 2, X &lt;- 1; # error: register &quot;X&quot; is assigned more than once
+</code></pre>
+<pre><code class="language-rteasy compile_fail(E025)"><span class="boring">declare register AR(3:0), DR(3:0)
+</span><span class="boring">declare memory MEM(AR, DR)
+</span><span class="boring">
+</span>read MEM, read MEM; # error: register &quot;DR&quot; is assigned more than once
+write MEM, write MEM; # error: memory &quot;MEM&quot; is assigned more than once
+</code></pre>
+<pre><code class="language-rteasy"><span class="boring">declare register X(3:0), COND
+</span><span class="boring">
+</span># ok, because always only one of the two assignments is executed in one cycle.
+if COND then X &lt;- 2 else X &lt;- 1 fi;
+</code></pre>
+<h2 id="e026"><a class="header" href="#e026">E026</a></h2>
+<p>TODO: ...</p>
+<h2 id="e027"><a class="header" href="#e027">E027</a></h2>
+<p>TODO: ...</p>
+<h2 id="e028"><a class="header" href="#e028">E028</a></h2>
 <p>TODO: ...</p>
 
                     </main>
