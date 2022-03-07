@@ -1,7 +1,8 @@
-use anyhow::{bail, ensure, Context, Error, Result};
+use anyhow::{anyhow, bail, ensure, Context, Error, Result};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::{
+    collections::HashSet,
     env, fs,
     path::{Path, PathBuf},
     process,
@@ -20,7 +21,7 @@ enum CodeKind {
     Ignore,
     NoRun,
     ShouldFail,
-    CompileFail,
+    CompileFail(Option<HashSet<usize>>),
 }
 
 #[derive(Debug)]
@@ -152,7 +153,8 @@ fn get_code_blocks(
 fn code_kind_from_attributes(attributes: &str) -> Result<CodeKind> {
     let mut kind = CodeKind::Default;
     for attr in attributes.split(',') {
-        match attr.trim() {
+        let attr = attr.trim();
+        match attr {
             "ignore" => {
                 ensure!(kind == CodeKind::Default, "conflicting attributes");
                 kind = CodeKind::Ignore;
@@ -167,7 +169,28 @@ fn code_kind_from_attributes(attributes: &str) -> Result<CodeKind> {
             }
             "compile_fail" => {
                 ensure!(kind == CodeKind::Default, "conflicting attributes");
-                kind = CodeKind::CompileFail;
+                kind = CodeKind::CompileFail(None);
+            }
+            _ if attr.starts_with("compile_fail(") && attr.ends_with(")") => {
+                ensure!(kind == CodeKind::Default, "conflicting attributes");
+
+                let errors = &attr["compile_fail(".len()..attr.len() - 1];
+                let errors = if errors.is_empty() {
+                    HashSet::new()
+                } else {
+                    errors
+                        .split(';')
+                        .map(|error| {
+                            ensure!(
+                                error.starts_with('E') && error.len() == 4,
+                                "failed to parse error codes"
+                            );
+                            error[1..].parse().context("failed to parse error codes")
+                        })
+                        .collect::<Result<_>>()?
+                };
+
+                kind = CodeKind::CompileFail(Some(errors));
             }
             _ => (),
         }
@@ -192,35 +215,67 @@ fn fix_code_source(source: &str) -> String {
 }
 
 fn test_code(code: &Code) -> Result<TestSuccess> {
-    match code.kind {
+    match &code.kind {
         CodeKind::Default => {
-            check_code(&code.source).context("check failed")?;
+            check_code(&code.source).map_err(|e| e.error).context("check failed")?;
             run_code(&code.source).context("run failed")?;
         }
         CodeKind::Ignore => return Ok(TestSuccess::Ignored),
         CodeKind::NoRun => {
-            check_code(&code.source).context("check failed")?;
+            check_code(&code.source).map_err(|e| e.error).context("check failed")?;
         }
         CodeKind::ShouldFail => {
-            check_code(&code.source).context("check failed")?;
+            check_code(&code.source).map_err(|e| e.error).context("check failed")?;
             run_code(&code.source).err().context("code executed successfully, expected error")?;
         }
-        CodeKind::CompileFail => {
+        CodeKind::CompileFail(None) => {
             check_code(&code.source).err().context("code compiled successfully, expected error")?;
+        }
+        CodeKind::CompileFail(Some(error_codes)) => {
+            let error = check_code(&code.source)
+                .err()
+                .context("code compiled successfully, expected error")?;
+            ensure!(
+                &error.codes == error_codes,
+                error.error.context(format!(
+                    "error codes mismatch, expected {:?}, got {:?}",
+                    error_codes, error.codes
+                ))
+            );
         }
     }
 
     Ok(TestSuccess::Passed)
 }
 
-fn check_code(source: &str) -> Result<()> {
+struct CheckCodeError {
+    error: Error,
+    codes: HashSet<usize>,
+}
+fn check_code(source: &str) -> Result<(), CheckCodeError> {
     let ast = match parser::parse(&source) {
         Ok(ast) => ast,
-        Err(e) => bail!(parser::pretty_print_error(&e, &source, None, true)),
+        Err(e) => {
+            return Err(CheckCodeError {
+                error: anyhow!(parser::pretty_print_error(&e, &source, None, true)),
+                codes: HashSet::new(),
+            })
+        }
     };
     match compiler::check(ast, &Default::default()) {
         Ok(()) => (),
-        Err(e) => bail!(e.pretty_print(&source, None, true)),
+        Err(e) => {
+            return Err(CheckCodeError {
+                error: anyhow!(e.pretty_print(&source, None, true)),
+                codes: match e {
+                    compiler::Error::Errors(errors) => {
+                        errors.into_iter().map(|e| e.kind.code()).collect()
+                    }
+                    compiler::Error::Internal(_) => HashSet::new(),
+                    compiler::Error::Backend(_) => HashSet::new(),
+                },
+            })
+        }
     };
 
     Ok(())

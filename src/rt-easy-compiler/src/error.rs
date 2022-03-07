@@ -58,7 +58,7 @@ impl CompilerError {
 
     pub fn pretty_print(&self, source: &str, file_name: Option<&str>, ansi_colors: bool) -> String {
         let message = self.kind.to_string();
-        let error_code = format!("[E{:03}]", self.kind.idx());
+        let error_code = format!("[E{:03}]", self.kind.code());
 
         let mut error = pretty_error::Error::new(&message)
             .with_error_code(&error_code)
@@ -105,7 +105,7 @@ pub enum CompilerErrorKind {
 }
 
 impl CompilerErrorKind {
-    fn idx(&self) -> usize {
+    pub fn code(&self) -> usize {
         use CompilerErrorKind::*;
 
         match self {
