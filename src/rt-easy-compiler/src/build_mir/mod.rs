@@ -13,7 +13,15 @@ pub fn build_mir<'s>(ast: ast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>
     if let Some(trailing_label) = ast.trailing_label {
         statements.push(Statement {
             label: Some(trailing_label),
-            steps: Spanned { node: Vec::new(), span: Span::dummy() },
+            steps: Spanned {
+                node: vec![Step {
+                    id: StepId(0),
+                    criteria: Vec::new(),
+                    operation: Operation::Nop(Nop { span: Span::dummy() }),
+                    annotation: Annotation::new(false, false),
+                }],
+                span: Span::dummy(),
+            },
             span: trailing_label.span,
             span_semicolon: Span::dummy(),
             span_pipe: None,
