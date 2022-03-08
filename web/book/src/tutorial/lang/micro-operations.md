@@ -33,7 +33,20 @@ write MEM;
 
 ## Assert
 
-...
+The assert operation checks if an expression (with a size of one bit) is one or zero. If the expression evaluates to zero, the assert fails and the simulator will stop immediately and highlight the failed assert.
+
+The assert operation is intended as a tool for development and is therefore only executed in the simulator. It will not execute if the program gets compiled to VHDL.
+
+```rteasy
+~declare bus BUS(3:0)
+~
+assert 5 > 2; # passes
+assert BUS = 2, BUS <- 2; # passes
+```
+
+```rteasy,should_fail
+assert 2 = 3; # fails
+```
 
 ## Goto
 
@@ -72,4 +85,21 @@ fi;
 
 ## Switch
 
-...
+The switch operation checks an expression against various values. The expression must have a fixed size. This requirement is necessary to have a well defined size in which to evaluate. Fixed size expression are: comparisons, concatenations, registers, buses, register arrays and bit strings.
+
+The values used in the case clauses can be literals or constant expressions. Constant expression are: literals, concatenations only containing constants and terms only containing constants.
+
+In addition to the case clauses, there must always be exactly one default clause.
+
+```rteasy
+~declare register A(3:0), B(3:0), C(3:0), D(3:0)
+~
+switch A.D(2) {            # match against a fixed size expression
+    case 0: B <- 2, C <- 2 # case clause 0
+    case 1: nop            # case clause 1
+    case 1 + 1: C <- 3     # case clause 2 (1 + 1)
+    default: goto END      # default clause
+};
+~
+~END:
+```

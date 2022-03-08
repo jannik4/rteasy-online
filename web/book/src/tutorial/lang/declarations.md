@@ -26,6 +26,8 @@ Declare a register array named `ARR`. As with registers and buses, a bit range c
 declare register array ARR(7:0)[4]
 ```
 
+Register arrays may be read no more than twice and written no more than once per execution path and cycle.
+
 ## Memories
 
 Declare a memory named `MEM`. Memories require two registers, whereby the first is the address register and the second is the data register. So in this case `AR` is the address register and `DR` is the data register. Thus the memory is of size 2^16 = 64 KByte and 1 byte wide.
@@ -37,4 +39,11 @@ declare memory MEM(AR, DR)
 
 ## Inputs/Outputs
 
-...
+Declare an input `IN` and an output `OUT`. As far as the execution is concerned, outputs behave exactly as registers do. Inputs behave exactly as buses do, except that they are read-only and are not reset between clock cycles.
+
+```rteasy
+declare input IN(7:0)
+declare output OUT(7:0)
+```
+
+Inputs and outputs define the interface of a program. The inputs and outputs become input and output ports respectively in the VHDL export.
