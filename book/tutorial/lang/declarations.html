@@ -156,13 +156,18 @@
 <p>Declare a register array named <code>ARR</code>. As with registers and buses, a bit range can be specified. The length of the register array is specified in brackets. The length must be a power of two.</p>
 <pre><code class="language-rteasy">declare register array ARR(7:0)[4]
 </code></pre>
+<p>Register arrays may be read no more than twice and written no more than once per execution path and cycle.</p>
 <h2 id="memories"><a class="header" href="#memories">Memories</a></h2>
 <p>Declare a memory named <code>MEM</code>. Memories require two registers, whereby the first is the address register and the second is the data register. So in this case <code>AR</code> is the address register and <code>DR</code> is the data register. Thus the memory is of size 2^16 = 64 KByte and 1 byte wide.</p>
 <pre><code class="language-rteasy">declare register AR(15:0), DR(7:0)
 declare memory MEM(AR, DR)
 </code></pre>
 <h2 id="inputsoutputs"><a class="header" href="#inputsoutputs">Inputs/Outputs</a></h2>
-<p>...</p>
+<p>Declare an input <code>IN</code> and an output <code>OUT</code>. As far as the execution is concerned, outputs behave exactly as registers do. Inputs behave exactly as buses do, except that they are read-only and are not reset between clock cycles.</p>
+<pre><code class="language-rteasy">declare input IN(7:0)
+declare output OUT(7:0)
+</code></pre>
+<p>Inputs and outputs define the interface of a program. The inputs and outputs become input and output ports respectively in the VHDL export.</p>
 
                     </main>
 

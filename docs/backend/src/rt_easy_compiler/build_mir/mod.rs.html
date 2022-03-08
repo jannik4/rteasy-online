@@ -56,6 +56,14 @@
 <span id="54">54</span>
 <span id="55">55</span>
 <span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
 </pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">declaration</span>;
 <span class="kw">mod</span> <span class="ident">expression</span>;
 <span class="kw">mod</span> <span class="ident">step</span>;
@@ -71,7 +79,15 @@
     <span class="kw">if</span> <span class="kw">let</span> <span class="prelude-val">Some</span>(<span class="ident">trailing_label</span>) <span class="op">=</span> <span class="ident">ast</span>.<span class="ident">trailing_label</span> {
         <span class="ident">statements</span>.<span class="ident">push</span>(<span class="ident">Statement</span> {
             <span class="ident">label</span>: <span class="prelude-val">Some</span>(<span class="ident">trailing_label</span>),
-            <span class="ident">steps</span>: <span class="ident">Spanned</span> { <span class="ident">node</span>: <span class="ident">Vec::new</span>(), <span class="ident">span</span>: <span class="ident">Span::dummy</span>() },
+            <span class="ident">steps</span>: <span class="ident">Spanned</span> {
+                <span class="ident">node</span>: <span class="macro">vec!</span>[<span class="ident">Step</span> {
+                    <span class="ident">id</span>: <span class="ident">StepId</span>(<span class="number">0</span>),
+                    <span class="ident">criteria</span>: <span class="ident">Vec::new</span>(),
+                    <span class="ident">operation</span>: <span class="ident">Operation::Nop</span>(<span class="ident">Nop</span> { <span class="ident">span</span>: <span class="ident">Span::dummy</span>() }),
+                    <span class="ident">annotation</span>: <span class="ident">Annotation::new</span>(<span class="bool-val">false</span>, <span class="bool-val">false</span>),
+                }],
+                <span class="ident">span</span>: <span class="ident">Span::dummy</span>(),
+            },
             <span class="ident">span</span>: <span class="ident">trailing_label</span>.<span class="ident">span</span>,
             <span class="ident">span_semicolon</span>: <span class="ident">Span::dummy</span>(),
             <span class="ident">span_pipe</span>: <span class="prelude-val">None</span>,

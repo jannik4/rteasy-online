@@ -164,7 +164,15 @@ DR &lt;- DR + 1;
 write MEM;
 </code></pre>
 <h2 id="assert"><a class="header" href="#assert">Assert</a></h2>
-<p>...</p>
+<p>The assert operation checks if an expression (with a size of one bit) is one or zero. If the expression evaluates to zero, the assert fails and the simulator will stop immediately and highlight the failed assert.</p>
+<p>The assert operation is intended as a tool for development and is therefore only executed in the simulator. It will not execute if the program gets compiled to VHDL.</p>
+<pre><code class="language-rteasy"><span class="boring">declare bus BUS(3:0)
+</span><span class="boring">
+</span>assert 5 &gt; 2; # passes
+assert BUS = 2, BUS &lt;- 2; # passes
+</code></pre>
+<pre><code class="language-rteasy should_fail">assert 2 = 3; # fails
+</code></pre>
 <h2 id="goto"><a class="header" href="#goto">Goto</a></h2>
 <p>The goto operation takes a label and can be used to resume the execution at a different state than the following one.</p>
 <pre><code class="language-rteasy"><span class="boring">declare register A, B
@@ -193,7 +201,20 @@ if A = 0 and B = 0 then
 fi;
 </code></pre>
 <h2 id="switch"><a class="header" href="#switch">Switch</a></h2>
-<p>...</p>
+<p>The switch operation checks an expression against various values. The expression must have a fixed size. This requirement is necessary to have a well defined size in which to evaluate. Fixed size expression are: comparisons, concatenations, registers, buses, register arrays and bit strings.</p>
+<p>The values used in the case clauses can be literals or constant expressions. Constant expression are: literals, concatenations only containing constants and terms only containing constants.</p>
+<p>In addition to the case clauses, there must always be exactly one default clause.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register A(3:0), B(3:0), C(3:0), D(3:0)
+</span><span class="boring">
+</span>switch A.D(2) {            # match against a fixed size expression
+    case 0: B &lt;- 2, C &lt;- 2 # case clause 0
+    case 1: nop            # case clause 1
+    case 1 + 1: C &lt;- 3     # case clause 2 (1 + 1)
+    default: goto END      # default clause
+};
+<span class="boring">
+</span><span class="boring">END:
+</span></code></pre>
 
                     </main>
 

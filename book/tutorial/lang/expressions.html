@@ -143,25 +143,112 @@
                 <div id="content" class="content">
                     <main>
                         <h1 id="expressions"><a class="header" href="#expressions">Expressions</a></h1>
-<p>...</p>
+<p>Expressions appear in assignments, asserts, and as conditions.
+Besides literals, registers and buses there is the possibility to form concatenations and terms.</p>
+<p>When evaluating expressions, expressions of different sizes are automatically adjusted by zero extending by default.
+However, if you want for example a register to be interpreted as signed, you can use the sign extend operator (see further below) to extend with the sign bit instead.</p>
 <h2 id="literals"><a class="header" href="#literals">Literals</a></h2>
-<p>...</p>
-<pre><code class="language-rteasy"># decimal: 12, 27
-# hexadecimal: 0xFA, $FA
-# binary: 0b01010111, %01010111
+<h3 id="decimal"><a class="header" href="#decimal">Decimal</a></h3>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span><span class="boring">
+</span>X &lt;- 12;
+X &lt;- 00000012; # leading zeros are stripped
 </code></pre>
-<h2 id="bit-strings"><a class="header" href="#bit-strings">Bit Strings</a></h2>
-<p>...</p>
-<pre><code class="language-rteasy"># &quot;0101010&quot;, &quot;111&quot;
+<h3 id="binary"><a class="header" href="#binary">Binary</a></h3>
+<p>Binary literals are prefixed with <code>0b</code>/<code>0B</code> (or with <code>%</code> for compatibility with older versions).</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span><span class="boring">
+</span>X &lt;-     0b110011;
+X &lt;-     0B110011;
+X &lt;-      %110011;
+X &lt;- 0b0000110011; # leading zeros are stripped
 </code></pre>
-<h2 id="registerbus"><a class="header" href="#registerbus">Register/Bus</a></h2>
-<p>...</p>
-<h2 id="concatenation"><a class="header" href="#concatenation">Concatenation</a></h2>
-<p>...</p>
-<h2 id="unary-term"><a class="header" href="#unary-term">Unary Term</a></h2>
-<p>... (sxt)</p>
-<h2 id="binary-term"><a class="header" href="#binary-term">Binary Term</a></h2>
-<p>...</p>
+<h3 id="hexadecimal"><a class="header" href="#hexadecimal">Hexadecimal</a></h3>
+<p>Hexadecimal literals are prefixed with <code>0x</code>/<code>0X</code> (or with <code>$</code> for compatibility with older versions).</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span><span class="boring">
+</span>X &lt;-     0xfa;
+X &lt;-     0XfA;
+X &lt;-      $fa;
+X &lt;- 0x0000fa; # leading zeros are stripped
+</code></pre>
+<h3 id="bit-strings"><a class="header" href="#bit-strings">Bit Strings</a></h3>
+<p>Bit strings are a sequence of zeros and ones delimited by double quotes. They work pretty much the same as normal binary numbers. The only difference is that they have a fixed size unlike other literals. All other literals ignore leading zeros and are always equivalent to the shortest binary representation of themselves.</p>
+<p>The main use case for bit strings is for use in concatenations (see further below) where all parts must have a well defined size.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span><span class="boring">
+</span>X &lt;- &quot;01010&quot;;
+</code></pre>
+<h2 id="registersbuses"><a class="header" href="#registersbuses">Registers/Buses</a></h2>
+<p>Registers and buses can be used simply by name. Individual bits can be accessed by specifying a bit range.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span>declare register REG(7:0)
+declare bus BUS(7:0)
+
+X &lt;- REG;
+X &lt;- BUS;
+
+X &lt;- REG(4:2); # Access a subrange
+X &lt;- BUS(4);   # Access a single bit
+</code></pre>
+<h2 id="register-arrays"><a class="header" href="#register-arrays">Register Arrays</a></h2>
+<p>Using register arrays works similiar to using registers. In addition to the name, an index must be specified, which is itself an expression.
+Accessing individual bits is not possible with register arrays.</p>
+<p>In addition, care must be taken that register arrays may be read no more than twice once per execution path and cycle.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span>declare register IDX(1:0)
+declare register array ARR(7:0)[4]
+
+X &lt;- ARR[0];       # Read at index 0
+X &lt;- ARR[IDX + 1]; # Use an expression as the index
+</code></pre>
+<p>If it is necessary to access individual bits, this can be done with the help of a temporary bus:</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(7:0)
+</span>declare bus TEMP(7:0)
+declare register array ARR(7:0)[4]
+
+TEMP &lt;- ARR[0], X &lt;- TEMP(4:2); # Access a subrange at index 0
+</code></pre>
+<h2 id="concatenations"><a class="header" href="#concatenations">Concatenations</a></h2>
+<p>Concatenations can be composed of registers, buses, register arrays and bit strings. The individual values are simply concatenated bit by bit.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(31:0)
+</span>declare register REG(7:0)
+declare bus BUS(7:0)
+declare register array ARR(7:0)[4]
+
+X &lt;- REG.&quot;001100&quot;.BUS(2);
+X &lt;- &quot;01&quot;.ARR[3].REG(3:1);
+</code></pre>
+<h2 id="terms"><a class="header" href="#terms">Terms</a></h2>
+<p>Unary terms are written as <code>OPERATOR EXPRESSION</code> and binary terms are written as <code>EXPRESSION OPERATOR EXPRESSION</code>.</p>
+<pre><code class="language-rteasy"><span class="boring">declare register X(15:0)
+</span>declare register REG(7:0)
+declare bus BUS(7:0)
+
+X &lt;- neg REG;
+X &lt;- REG + 1;
+X &lt;- not BUS.&quot;1&quot; + 42;
+</code></pre>
+<p>The following table gives an overview of all operators. Operators with higher precedence are executed before operators with lower precedence. Precedence comes before associativity.</p>
+<table><thead><tr><th>Precedence</th><th>Operator</th><th>Associativity</th><th>Individual operators</th></tr></thead><tbody>
+<tr><td>10</td><td>Unary Sign</td><td>right-to-left</td><td><code>- ... </code></td></tr>
+<tr><td>10</td><td>Unary Negation</td><td>right-to-left</td><td><code>neg ... </code></td></tr>
+<tr><td>9</td><td>Sign Extend</td><td>right-to-left</td><td><code>sxt ... </code></td></tr>
+<tr><td>8</td><td>Addition</td><td>left-to-right</td><td><code>... + ...</code></td></tr>
+<tr><td>8</td><td>Subtraction</td><td>left-to-right</td><td><code>... - ...</code></td></tr>
+<tr><td>7</td><td>Less Than</td><td>left-to-right</td><td><code>... &lt; ...</code></td></tr>
+<tr><td>7</td><td>Less Than Or Equal</td><td>left-to-right</td><td><code>... &lt;= ...</code></td></tr>
+<tr><td>7</td><td>Greater Than</td><td>left-to-right</td><td><code>... &gt; ...</code></td></tr>
+<tr><td>7</td><td>Greater Than Or Equal</td><td>left-to-right</td><td><code>... &gt;= ...</code></td></tr>
+<tr><td>6</td><td>Equality</td><td>left-to-right</td><td><code>... = ...</code></td></tr>
+<tr><td>6</td><td>Inequality</td><td>left-to-right</td><td><code>... &lt;&gt; ...</code></td></tr>
+<tr><td>5</td><td>Bitwise NOT</td><td>right-to-left</td><td><code>not ...</code></td></tr>
+<tr><td>4</td><td>Bitwise NAND</td><td>left-to-right</td><td><code>... nand ...</code></td></tr>
+<tr><td>3</td><td>Bitwise AND</td><td>left-to-right</td><td><code>... and ...</code></td></tr>
+<tr><td>2</td><td>Bitwise NOR</td><td>left-to-right</td><td><code>... nor ...</code></td></tr>
+<tr><td>1</td><td>Bitwise OR</td><td>left-to-right</td><td><code>... or ...</code></td></tr>
+<tr><td>0</td><td>Bitwise XOR</td><td>left-to-right</td><td><code>... xor ...</code></td></tr>
+</tbody></table>
 
                     </main>
 
