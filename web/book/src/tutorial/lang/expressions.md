@@ -5,6 +5,7 @@ Besides literals, registers and buses there is the possibility to form concatena
 
 When evaluating expressions, expressions of different sizes are automatically adjusted by zero extending by default.
 However, if you want for example a register to be interpreted as signed, you can use the sign extend operator (see further below) to extend with the sign bit instead.
+What the exact rules are when evaluating expressions can be seen in [Evaluation of Expressions](../advanced/eval-expressions.md).
 
 ## Literals
 
