@@ -1,0 +1,13 @@
+[package]
+name = "test-vhdl"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+parser = { path = "../src/rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../src/rt-easy-compiler", package = "rt-easy-compiler" }
+compiler-backend-vhdl = { path = "../src/rt-easy-compiler-backend-vhdl", package = "rt-easy-compiler-backend-vhdl" }
+
+anyhow = "1.0.44"
