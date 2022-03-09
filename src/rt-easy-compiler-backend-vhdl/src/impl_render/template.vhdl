@@ -149,8 +149,8 @@ ENTITY CU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
         reset : IN STD_LOGIC;
-        c : OUT STD_LOGIC_VECTOR({{ operations.len() }} DOWNTO 0);
-        k : IN STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0)
+        c : OUT STD_LOGIC_VECTOR({{ operations.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
+        k : IN STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0)
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
     ATTRIBUTE KEEP_HIERARCHY OF CU_{{ module_name }} : ENTITY IS "YES";
@@ -268,8 +268,8 @@ USE work.HELPER_{{ module_name }}.ALL;
 ENTITY EU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
-        c : IN STD_LOGIC_VECTOR({{ operations.len() }} DOWNTO 0);
-        k : OUT STD_LOGIC_VECTOR({{ criteria.len() }} DOWNTO 0);
+        c : IN STD_LOGIC_VECTOR({{ operations.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
+        k : OUT STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
 
         {% for input in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Input) %}
         input_{{ input.ident.0 }} : IN unsigned{{ RenderBitRange(input.range.or(Some(BitRange::default()))) }};
