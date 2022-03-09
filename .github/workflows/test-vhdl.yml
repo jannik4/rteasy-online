@@ -28,7 +28,7 @@ jobs:
         with:
           toolchain: stable
 
-      - run: apt-get update
+      - run: sudo apt-get update
 
       - name: Setup ghdl
         uses: ghdl/setup-ghdl-ci@nightly
