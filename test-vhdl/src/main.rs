@@ -116,14 +116,17 @@ impl Tb {
         self.compile_and_save().context("failed to compile rt code")?;
 
         // Analyze
-        self.run_cmd(&format!("ghdl -a {}.gen.vhdl", self.name))?;
-        self.run_cmd(&format!("ghdl -a {}_tb.vhdl", self.name))?;
+        self.run_cmd(&format!("ghdl -a --std=08 {}.gen.vhdl", self.name))?;
+        self.run_cmd(&format!("ghdl -a --std=08 {}_tb.vhdl", self.name))?;
 
         // Elaborate
-        self.run_cmd(&format!("ghdl -e {}_tb", self.name))?;
+        self.run_cmd(&format!("ghdl -e --std=08 {}_tb", self.name))?;
 
         // Run
-        self.run_cmd(&format!("ghdl -r {}_tb --assert-level=error --wave=simple.ghw", self.name))?;
+        self.run_cmd(&format!(
+            "ghdl -r --std=08 {}_tb --assert-level=error --wave=simple.ghw",
+            self.name
+        ))?;
 
         Ok(())
     }
