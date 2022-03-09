@@ -304,7 +304,7 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     -- TODO: Generate memories
 BEGIN
-    BusMux : PROCESS (*) -- TODO: List deps (...)
+    BusMux : PROCESS (ALL) -- TODO: List deps (...)
     BEGIN
         -- Set buses to zero
         {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
@@ -333,7 +333,7 @@ BEGIN
         END IF;
     END PROCESS;
     
-    ConditionGen : PROCESS (*) -- TODO: List deps (...)
+    ConditionGen : PROCESS (ALL) -- TODO: List deps (...)
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
         -- criterion {{ idx }}: {{ Fmt(expression) }}
