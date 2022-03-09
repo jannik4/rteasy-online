@@ -28,6 +28,11 @@ jobs:
         with:
           toolchain: stable
 
+      - name: Setup ghdl
+        uses: ghdl/setup-ghdl-ci@nightly
+        with:
+          backend: mcode
+
       - name: Run tests
         run: cargo run
         working-directory: test-vhdl
