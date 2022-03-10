@@ -1,0 +1,8 @@
+declare output OUTPUT(7:0)
+declare register X(3:0)
+
+OUTPUT <- sxt 1;
+OUTPUT <- sxt "01", X <- "1100";
+OUTPUT <- sxt X,    X <- "0110";
+OUTPUT <- sxt X;
+OUTPUT <- sxt X(2:0);

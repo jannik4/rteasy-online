@@ -2,29 +2,29 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY simple_tb IS
-END simple_tb;
+ENTITY sxt_tb IS
+END sxt_tb;
 
-ARCHITECTURE tb OF simple_tb IS
+ARCHITECTURE tb OF sxt_tb IS
     SIGNAL clock_p : STD_LOGIC := '0';
     SIGNAL clock_n : STD_LOGIC;
     SIGNAL reset : STD_LOGIC := '0';
-    SIGNAL c : STD_LOGIC_VECTOR(0 DOWNTO 0);
+    SIGNAL c : STD_LOGIC_VECTOR(5 DOWNTO 0);
     SIGNAL k : STD_LOGIC_VECTOR(0 DOWNTO 0);
 
-    SIGNAL output_OUTPUT : unsigned(0 TO 0);
+    SIGNAL output_OUTPUT : unsigned(7 DOWNTO 0);
 BEGIN
     -- Clock
     clock_n <= NOT clock_p;
 
     -- Connect ports
-    MAP_EU : ENTITY work.EU_simple PORT MAP(
+    MAP_EU : ENTITY work.EU_sxt PORT MAP(
         clock => clock_p,
         c => c,
         k => k,
         output_OUTPUT => output_OUTPUT
         );
-    MAP_CU : ENTITY work.CU_simple PORT MAP(
+    MAP_CU : ENTITY work.CU_sxt PORT MAP(
         clock => clock_n,
         reset => reset,
         c => c,
@@ -55,11 +55,16 @@ BEGIN
         do_reset;
 
         -- Test
-        ASSERT output_OUTPUT = "0";
         advance_clock;
-        ASSERT output_OUTPUT = "1";
+        ASSERT output_OUTPUT = "11111111";
         advance_clock;
-        ASSERT output_OUTPUT = "1";
+        ASSERT output_OUTPUT = "00000001";
+        advance_clock;
+        ASSERT output_OUTPUT = "11111100";
+        advance_clock;
+        ASSERT output_OUTPUT = "00000110";
+        advance_clock;
+        ASSERT output_OUTPUT = "11111110";
 
         -- Finished
         REPORT "Testbench finished";
