@@ -2,33 +2,31 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY add_tb IS
-END add_tb;
+ENTITY if_tb IS
+END if_tb;
 
-ARCHITECTURE tb OF add_tb IS
+ARCHITECTURE tb OF if_tb IS
     SIGNAL clock_p : STD_LOGIC := '0';
     SIGNAL clock_n : STD_LOGIC;
     SIGNAL reset : STD_LOGIC := '0';
     SIGNAL c : STD_LOGIC_VECTOR(0 DOWNTO 0);
     SIGNAL k : STD_LOGIC_VECTOR(0 DOWNTO 0);
 
-    SIGNAL input_A : unsigned(7 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL input_B : unsigned(7 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL output_OUT : unsigned(7 DOWNTO 0);
+    SIGNAL input_IN : unsigned(0 TO 0) := (OTHERS => '0');
+    SIGNAL output_OUT : unsigned(0 TO 0);
 BEGIN
     -- Clock
     clock_n <= NOT clock_p;
 
     -- Connect ports
-    MAP_EU : ENTITY work.EU_add PORT MAP(
+    MAP_EU : ENTITY work.EU_if PORT MAP(
         clock => clock_p,
         c => c,
         k => k,
-        input_A => input_A,
-        input_B => input_B,
+        input_IN => input_IN,
         output_OUT => output_OUT
         );
-    MAP_CU : ENTITY work.CU_add PORT MAP(
+    MAP_CU : ENTITY work.CU_if PORT MAP(
         clock => clock_n,
         reset => reset,
         c => c,
@@ -54,22 +52,22 @@ BEGIN
         -- Reset
         do_reset;
 
-        -- Test 4 + 3
-        input_A <= to_unsigned(4, 8);
-        input_B <= to_unsigned(3, 8);
+        -- Test false
+        input_IN <= "0";
         WAIT FOR 100 ns;
+        ASSERT output_OUT = "0";
         advance_clock;
-        ASSERT output_OUT = 7;
+        ASSERT output_OUT = "0";
 
         -- Reset
         do_reset;
 
-        -- Test 255 + 7 (overflow)
-        input_A <= to_unsigned(255, 8);
-        input_B <= to_unsigned(7, 8);
+        -- Test true
+        input_IN <= "1";
         WAIT FOR 100 ns;
+        ASSERT output_OUT = "0";
         advance_clock;
-        ASSERT output_OUT = 6;
+        ASSERT output_OUT = "1";
 
         -- Finished
         REPORT "Testbench finished";

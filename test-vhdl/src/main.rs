@@ -124,7 +124,7 @@ impl Tb {
 
         // Run
         self.run_cmd(&format!(
-            "ghdl -r --std=08 {}_tb --assert-level=error --wave=simple.ghw",
+            "ghdl -r --std=08 {0}_tb --assert-level=error --wave={0}.ghw",
             self.name
         ))?;
 

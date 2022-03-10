@@ -7,20 +7,12 @@ END fail_tb;
 
 ARCHITECTURE tb OF fail_tb IS
     SIGNAL clock_p : STD_LOGIC := '0';
-    SIGNAL clock_n : STD_LOGIC := '0';
-    SIGNAL reset : STD_LOGIC;
+    SIGNAL clock_n : STD_LOGIC;
+    SIGNAL reset : STD_LOGIC := '0';
     SIGNAL c : STD_LOGIC_VECTOR(0 DOWNTO 0);
     SIGNAL k : STD_LOGIC_VECTOR(0 DOWNTO 0);
 
     SIGNAL output_OUT : unsigned(0 TO 0);
-
-    PROCEDURE advance_clock(SIGNAL clock : OUT STD_LOGIC) IS
-    BEGIN
-        clock <= '1';
-        WAIT FOR 100 ns;
-        clock <= '0';
-        WAIT FOR 100 ns;
-    END PROCEDURE;
 BEGIN
     -- Clock
     clock_n <= NOT clock_p;
@@ -39,17 +31,28 @@ BEGIN
         k => k
         );
 
-    Test : PROCESS
+    Test : PROCESS IS
+        PROCEDURE do_reset IS
+        BEGIN
+            reset <= '1';
+            WAIT FOR 100 ns;
+            reset <= '0';
+            WAIT FOR 100 ns;
+        END PROCEDURE;
+        PROCEDURE advance_clock IS
+        BEGIN
+            clock_p <= '1';
+            WAIT FOR 100 ns;
+            clock_p <= '0';
+            WAIT FOR 100 ns;
+        END PROCEDURE;
     BEGIN
         -- Reset
-        reset <= '1';
-        WAIT FOR 100 ns;
-        reset <= '0';
-        WAIT FOR 100 ns;
+        do_reset;
 
         -- Test
         ASSERT output_OUT = "0";
-        advance_clock(clock_p);
+        advance_clock;
         ASSERT output_OUT = "0";
 
         -- Finished
