@@ -1,0 +1,6 @@
+declare output OUTPUT(7:0)
+declare register REG(3:0)
+declare bus BUS(3:0)
+
+OUTPUT <- "11"."00"."11"."00", REG <- "1010";
+OUTPUT <- REG(1:0)."01".BUS, BUS <- "0011";
