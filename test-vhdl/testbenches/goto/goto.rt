@@ -1,0 +1,5 @@
+declare output OUT(1:0)
+
+OUT <- 1, goto END;
+OUT <- 2;
+END: OUT <- 3;
