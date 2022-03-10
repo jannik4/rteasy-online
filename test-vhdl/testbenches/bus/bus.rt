@@ -1,0 +1,10 @@
+declare bus BUS(7:0)
+declare output OUTPUT(7:0)
+
+BUS <- 3, OUTPUT <- BUS;
+OUTPUT <- BUS, BUS <- 4;
+
+OUTPUT <- BUS, BUS <- 4 + 2;
+OUTPUT <- BUS + 3, BUS <- 4;
+
+OUTPUT <- BUS(1:0), BUS <- 6;
