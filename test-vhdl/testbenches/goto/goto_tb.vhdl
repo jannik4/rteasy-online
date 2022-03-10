@@ -34,17 +34,21 @@ BEGIN
     Test : PROCESS IS
         PROCEDURE do_reset IS
         BEGIN
+            WAIT FOR 50 ns;
             reset <= '1';
             WAIT FOR 100 ns;
             reset <= '0';
-            WAIT FOR 100 ns;
+            WAIT FOR 50 ns;
         END PROCEDURE;
-        PROCEDURE advance_clock IS
+        PROCEDURE advance_clock(amount : INTEGER := 1) IS
         BEGIN
-            clock_p <= '1';
-            WAIT FOR 100 ns;
-            clock_p <= '0';
-            WAIT FOR 100 ns;
+            FOR i IN 1 TO amount LOOP
+                WAIT FOR 50 ns;
+                clock_p <= '1';
+                WAIT FOR 100 ns;
+                clock_p <= '0';
+                WAIT FOR 50 ns;
+            END LOOP;
         END PROCEDURE;
     BEGIN
         -- Reset
