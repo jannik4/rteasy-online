@@ -48,12 +48,14 @@ fn run() -> Result<Vec<Result<Tb, (Tb, Error)>>> {
                 Ok(()) => {
                     test_results.push(Err((tb, anyhow!("executed successfully, expected error"))))
                 }
-                Err(_e) => test_results.push(Ok(tb)),
+                Err(TbError::Prepare(e)) => test_results.push(Err((tb, e))),
+                Err(TbError::Run(_e)) => test_results.push(Ok(tb)),
             }
         } else {
             match result {
                 Ok(()) => test_results.push(Ok(tb)),
-                Err(e) => test_results.push(Err((tb, e))),
+                Err(TbError::Prepare(e)) => test_results.push(Err((tb, e))),
+                Err(TbError::Run(e)) => test_results.push(Err((tb, e))),
             }
         }
     }
@@ -110,23 +112,35 @@ struct Tb {
     dir: PathBuf,
 }
 
+#[derive(Debug)]
+enum TbError {
+    Prepare(Error),
+    Run(Error),
+}
+
 impl Tb {
-    fn run(&self) -> Result<()> {
-        // Compile and save
-        self.compile_and_save().context("failed to compile rt code")?;
+    fn run(&self) -> Result<(), TbError> {
+        // Prepare
+        (|| {
+            // Compile and save
+            self.compile_and_save().context("failed to compile rt code")?;
 
-        // Analyze
-        self.run_cmd(&format!("ghdl -a --std=08 {}.gen.vhdl", self.name))?;
-        self.run_cmd(&format!("ghdl -a --std=08 {}_tb.vhdl", self.name))?;
+            // Analyze
+            self.run_cmd(&format!("ghdl -a --std=08 {}.gen.vhdl", self.name))?;
+            self.run_cmd(&format!("ghdl -a --std=08 {}_tb.vhdl", self.name))?;
 
-        // Elaborate
-        self.run_cmd(&format!("ghdl -e --std=08 {}_tb", self.name))?;
+            // Elaborate
+            self.run_cmd(&format!("ghdl -e --std=08 {}_tb", self.name))?;
+            Ok(())
+        })()
+        .map_err(TbError::Prepare)?;
 
         // Run
         self.run_cmd(&format!(
             "ghdl -r --std=08 {0}_tb --assert-level=error --wave={0}.ghw",
             self.name
-        ))?;
+        ))
+        .map_err(TbError::Run)?;
 
         Ok(())
     }
