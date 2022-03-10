@@ -28,7 +28,7 @@ fn main() {
         println!("PASSED\n\n{} passed; {} failed", passed, failed.len());
     } else {
         for (tb, err) in &failed {
-            eprintln!("{} failed\n{:?}", tb.name, err);
+            eprintln!("Test {} failed\n\n{:?}", tb.name, err);
             eprintln!("\n--------------------------------\n\n");
         }
 
@@ -179,10 +179,10 @@ impl Tb {
             Ok(())
         } else {
             Err(anyhow!(
-                "failed to execute cmd `{}`\nstdout: {}\nstderr: {}",
+                "failed to execute cmd `{}`\n\nstdout:\n{}\nstderr:\n{}",
                 command,
-                std::str::from_utf8(&output.stdout).unwrap_or("<invalid utf8>"),
-                std::str::from_utf8(&output.stderr).unwrap_or("<invalid utf8>"),
+                String::from_utf8_lossy(&output.stdout),
+                String::from_utf8_lossy(&output.stderr),
             ))
         }
     }
