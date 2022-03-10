@@ -1,4 +1,4 @@
-use super::{bit_range::RenderBitRange, expression::RenderExpression};
+use super::{bit_range::RenderBitRange, Render};
 use crate::vhdl;
 use std::fmt::{Display, Formatter, Result};
 
@@ -66,11 +66,7 @@ impl Display for RenderOperation<'_, &vhdl::Assignment<'_>> {
             vhdl::Lvalue::ConcatUnclocked(_lvalue) => todo!(),
         }
 
-        write!(
-            f,
-            " <= {};",
-            RenderExpression { expression: &self.operation.rhs, ctx_size: self.operation.size }
-        )?;
+        write!(f, " <= {};", Render(&self.operation.rhs))?;
 
         Ok(())
     }

@@ -142,7 +142,19 @@ impl std::fmt::Display for Label {
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Expression<'s> {
+pub struct Expression<'s> {
+    pub kind: ExpressionKind<'s>,
+    pub extend_to: Extend,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum Extend {
+    Zero(usize),
+    Sign(usize),
+}
+
+#[derive(Debug, PartialEq, Eq, Hash)]
+pub enum ExpressionKind<'s> {
     Atom(Atom<'s>),
     BinaryTerm(Box<BinaryTerm<'s>>),
     UnaryTerm(Box<UnaryTerm<'s>>),
@@ -162,14 +174,12 @@ pub struct BinaryTerm<'s> {
     pub lhs: Expression<'s>,
     pub rhs: Expression<'s>,
     pub operator: BinaryOperator,
-    pub ctx_size: CtxSize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct UnaryTerm<'s> {
     pub expression: Expression<'s>,
     pub operator: UnaryOperator,
-    pub ctx_size: CtxSize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -190,7 +200,6 @@ pub struct Bus<'s> {
 pub struct RegisterArray<'s> {
     pub ident: Ident<'s>,
     pub index: Box<Expression<'s>>,
-    pub index_ctx_size: usize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -237,7 +246,6 @@ pub struct Read<'s> {
 pub struct Assignment<'s> {
     pub lhs: Lvalue<'s>,
     pub rhs: Expression<'s>,
-    pub size: usize,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]

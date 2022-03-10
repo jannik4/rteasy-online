@@ -75,7 +75,13 @@ mod fmt {
 
     impl Display for Fmt<&Expression<'_>> {
         fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-            use Expression::*;
+            write!(f, "{}", Fmt(&self.0.kind))
+        }
+    }
+
+    impl Display for Fmt<&ExpressionKind<'_>> {
+        fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+            use ExpressionKind::*;
             match &self.0 {
                 Atom(expr) => write!(f, "{}", Fmt(expr)),
                 BinaryTerm(expr) => write!(f, "{}", Fmt(&**expr)),
@@ -220,10 +226,10 @@ mod fmt {
     }
 
     fn precedence(expression: &Expression<'_>) -> u32 {
-        match expression {
-            Expression::Atom(_) => u32::MAX,
-            Expression::BinaryTerm(binary) => binary.operator.precedence(),
-            Expression::UnaryTerm(unary) => unary.operator.precedence(),
+        match &expression.kind {
+            ExpressionKind::Atom(_) => u32::MAX,
+            ExpressionKind::BinaryTerm(binary) => binary.operator.precedence(),
+            ExpressionKind::UnaryTerm(unary) => unary.operator.precedence(),
         }
     }
 }

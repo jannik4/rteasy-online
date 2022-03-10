@@ -337,7 +337,7 @@ BEGIN
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
         -- criterion {{ idx }}: {{ Fmt(expression) }}
-        k({{ idx }}) <= to_std_logic({{ RenderExpression { expression, ctx_size: 1 } }} = "1");
+        k({{ idx }}) <= to_std_logic({{ Render(expression) }} = "1");
         {% endfor %}
     END PROCESS;
 END Behavioral;

@@ -146,7 +146,7 @@ fn generate_statement_<'s>(
             // MIR criteria are inserted in the global VHDL criteria set.
             // In addition, an entry is created in the mapping.
             mir::Operation::EvalCriterion(mir_eval_criterion) => {
-                let condition = generate_expression(&mir_eval_criterion.condition);
+                let condition = generate_expression(&mir_eval_criterion.condition, 1);
                 criteria_mapping
                     .insert(mir_eval_criterion.criterion_id, get_criterion_id(condition));
             }
@@ -302,10 +302,10 @@ fn next_state_logic_deps<'s>(
 }
 
 fn deps_expr<'s>(expr: &Expression<'s>) -> NextStateLogicDeps {
-    match expr {
-        Expression::Atom(e) => deps_atom(e),
-        Expression::BinaryTerm(e) => deps_binary_term(e),
-        Expression::UnaryTerm(e) => deps_unary_term(e),
+    match &expr.kind {
+        ExpressionKind::Atom(e) => deps_atom(e),
+        ExpressionKind::BinaryTerm(e) => deps_binary_term(e),
+        ExpressionKind::UnaryTerm(e) => deps_unary_term(e),
     }
 }
 fn deps_atom<'s>(atom: &Atom<'s>) -> NextStateLogicDeps {

@@ -15,8 +15,7 @@ use indexmap::IndexSet;
 use temply::Template;
 
 use self::{
-    bit_range::RenderBitRange, criteria_expr::RenderCriteriaExpr, expression::RenderExpression,
-    operation::RenderOperation,
+    bit_range::RenderBitRange, criteria_expr::RenderCriteriaExpr, operation::RenderOperation,
 };
 use crate::signals::Fmt;
 
@@ -43,3 +42,6 @@ struct VhdlTemplate<'a> {
 
     declarations: &'a Declarations<'a>,
 }
+
+#[derive(Debug)]
+struct Render<T>(T);

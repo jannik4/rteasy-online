@@ -7,8 +7,7 @@ use compiler::mir;
 pub fn generate_assignment<'s>(assignment: &mir::Assignment<'s>) -> Assignment<'s> {
     Assignment {
         lhs: generate_lvalue(&assignment.lhs),
-        rhs: generate_expression(&assignment.rhs),
-        size: assignment.size,
+        rhs: generate_expression(&assignment.rhs, assignment.size),
     }
 }
 
