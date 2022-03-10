@@ -6,6 +6,8 @@ use std::{
     process::{self, Command},
 };
 
+const VHDL_STANDARD: &str = "08";
+
 fn main() {
     let test_results = match run() {
         Ok(test_results) => test_results,
@@ -65,7 +67,7 @@ fn run() -> Result<Vec<Result<Tb, (Tb, Error)>>> {
 
 fn testbenches() -> Result<Vec<Tb>> {
     let current_dir = env::current_dir()?;
-    let testbenches_dir = current_dir.join("testbenches");
+    let testbenches_dir = current_dir.join("testbenches/src");
     ensure!(
         fs::metadata(&testbenches_dir).is_ok(),
         "testbenches directory not found. make sure to run tests from the correct working directory"
@@ -79,26 +81,15 @@ fn testbenches() -> Result<Vec<Tb>> {
         let metadata = fs::metadata(&path)?;
 
         if metadata.is_dir() {
-            let dir_name = path
+            let name = path
                 .file_name()
                 .context("expected file name")?
                 .to_str()
-                .context("directory name utf8 error")?;
-            let rt_name = format!("{}.rt", dir_name);
-            let tb_name = format!("{}_tb.vhdl", dir_name);
-            ensure!(
-                path.join(&rt_name).is_file() && path.join(&tb_name).is_file(),
-                "expected {} and {} in {}",
-                rt_name,
-                tb_name,
-                dir_name
-            );
+                .context("directory name utf8 error")?
+                .to_owned();
+            let target_dir = testbenches_dir.join(format!("../target/{}", name));
 
-            testbenches.push(Tb {
-                name: dir_name.to_owned(),
-                rt_code: fs::read_to_string(path.join(&rt_name))?,
-                dir: path,
-            });
+            testbenches.push(Tb { name, src_dir: path, target_dir });
         }
     }
 
@@ -108,8 +99,8 @@ fn testbenches() -> Result<Vec<Tb>> {
 #[derive(Debug)]
 struct Tb {
     name: String,
-    rt_code: String,
-    dir: PathBuf,
+    src_dir: PathBuf,
+    target_dir: PathBuf,
 }
 
 #[derive(Debug)]
@@ -122,23 +113,44 @@ impl Tb {
     fn run(&self) -> Result<(), TbError> {
         // Prepare
         (|| {
-            // Compile and save
+            // Check for files
+            ensure!(
+                self.src_dir.join(self.rt_file_name()).is_file()
+                    && self.src_dir.join(self.tb_file_name()).is_file(),
+                "could not find {} and {} in {:?}",
+                self.rt_file_name(),
+                self.tb_file_name(),
+                self.src_dir
+            );
+
+            // Create target dir
+            fs::create_dir_all(&self.target_dir)?;
+
+            // Compile and save rt code to vhdl
             self.compile_and_save().context("failed to compile rt code")?;
 
+            // Copy testbench to target
+            fs::copy(
+                self.src_dir.join(self.tb_file_name()),
+                self.target_dir.join(self.tb_file_name()),
+            )?;
+
             // Analyze
-            self.run_cmd(&format!("ghdl -a --std=08 {}.gen.vhdl", self.name))?;
-            self.run_cmd(&format!("ghdl -a --std=08 {}_tb.vhdl", self.name))?;
+            self.run_cmd(&format!("ghdl -a --std={} {}", VHDL_STANDARD, self.vhdl_file_name()))?;
+            self.run_cmd(&format!("ghdl -a --std={} {}", VHDL_STANDARD, self.tb_file_name()))?;
 
             // Elaborate
-            self.run_cmd(&format!("ghdl -e --std=08 {}_tb", self.name))?;
+            self.run_cmd(&format!("ghdl -e --std={} {}", VHDL_STANDARD, self.tb_name()))?;
             Ok(())
         })()
         .map_err(TbError::Prepare)?;
 
         // Run
         self.run_cmd(&format!(
-            "ghdl -r --std=08 {0}_tb --assert-level=error --wave={0}.ghw",
-            self.name
+            "ghdl -r --std={} {} --assert-level=error --wave={}",
+            VHDL_STANDARD,
+            self.tb_name(),
+            self.ghw_file_name()
         ))
         .map_err(TbError::Run)?;
 
@@ -146,9 +158,11 @@ impl Tb {
     }
 
     fn compile_and_save(&self) -> Result<()> {
-        let ast = match parser::parse(&self.rt_code) {
+        let rt_code = fs::read_to_string(self.src_dir.join(self.rt_file_name()))?;
+
+        let ast = match parser::parse(&rt_code) {
             Ok(ast) => ast,
-            Err(e) => bail!("{}", parser::pretty_print_error(&e, &self.rt_code, None, false)),
+            Err(e) => bail!("{}", parser::pretty_print_error(&e, &rt_code, None, false)),
         };
 
         let vhdl = match compiler::compile(
@@ -158,10 +172,10 @@ impl Tb {
             &Default::default(),
         ) {
             Ok(vhdl) => vhdl,
-            Err(e) => bail!("{}", e.pretty_print(&self.rt_code, None, false)),
+            Err(e) => bail!("{}", e.pretty_print(&rt_code, None, false)),
         };
 
-        fs::write(self.dir.join(format!("{}.gen.vhdl", self.name)), vhdl.render()?)?;
+        fs::write(self.target_dir.join(self.vhdl_file_name()), vhdl.render()?)?;
 
         Ok(())
     }
@@ -172,7 +186,7 @@ impl Tb {
 
         let output = Command::new(program)
             .args([exec_arg, command])
-            .current_dir(&self.dir)
+            .current_dir(&self.target_dir)
             .output()
             .with_context(|| format!("failed to execute cmd `{}`", command))?;
         if output.status.success() {
@@ -185,6 +199,23 @@ impl Tb {
                 String::from_utf8_lossy(&output.stderr),
             ))
         }
+    }
+
+    fn tb_name(&self) -> String {
+        format!("{}_tb", self.name)
+    }
+
+    fn rt_file_name(&self) -> String {
+        format!("{}.rt", self.name)
+    }
+    fn tb_file_name(&self) -> String {
+        format!("{}_tb.vhdl", self.name)
+    }
+    fn vhdl_file_name(&self) -> String {
+        format!("{}.vhdl", self.name)
+    }
+    fn ghw_file_name(&self) -> String {
+        format!("{}.ghw", self.name)
     }
 }
 
