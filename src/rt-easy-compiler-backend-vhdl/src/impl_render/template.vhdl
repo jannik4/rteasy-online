@@ -187,14 +187,14 @@ BEGIN
                 {% endwhere %}
                 {% where NextStateLogic::Cond { conditional, default } %}
                 {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
+                {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
                     {% match &logic %}
                     {% where NextStateLogic::Label(label) %}
                     next_state <= {{ label }};
                     {% endwhere %}
                     {% where NextStateLogic::Cond { conditional, default } %}
                     {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
+                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
                         next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
                     {% endfor %}
                     ELSE
@@ -210,7 +210,7 @@ BEGIN
                     {% endwhere %}
                     {% where NextStateLogic::Cond { conditional, default } %}
                     {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderCriteriaExpr(criteria_expr) }} THEN
+                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
                         next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
                     {% endfor %}
                     ELSE
@@ -242,7 +242,7 @@ BEGIN
                 {% for (operation_id, criteria_expr) in statement.operations.iter() %}
                 {% match criteria_expr %}
                     {% where Some(criteria_expr) %}
-                        c({{ operation_id.0 }}) <= to_std_logic({{ RenderCriteriaExpr(criteria_expr) }});
+                        c({{ operation_id.0 }}) <= to_std_logic({{ RenderAsVhdl(criteria_expr) }});
                     {% endwhere %}
                     {% where None %}
                         c({{ operation_id.0 }}) <= '1';
@@ -272,11 +272,11 @@ ENTITY EU_{{ module_name }} IS
         k : OUT STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
 
         {% for input in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Input) %}
-        input_{{ input.ident.0 }} : IN unsigned{{ RenderBitRange(input.range.or(Some(BitRange::default()))) }};
+        input_{{ input.ident.0 }} : IN unsigned{{ RenderAsVhdl(input.range.or(Some(BitRange::default()))) }};
         {% endfor %}
 
         {% for output in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Output) %}
-        output_{{ output.ident.0 }} : OUT unsigned{{ RenderBitRange(output.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
+        output_{{ output.ident.0 }} : OUT unsigned{{ RenderAsVhdl(output.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
         {% endfor %}
         
         dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
@@ -290,13 +290,13 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     {% for register in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Intern) %}
 
-    signal register_{{ register.ident.0 }} : unsigned{{ RenderBitRange(register.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
+    signal register_{{ register.ident.0 }} : unsigned{{ RenderAsVhdl(register.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
     attribute KEEP of register_{{ register.ident.0 }} : signal is "TRUE";
     {% endfor %}
 
     {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
 
-    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderBitRange(bus.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
+    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderAsVhdl(bus.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
     attribute KEEP of bus_{{ bus.ident.0 }} : signal is "TRUE";
     {% endfor %}
 
@@ -313,9 +313,9 @@ BEGIN
         
         {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| !op.is_clocked()) %}
 
-        -- control signal {{ idx }}: {{ Fmt(operation) }}
+        -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
         IF c({{ idx }}) = '1' THEN
-            {{ RenderOperation { operation, _p: std::marker::PhantomData } }}
+            {{ RenderAsVhdl(operation) }}
         END IF;
         {% endfor %}
     END PROCESS;
@@ -325,9 +325,9 @@ BEGIN
         IF rising_edge(clock) THEN
             {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| op.is_clocked()) %}
 
-            -- control signal {{ idx }}: {{ Fmt(operation) }}
+            -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
             IF c({{ idx }}) = '1' THEN
-                {{ RenderOperation { operation, _p: std::marker::PhantomData } }}
+                {{ RenderAsVhdl(operation) }}
             END IF;
             {% endfor %}
         END IF;
@@ -336,8 +336,8 @@ BEGIN
     ConditionGen : PROCESS (ALL) -- TODO: List deps (...)
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
-        -- criterion {{ idx }}: {{ Fmt(expression) }}
-        k({{ idx }}) <= to_std_logic({{ Render(expression) }} = "1");
+        -- criterion {{ idx }}: {{ RenderAsRt(expression) }}
+        k({{ idx }}) <= to_std_logic({{ RenderAsVhdl(expression) }} = "1");
         {% endfor %}
     END PROCESS;
 END Behavioral;

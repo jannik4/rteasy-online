@@ -1,23 +1,10 @@
-mod bit_range;
-mod criteria_expr;
-mod expression;
-mod label;
-mod operation;
-
-// TODO: Display instead of all RenderXXXX
-// --> add necessary data in generate, e.g. add ctx_size for expressions
-
 use crate::vhdl::{
     BitRange, BusKind, Declarations, Expression, NextStateLogic, Operation, RegisterKind,
     Statement, Vhdl,
 };
+use crate::{render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;
 use temply::Template;
-
-use self::{
-    bit_range::RenderBitRange, criteria_expr::RenderCriteriaExpr, operation::RenderOperation,
-};
-use crate::signals::Fmt;
 
 pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
     let mut buffer = String::new();
@@ -42,6 +29,3 @@ struct VhdlTemplate<'a> {
 
     declarations: &'a Declarations<'a>,
 }
-
-#[derive(Debug)]
-struct Render<T>(T);

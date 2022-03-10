@@ -22,6 +22,8 @@
 
 mod generate;
 mod impl_render;
+mod render_as_rt;
+mod render_as_vhdl;
 mod signals;
 
 pub mod vhdl;

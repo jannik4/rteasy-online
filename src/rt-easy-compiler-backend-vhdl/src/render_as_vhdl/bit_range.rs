@@ -1,10 +1,8 @@
-use crate::vhdl;
+use super::RenderAsVhdl;
+use crate::vhdl::*;
 use std::fmt::{Display, Formatter, Result};
 
-#[derive(Debug)]
-pub struct RenderBitRange(pub Option<vhdl::BitRange>);
-
-impl Display for RenderBitRange {
+impl Display for RenderAsVhdl<Option<BitRange>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0 {
             Some(bit_range) => {
