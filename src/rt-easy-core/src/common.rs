@@ -170,10 +170,10 @@ impl BitRange {
     pub fn contains_range(&self, idx: Self) -> bool {
         let contains_msb = self.contains(idx.msb);
         let contains_lsb = self.contains(idx.lsb());
-        let msb_lsb_order = if idx.lsb.is_some() {
-            (self.msb >= self.lsb()) == (idx.msb >= idx.lsb())
-        } else {
+        let msb_lsb_order = if idx.lsb() == idx.msb {
             true
+        } else {
+            (self.msb >= self.lsb()) == (idx.msb >= idx.lsb())
         };
 
         contains_msb && contains_lsb && msb_lsb_order

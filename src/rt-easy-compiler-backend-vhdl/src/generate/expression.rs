@@ -106,18 +106,9 @@ fn generate_bit_range(
     let range = range?;
 
     // Map range
-    let range = match range {
-        mir::BitRange { msb, lsb: Some(lsb) } => {
-            if msb >= lsb {
-                BitRange::Downto(msb, lsb)
-            } else {
-                BitRange::To(msb, lsb)
-            }
-        }
-        mir::BitRange { msb, lsb: None } => match range_declaration {
-            BitRange::Downto(_, _) => BitRange::Downto(msb, msb),
-            BitRange::To(_, _) => BitRange::To(msb, msb),
-        },
+    let range = match range_declaration {
+        BitRange::Downto(_, _) => BitRange::Downto(range.msb, range.lsb()),
+        BitRange::To(_, _) => BitRange::To(range.msb, range.lsb()),
     };
 
     // Full range (= None) if range is equals range_declaration
