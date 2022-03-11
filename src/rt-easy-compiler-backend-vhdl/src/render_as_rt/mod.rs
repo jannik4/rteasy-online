@@ -1,3 +1,4 @@
+mod bit_range;
 mod concat;
 mod expression;
 mod operation;

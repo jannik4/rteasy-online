@@ -134,7 +134,7 @@ pub enum BusKind {
     Input,
 }
 
-#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Hash)]
+#[derive(Debug, Default, Clone, Copy)]
 pub struct BitRange {
     pub msb: usize,
     pub lsb: Option<usize>,

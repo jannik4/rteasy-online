@@ -78,19 +78,13 @@ impl Display for RenderAsRt<&UnaryTerm<'_>> {
 
 impl Display for RenderAsRt<&Register<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self.0.range {
-            Some(range) => write!(f, "{}{}", self.0.ident.0, range),
-            None => write!(f, "{}", self.0.ident.0),
-        }
+        write!(f, "{}{}", self.0.ident.0, RenderAsRt(self.0.range))
     }
 }
 
 impl Display for RenderAsRt<&Bus<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self.0.range {
-            Some(range) => write!(f, "{}{}", self.0.ident.0, range),
-            None => write!(f, "{}", self.0.ident.0),
-        }
+        write!(f, "{}{}", self.0.ident.0, RenderAsRt(self.0.range))
     }
 }
 

@@ -1,6 +1,5 @@
 use crate::vhdl::{
-    BitRange, BusKind, Declarations, Expression, NextStateLogic, Operation, RegisterKind,
-    Statement, Vhdl,
+    BusKind, Declarations, Expression, NextStateLogic, Operation, RegisterKind, Statement, Vhdl,
 };
 use crate::{render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;

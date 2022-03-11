@@ -7,7 +7,7 @@ use vec1::Vec1;
 // -------------------------------------------------------------------------------------------------
 
 pub use rtcore::ast::Ident;
-pub use rtcore::common::{BinaryOperator, BitRange, BusKind, CtxSize, RegisterKind, UnaryOperator};
+pub use rtcore::common::{BinaryOperator, BusKind, RegisterKind, UnaryOperator};
 
 // -------------------------------------------------------------------------------------------------
 // Top
@@ -47,17 +47,10 @@ impl<'s> Vhdl<'s> {
 
 #[derive(Debug)]
 pub struct Declarations<'s> {
-    pub registers: Vec<Register<'s>>,
-    pub buses: Vec<Bus<'s>>,
-    pub memories: Vec<Memory<'s>>,
-    pub register_arrays: Vec<RegisterArray<'s>>,
-}
-
-#[derive(Debug)]
-pub struct Memory<'s> {
-    pub ident: Ident<'s>,
-    pub address_register: Ident<'s>,
-    pub data_register: Ident<'s>,
+    pub registers: Vec<(Ident<'s>, BitRange, RegisterKind)>, // (Name, Range, Kind)
+    pub buses: Vec<(Ident<'s>, BitRange, BusKind)>,          // (Name, Range, Kind)
+    pub register_arrays: Vec<(Ident<'s>, BitRange, usize)>,  // (Name, Range, Len)
+    pub memories: Vec<(Ident<'s>, Ident<'s>, Ident<'s>)>,    // (Name, AR, DR)
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -287,4 +280,14 @@ pub enum ConcatPartExpr<'s> {
     Bus(Bus<'s>),
     RegisterArray(RegisterArray<'s>),
     Number(Number),
+}
+
+// -------------------------------------------------------------------------------------------------
+// Bit Range
+// -------------------------------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub enum BitRange {
+    Downto(usize, usize),
+    To(usize, usize),
 }

@@ -17,6 +17,7 @@ pub fn generate_statement<'s>(
         idx,
         mir_statement,
         next_mir_statement,
+        &vhdl.declarations,
         |cond| CriterionId(vhdl.criteria.insert_full(cond).0),
         |op| OperationId(vhdl.operations.insert_full(op).0),
     );
@@ -113,6 +114,7 @@ fn generate_statement_<'s>(
     idx: usize,
     mir_statement: &mir::Statement<'s>,
     next_mir_statement: Option<&mir::Statement<'s>>,
+    declarations: &Declarations<'s>,
 
     mut get_criterion_id: impl FnMut(Expression<'s>) -> CriterionId,
     mut get_operation_id: impl FnMut(Operation<'s>) -> OperationId,
@@ -146,7 +148,7 @@ fn generate_statement_<'s>(
             // MIR criteria are inserted in the global VHDL criteria set.
             // In addition, an entry is created in the mapping.
             mir::Operation::EvalCriterion(mir_eval_criterion) => {
-                let condition = generate_expression(&mir_eval_criterion.condition, 1);
+                let condition = generate_expression(&mir_eval_criterion.condition, declarations, 1);
                 criteria_mapping
                     .insert(mir_eval_criterion.criterion_id, get_criterion_id(condition));
             }
@@ -181,7 +183,8 @@ fn generate_statement_<'s>(
             mir::Operation::Write(_) => todo!(),
             mir::Operation::Read(_) => todo!(),
             mir::Operation::Assignment(mir_assignment) => {
-                let operation = Operation::Assignment(generate_assignment(mir_assignment));
+                let operation =
+                    Operation::Assignment(generate_assignment(mir_assignment, declarations));
                 let operation_id = get_operation_id(operation);
 
                 if mir_step.criteria.is_empty() {

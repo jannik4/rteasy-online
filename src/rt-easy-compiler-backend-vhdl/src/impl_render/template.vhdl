@@ -271,12 +271,14 @@ ENTITY EU_{{ module_name }} IS
         c : IN STD_LOGIC_VECTOR({{ operations.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
         k : OUT STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
 
-        {% for input in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Input) %}
-        input_{{ input.ident.0 }} : IN unsigned{{ RenderAsVhdl(input.range.or(Some(BitRange::default()))) }};
+        -- Inputs
+        {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Input) %}
+        input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(*range) }};
         {% endfor %}
 
-        {% for output in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Output) %}
-        output_{{ output.ident.0 }} : OUT unsigned{{ RenderAsVhdl(output.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
+        -- Outputs
+        {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
+        output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
         {% endfor %}
         
         dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
@@ -288,16 +290,16 @@ END EU_{{ module_name }};
 ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     ATTRIBUTE KEEP : STRING;
 
-    {% for register in declarations.registers.iter().filter(|reg| reg.kind == RegisterKind::Intern) %}
-
-    signal register_{{ register.ident.0 }} : unsigned{{ RenderAsVhdl(register.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
-    attribute KEEP of register_{{ register.ident.0 }} : signal is "TRUE";
+    -- Registers
+    {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Intern) %}
+    signal register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+    attribute KEEP of register_{{ name.0 }} : signal is "TRUE";
     {% endfor %}
 
-    {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
-
-    signal bus_{{ bus.ident.0 }} : unsigned{{ RenderAsVhdl(bus.range.or(Some(BitRange::default()))) }} := (OTHERS => '0');
-    attribute KEEP of bus_{{ bus.ident.0 }} : signal is "TRUE";
+    -- Buses
+    {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
+    signal bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+    attribute KEEP of bus_{{ name.0 }} : signal is "TRUE";
     {% endfor %}
 
     -- TODO: Generate reg arrays
@@ -307,8 +309,8 @@ BEGIN
     BusMux : PROCESS (ALL) -- TODO: List deps (...)
     BEGIN
         -- Set buses to zero
-        {% for bus in declarations.buses.iter().filter(|bus| bus.kind == BusKind::Intern) %}
-        bus_{{ bus.ident.0 }} <= (OTHERS => '0');
+        {% for (name, _, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
+        bus_{{ name.0 }} <= (OTHERS => '0');
         {% endfor %}
         
         {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| !op.is_clocked()) %}
