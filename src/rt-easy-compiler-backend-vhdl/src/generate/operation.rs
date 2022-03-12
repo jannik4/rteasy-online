@@ -1,5 +1,6 @@
-use super::expression::{
-    generate_bus, generate_expression, generate_register, generate_register_array,
+use super::{
+    concat::{generate_concat_lvalue_clocked, generate_concat_lvalue_unclocked},
+    expression::{generate_bus, generate_expression, generate_register, generate_register_array},
 };
 use crate::vhdl::*;
 use compiler::mir;
@@ -21,7 +22,11 @@ fn generate_lvalue<'s>(lvalue: &mir::Lvalue<'s>, declarations: &Declarations<'s>
         mir::Lvalue::RegisterArray(reg_array) => {
             Lvalue::RegisterArray(generate_register_array(reg_array, declarations))
         }
-        mir::Lvalue::ConcatClocked(_concat) => todo!(),
-        mir::Lvalue::ConcatUnclocked(_concat) => todo!(),
+        mir::Lvalue::ConcatClocked(concat) => {
+            Lvalue::ConcatClocked(generate_concat_lvalue_clocked(concat, declarations))
+        }
+        mir::Lvalue::ConcatUnclocked(concat) => {
+            Lvalue::ConcatUnclocked(generate_concat_lvalue_unclocked(concat, declarations))
+        }
     }
 }

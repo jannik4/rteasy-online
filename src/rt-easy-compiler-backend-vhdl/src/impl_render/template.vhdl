@@ -307,29 +307,35 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     -- TODO: Generate memories
 BEGIN
     BusMux : PROCESS (ALL) -- TODO: List deps (...)
+        {% for (idx, range) in self.operations_tmp_var(false) %}
+        VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
+        {% endfor %}
     BEGIN
         -- Set buses to zero
         {% for (name, _, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
         bus_{{ name.0 }} <= (OTHERS => '0');
         {% endfor %}
         
-        {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| !op.is_clocked()) %}
+        {% for (idx, operation) in self.operations(false) %}
 
         -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
         IF c({{ idx }}) = '1' THEN
-            {{ RenderAsVhdl(operation) }}
+            {{ RenderAsVhdl((operation, idx)) }}
         END IF;
         {% endfor %}
     END PROCESS;
 
     ClockedOp : PROCESS (clock)
+        {% for (idx, range) in self.operations_tmp_var(true) %}
+        VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
+        {% endfor %}
     BEGIN
         IF rising_edge(clock) THEN
-            {% for (idx, operation) in operations.iter().enumerate().filter(|(_, op)| op.is_clocked()) %}
+            {% for (idx, operation) in self.operations(true) %}
 
             -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
             IF c({{ idx }}) = '1' THEN
-                {{ RenderAsVhdl(operation) }}
+                {{ RenderAsVhdl((operation, idx)) }}
             END IF;
             {% endfor %}
         END IF;

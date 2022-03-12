@@ -146,6 +146,15 @@ pub enum Extend {
     Sign(usize),
 }
 
+impl Extend {
+    pub fn size(&self) -> usize {
+        match *self {
+            Extend::Zero(size) => size,
+            Extend::Sign(size) => size,
+        }
+    }
+}
+
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub enum ExpressionKind<'s> {
     Atom(Atom<'s>),

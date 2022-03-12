@@ -2,12 +2,15 @@ use super::RenderAsVhdl;
 use crate::vhdl::*;
 use std::fmt::{Display, Formatter, Result};
 
-impl Display for RenderAsVhdl<&Operation<'_>> {
+impl Display for RenderAsVhdl<(&Operation<'_>, usize)> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match &self.0 {
+        let (op, idx) = self.0;
+        match op {
             Operation::Write(write) => write!(f, "{}", RenderAsVhdl(write)),
             Operation::Read(read) => write!(f, "{}", RenderAsVhdl(read)),
-            Operation::Assignment(assignment) => write!(f, "{}", RenderAsVhdl(assignment)),
+            Operation::Assignment(assignment) => {
+                write!(f, "{}", RenderAsVhdl((assignment, idx)))
+            }
         }
     }
 }
@@ -26,18 +29,61 @@ impl Display for RenderAsVhdl<&Read<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&Assignment<'_>> {
+impl Display for RenderAsVhdl<(&Assignment<'_>, usize)> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match &self.0.lhs {
-            Lvalue::Register(reg) => write!(f, "{}", RenderAsVhdl(reg))?,
-            Lvalue::Bus(bus) => write!(f, "{}", RenderAsVhdl(bus))?,
+        let (assignment, idx) = self.0;
+        match &assignment.lhs {
+            Lvalue::Register(reg) => {
+                write!(f, "{} <= {};", RenderAsVhdl(reg), RenderAsVhdl(&assignment.rhs))
+            }
+            Lvalue::Bus(bus) => {
+                write!(f, "{} <= {};", RenderAsVhdl(bus), RenderAsVhdl(&assignment.rhs))
+            }
             Lvalue::RegisterArray(_lvalue) => todo!(),
-            Lvalue::ConcatClocked(_lvalue) => todo!(),
-            Lvalue::ConcatUnclocked(_lvalue) => todo!(),
+            Lvalue::ConcatClocked(concat) => {
+                write!(f, "tmp_c_{} := {};", idx, RenderAsVhdl(&assignment.rhs))?;
+
+                let mut pos = 0;
+                for part in concat.parts.iter().rev() {
+                    let size = match part {
+                        ConcatPartLvalueClocked::Register(register, size) => {
+                            write!(f, " {}", RenderAsVhdl(register))?;
+                            size
+                        }
+                        ConcatPartLvalueClocked::RegisterArray(reg_array, size) => {
+                            write!(f, " {}", RenderAsVhdl(reg_array))?;
+                            size
+                        }
+                    };
+
+                    let range = BitRange::Downto(pos + size - 1, pos);
+                    write!(f, " <= tmp_c_{}{};", idx, RenderAsVhdl(range))?;
+
+                    pos += size;
+                }
+
+                Ok(())
+            }
+            Lvalue::ConcatUnclocked(concat) => {
+                write!(f, "tmp_c_{} := {};", idx, RenderAsVhdl(&assignment.rhs))?;
+
+                let mut pos = 0;
+                for part in concat.parts.iter().rev() {
+                    let size = match part {
+                        ConcatPartLvalueUnclocked::Bus(bus, size) => {
+                            write!(f, " {}", RenderAsVhdl(bus))?;
+                            size
+                        }
+                    };
+
+                    let range = BitRange::Downto(pos + size - 1, pos);
+                    write!(f, " <= tmp_c_{}{};", idx, RenderAsVhdl(range))?;
+
+                    pos += size;
+                }
+
+                Ok(())
+            }
         }
-
-        write!(f, " <= {};", RenderAsVhdl(&self.0.rhs))?;
-
-        Ok(())
     }
 }

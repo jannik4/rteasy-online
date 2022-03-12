@@ -35,4 +35,56 @@ fn generate_concat_part_expr<'s>(
     }
 }
 
-// TODO: ...
+pub fn generate_concat_lvalue_clocked<'s>(
+    concat: &mir::ConcatLvalueClocked<'s>,
+    declarations: &Declarations<'s>,
+) -> ConcatLvalueClocked<'s> {
+    ConcatLvalueClocked {
+        parts: concat
+            .parts
+            .iter()
+            .map(|part| generate_concat_part_lvalue_clocked(part, declarations))
+            .collect(),
+    }
+}
+
+fn generate_concat_part_lvalue_clocked<'s>(
+    part: &mir::ConcatPartLvalueClocked<'s>,
+    declarations: &Declarations<'s>,
+) -> ConcatPartLvalueClocked<'s> {
+    match part {
+        mir::ConcatPartLvalueClocked::Register(reg, size) => {
+            ConcatPartLvalueClocked::Register(generate_register(reg, declarations), *size)
+        }
+        mir::ConcatPartLvalueClocked::RegisterArray(reg_array, size) => {
+            ConcatPartLvalueClocked::RegisterArray(
+                generate_register_array(reg_array, declarations),
+                *size,
+            )
+        }
+    }
+}
+
+pub fn generate_concat_lvalue_unclocked<'s>(
+    concat: &mir::ConcatLvalueUnclocked<'s>,
+    declarations: &Declarations<'s>,
+) -> ConcatLvalueUnclocked<'s> {
+    ConcatLvalueUnclocked {
+        parts: concat
+            .parts
+            .iter()
+            .map(|part| generate_concat_part_lvalue_unclocked(part, declarations))
+            .collect(),
+    }
+}
+
+fn generate_concat_part_lvalue_unclocked<'s>(
+    part: &mir::ConcatPartLvalueUnclocked<'s>,
+    declarations: &Declarations<'s>,
+) -> ConcatPartLvalueUnclocked<'s> {
+    match part {
+        mir::ConcatPartLvalueUnclocked::Bus(bus, size) => {
+            ConcatPartLvalueUnclocked::Bus(generate_bus(bus, declarations), *size)
+        }
+    }
+}
