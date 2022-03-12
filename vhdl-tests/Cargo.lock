@@ -218,16 +218,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "test-vhdl"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "rt-easy-compiler",
- "rt-easy-compiler-backend-vhdl",
- "rt-easy-parser",
-]
-
-[[package]]
 name = "textwrap"
 version = "0.14.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -292,6 +282,16 @@ name = "vec1"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fc1631c774f0f9570797191e01247cbefde789eebfbf128074cb934115a6133"
+
+[[package]]
+name = "vhdl-tests"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "rt-easy-compiler",
+ "rt-easy-compiler-backend-vhdl",
+ "rt-easy-parser",
+]
 
 [[package]]
 name = "winapi"

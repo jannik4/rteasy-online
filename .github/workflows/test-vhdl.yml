@@ -20,8 +20,8 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-            test-vhdl/target
-          key: ${{ runner.os }}-cargo-${{ hashFiles('test-vhdl/Cargo.lock') }}
+            vhdl-tests/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('vhdl-tests/Cargo.lock') }}
 
       - name: Setup toolchain
         uses: actions-rs/toolchain@v1
@@ -37,4 +37,4 @@ jobs:
 
       - name: Run tests
         run: cargo run
-        working-directory: test-vhdl
+        working-directory: vhdl-tests
