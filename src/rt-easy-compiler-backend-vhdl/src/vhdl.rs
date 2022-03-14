@@ -49,7 +49,7 @@ impl<'s> Vhdl<'s> {
 pub struct Declarations<'s> {
     pub registers: Vec<(Ident<'s>, BitRange, RegisterKind)>, // (Name, Range, Kind)
     pub buses: Vec<(Ident<'s>, BitRange, BusKind)>,          // (Name, Range, Kind)
-    pub register_arrays: Vec<(Ident<'s>, BitRange, usize)>,  // (Name, Range, Len)
+    pub register_arrays: Vec<(Ident<'s>, BitRange, usize)>,  // (Name, Range, Length)
     pub memories:
         Vec<(Ident<'s>, (Ident<'s>, BitRange, RegisterKind), (Ident<'s>, BitRange, RegisterKind))>, // (Name, AR, DR)
 }

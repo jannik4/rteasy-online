@@ -49,7 +49,9 @@ impl Display for RenderAsVhdl<(&Assignment<'_>, usize)> {
             Lvalue::Bus(bus) => {
                 write!(f, "{} <= {};", RenderAsVhdl(bus), RenderAsVhdl(&assignment.rhs))
             }
-            Lvalue::RegisterArray(_lvalue) => todo!(),
+            Lvalue::RegisterArray(reg_array) => {
+                write!(f, "{} <= {};", RenderAsVhdl(reg_array), RenderAsVhdl(&assignment.rhs))
+            }
             Lvalue::ConcatClocked(concat) => {
                 write!(f, "tmp_c_{} := {};", idx, RenderAsVhdl(&assignment.rhs))?;
 

@@ -50,8 +50,14 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
                     ));
                 }
             }
-            mir::Declaration::RegisterArray(_) => {
-                todo!()
+            mir::Declaration::RegisterArray(declaration) => {
+                for register_array in &declaration.register_arrays {
+                    declarations.register_arrays.push((
+                        register_array.ident.node,
+                        generate_bit_range(register_array.range.map(|s| s.node)),
+                        register_array.len,
+                    ));
+                }
             }
         }
     }

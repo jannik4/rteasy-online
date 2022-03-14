@@ -1,6 +1,8 @@
 declare output OUTPUT(7:0)
 declare register REG(3:0)
 declare bus BUS(3:0)
+declare register array ARR(1:0)[2]
 
 OUTPUT <- "11"."00"."11"."00", REG <- "1010";
-OUTPUT <- REG(1:0)."01".BUS, BUS <- "0011";
+OUTPUT <- REG(1:0)."01".BUS, BUS <- "0011", ARR[1] <- "11";
+OUTPUT <- BUS.ARR[1]."0".OUTPUT(0);

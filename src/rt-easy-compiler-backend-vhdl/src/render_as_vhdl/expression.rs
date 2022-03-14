@@ -82,8 +82,8 @@ impl Display for RenderAsVhdl<&Bus<'_>> {
 }
 
 impl Display for RenderAsVhdl<&RegisterArray<'_>> {
-    fn fmt(&self, _f: &mut Formatter<'_>) -> Result {
-        todo!()
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        write!(f, "register_array_{}(to_integer({}))", self.0.ident.0, RenderAsVhdl(&*self.0.index))
     }
 }
 

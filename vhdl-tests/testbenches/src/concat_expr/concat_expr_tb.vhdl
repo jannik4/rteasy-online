@@ -9,7 +9,7 @@ ARCHITECTURE tb OF concat_expr_tb IS
     SIGNAL clock_p : STD_LOGIC := '0';
     SIGNAL clock_n : STD_LOGIC;
     SIGNAL reset : STD_LOGIC := '0';
-    SIGNAL c : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    SIGNAL c : STD_LOGIC_VECTOR(5 DOWNTO 0);
     SIGNAL k : STD_LOGIC_VECTOR(0 DOWNTO 0);
 
     SIGNAL output_OUTPUT : unsigned(7 DOWNTO 0);
@@ -59,6 +59,8 @@ BEGIN
         ASSERT output_OUTPUT = "11001100";
         advance_clock;
         ASSERT output_OUTPUT = "10010011";
+        advance_clock;
+        ASSERT output_OUTPUT = "00001101";
 
         -- Finished
         REPORT "Testbench finished";

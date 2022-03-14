@@ -282,12 +282,19 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
         ATTRIBUTE KEEP OF bus_{{ name.0 }} : SIGNAL IS "TRUE";
     {% endfor %}
 
-    -- TODO: Generate reg arrays
+    -- Register arrays
+    {% for (name, range, length) in &declarations.register_arrays %}
+        TYPE type_of_register_array_{{ name.0 }} IS ARRAY(0 TO {{ length - 1 }}) OF unsigned{{ RenderAsVhdl(*range) }};
+        SIGNAL register_array_{{ name.0 }} : type_of_register_array_{{ name.0 }} := (
+            OTHERS => (OTHERS => '0')
+        );
+        ATTRIBUTE KEEP OF register_array_{{ name.0 }} : SIGNAL IS "TRUE";
+    {% endfor %}
 
     -- Memories
     {% for (name, ar, dr) in &declarations.memories %}
-        TYPE TYPE_OF_MEMORY_{{ name.0 }} IS ARRAY({{ 2usize.pow(ar.1.size() as u32) - 1 }} DOWNTO 0) OF unsigned{{ RenderAsVhdl(dr.1) }};
-        SIGNAL memory_{{ name.0 }} : TYPE_OF_MEMORY_{{ name.0 }} := (
+        TYPE type_of_memory_{{ name.0 }} IS ARRAY(0 TO {{ 2usize.pow(ar.1.size() as u32) - 1 }}) OF unsigned{{ RenderAsVhdl(dr.1) }};
+        SIGNAL memory_{{ name.0 }} : type_of_memory_{{ name.0 }} := (
             -- Initialize memory here
             -- 0 => "01010101",
             -- 1 => "01010101",
