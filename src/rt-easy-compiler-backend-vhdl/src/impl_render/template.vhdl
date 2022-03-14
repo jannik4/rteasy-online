@@ -159,7 +159,7 @@ END CU_{{ module_name }};
 ARCHITECTURE Behavioral OF CU_{{ module_name }} IS
     TYPE state_type IS (
         {% for (idx, statement) in statements.iter().enumerate() %}
-        {{ statement.label }}{% if idx != statements.len() - 1 %},{% endif %}
+            {{ statement.label }}{% if idx != statements.len() - 1 %},{% endif %}
         {% endfor %}
     );
     SIGNAL state, next_state : state_type := {{ statements[0].label }};
@@ -180,47 +180,23 @@ BEGIN
         CASE state IS
             {% for statement in statements.iter() %}
 
-            WHEN {{ &statement.label }} =>
-                {% match &statement.next_state_logic %}
-                {% where NextStateLogic::Label(label) %}
-                next_state <= {{ label }};
-                {% endwhere %}
-                {% where NextStateLogic::Cond { conditional, default } %}
-                {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
-                    {% match &logic %}
-                    {% where NextStateLogic::Label(label) %}
-                    next_state <= {{ label }};
-                    {% endwhere %}
-                    {% where NextStateLogic::Cond { conditional, default } %}
-                    {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
-                        next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
-                    {% endfor %}
-                    ELSE
-                        next_state <= {{ default.as_label().unwrap() /* TODO: ... */ }};
-                    END IF;
-                    {% endwhere %}
-                    {% endmatch %}
-                {% endfor %}
-                ELSE
-                    {% match &**default %}
-                    {% where NextStateLogic::Label(label) %}
-                    next_state <= {{ label }};
-                    {% endwhere %}
-                    {% where NextStateLogic::Cond { conditional, default } %}
-                    {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
-                    {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
-                        next_state <= {{ logic.as_label().unwrap() /* TODO: ... */ }};
-                    {% endfor %}
-                    ELSE
-                        next_state <= {{ default.as_label().unwrap() /* TODO: ... */ }};
-                    END IF;
-                    {% endwhere %}
-                    {% endmatch %}
-                END IF;
-                {% endwhere %}
-                {% endmatch %}
+                WHEN {{ &statement.label }} =>
+                    {% macro render_logic |logic: &NextStateLogic| %}
+                        {% match logic %}
+                            {% where NextStateLogic::Label(label) %}
+                                next_state <= {{ label }};
+                            {% endwhere %}
+                            {% where NextStateLogic::Cond { conditional, default } %}
+                                {% for (idx, (criteria_expr, logic)) in conditional.iter().enumerate() %}
+                                {{ if idx == 0 { "IF" } else { "ELSIF" } }} {{ RenderAsVhdl(criteria_expr) }} THEN
+                                    {% call render_logic(logic) %}
+                                {% endfor %}
+                                ELSE
+                                    {% call render_logic(&**default) %}
+                                END IF;
+                            {% endwhere %}
+                        {% endmatch %}
+                    {% endmacro %}{% call render_logic(&statement.next_state_logic) %}
             {% endfor %}
 
             -- reset on error
@@ -235,21 +211,21 @@ BEGIN
         CASE state IS
             {% for statement in statements.iter() %}
 
-            WHEN {{ statement.label }} =>
-                {% if statement.operations.is_empty() %}
-                NULL;
-                {% else %}
-                {% for (operation_id, criteria_expr) in statement.operations.iter() %}
-                {% match criteria_expr %}
-                    {% where Some(criteria_expr) %}
-                        c({{ operation_id.0 }}) <= to_std_logic({{ RenderAsVhdl(criteria_expr) }});
-                    {% endwhere %}
-                    {% where None %}
-                        c({{ operation_id.0 }}) <= '1';
-                    {% endwhere %}
-                {% endmatch %}
-                {% endfor %}
-                {% endif %}
+                WHEN {{ statement.label }} =>
+                    {% if statement.operations.is_empty() %}
+                        NULL;
+                    {% else %}
+                        {% for (operation_id, criteria_expr) in statement.operations.iter() %}
+                            {% match criteria_expr %}
+                                {% where Some(criteria_expr) %}
+                                    c({{ operation_id.0 }}) <= to_std_logic({{ RenderAsVhdl(criteria_expr) }});
+                                {% endwhere %}
+                                {% where None %}
+                                    c({{ operation_id.0 }}) <= '1';
+                                {% endwhere %}
+                            {% endmatch %}
+                        {% endfor %}
+                    {% endif %}
             {% endfor %}
 
             WHEN OTHERS =>
@@ -273,12 +249,12 @@ ENTITY EU_{{ module_name }} IS
 
         -- Inputs
         {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Input) %}
-        input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(*range) }};
+            input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(*range) }};
         {% endfor %}
 
         -- Outputs
         {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
-        output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+            output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
         {% endfor %}
         
         dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
@@ -292,14 +268,14 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     -- Registers
     {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Intern) %}
-    signal register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-    attribute KEEP of register_{{ name.0 }} : signal is "TRUE";
+        signal register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        attribute KEEP of register_{{ name.0 }} : signal is "TRUE";
     {% endfor %}
 
     -- Buses
     {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
-    signal bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-    attribute KEEP of bus_{{ name.0 }} : signal is "TRUE";
+        signal bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        attribute KEEP of bus_{{ name.0 }} : signal is "TRUE";
     {% endfor %}
 
     -- TODO: Generate reg arrays
@@ -308,35 +284,35 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 BEGIN
     BusMux : PROCESS (ALL) -- TODO: List deps (...)
         {% for (idx, range) in self.operations_tmp_var(false) %}
-        VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
+            VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
         {% endfor %}
     BEGIN
         -- Set buses to zero
         {% for (name, _, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
-        bus_{{ name.0 }} <= (OTHERS => '0');
+            bus_{{ name.0 }} <= (OTHERS => '0');
         {% endfor %}
         
         {% for (idx, operation) in self.operations(false) %}
-
-        -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
-        IF c({{ idx }}) = '1' THEN
-            {{ RenderAsVhdl((operation, idx)) }}
-        END IF;
-        {% endfor %}
-    END PROCESS;
-
-    ClockedOp : PROCESS (clock)
-        {% for (idx, range) in self.operations_tmp_var(true) %}
-        VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
-        {% endfor %}
-    BEGIN
-        IF rising_edge(clock) THEN
-            {% for (idx, operation) in self.operations(true) %}
 
             -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
             IF c({{ idx }}) = '1' THEN
                 {{ RenderAsVhdl((operation, idx)) }}
             END IF;
+        {% endfor %}
+    END PROCESS;
+
+    ClockedOp : PROCESS (clock)
+        {% for (idx, range) in self.operations_tmp_var(true) %}
+            VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
+        {% endfor %}
+    BEGIN
+        IF rising_edge(clock) THEN
+            {% for (idx, operation) in self.operations(true) %}
+
+                -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
+                IF c({{ idx }}) = '1' THEN
+                    {{ RenderAsVhdl((operation, idx)) }}
+                END IF;
             {% endfor %}
         END IF;
     END PROCESS;
@@ -344,8 +320,8 @@ BEGIN
     ConditionGen : PROCESS (ALL) -- TODO: List deps (...)
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
-        -- criterion {{ idx }}: {{ RenderAsRt(expression) }}
-        k({{ idx }}) <= to_std_logic({{ RenderAsVhdl(expression) }} = "1");
+            -- criterion {{ idx }}: {{ RenderAsRt(expression) }}
+            k({{ idx }}) <= to_std_logic({{ RenderAsVhdl(expression) }} = "1");
         {% endfor %}
     END PROCESS;
 END Behavioral;

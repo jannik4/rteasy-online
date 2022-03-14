@@ -20,6 +20,7 @@ pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
 }
 
 #[derive(Debug, Template)]
+#[dedent]
 #[template = "./impl_render/template.vhdl"]
 struct VhdlTemplate<'a> {
     module_name: &'a str,
