@@ -39,14 +39,18 @@ END PACKAGE HELPER_{{ module_name }};
 PACKAGE BODY HELPER_{{ module_name }} IS
     -- helper
     FUNCTION to_std_logic(x : BOOLEAN) RETURN STD_LOGIC IS BEGIN
-        IF x THEN RETURN '1';
-        ELSE      RETURN '0';
+        IF x THEN
+            RETURN '1';
+        ELSE
+            RETURN '0';
         END IF;
     END FUNCTION;
 
     FUNCTION to_unsigned(x : BOOLEAN) RETURN unsigned IS BEGIN
-        IF x THEN RETURN to_unsigned(1, 1);
-        ELSE      RETURN to_unsigned(0, 1);
+        IF x THEN
+            RETURN to_unsigned(1, 1);
+        ELSE
+            RETURN to_unsigned(0, 1);
         END IF;
     END FUNCTION;
 
@@ -256,7 +260,7 @@ ENTITY EU_{{ module_name }} IS
         {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
             output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
         {% endfor %}
-        
+
         dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
@@ -268,14 +272,14 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     -- Registers
     {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Intern) %}
-        signal register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-        attribute KEEP of register_{{ name.0 }} : signal is "TRUE";
+        SIGNAL register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        ATTRIBUTE KEEP OF register_{{ name.0 }} : SIGNAL IS "TRUE";
     {% endfor %}
 
     -- Buses
     {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
-        signal bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-        attribute KEEP of bus_{{ name.0 }} : signal is "TRUE";
+        SIGNAL bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        ATTRIBUTE KEEP OF bus_{{ name.0 }} : SIGNAL IS "TRUE";
     {% endfor %}
 
     -- TODO: Generate reg arrays
@@ -291,7 +295,7 @@ BEGIN
         {% for (name, _, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
             bus_{{ name.0 }} <= (OTHERS => '0');
         {% endfor %}
-        
+
         {% for (idx, operation) in self.operations(false) %}
 
             -- control signal {{ idx }}: {{ RenderAsRt(operation) }}
