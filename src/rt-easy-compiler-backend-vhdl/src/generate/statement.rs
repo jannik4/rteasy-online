@@ -1,4 +1,7 @@
-use super::{expression::generate_expression, operation::generate_assignment};
+use super::{
+    expression::generate_expression,
+    operation::{generate_assignment, generate_read, generate_write},
+};
 use crate::vhdl::*;
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
@@ -180,8 +183,51 @@ fn generate_statement_<'s>(
 
             // First, map the operation, insert it into the global VHDL operations set and get the id.
             // Then upsert the operation id into the statement operations and update the criteria.
-            mir::Operation::Write(_) => todo!(),
-            mir::Operation::Read(_) => todo!(),
+            // TODO: Deduplicate code
+            mir::Operation::Write(mir_write) => {
+                let operation = Operation::Write(generate_write(mir_write, declarations));
+                let operation_id = get_operation_id(operation);
+
+                if mir_step.criteria.is_empty() {
+                    let old = statement.operations.insert(operation_id, None);
+
+                    // If an operation has no criteria, it is always executed.
+                    // There should be no identical operation, otherwise it would possibly
+                    // be executed twice in one cycle.
+                    assert!(old.is_none());
+                } else {
+                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
+                    match statement.operations.get_mut(&operation_id) {
+                        Some(Some(criteria)) => criteria.0.push(and),
+                        Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
+                        None => {
+                            statement.operations.insert(operation_id, Some(Or(vec1![and])));
+                        }
+                    }
+                }
+            }
+            mir::Operation::Read(mir_read) => {
+                let operation = Operation::Read(generate_read(mir_read, declarations));
+                let operation_id = get_operation_id(operation);
+
+                if mir_step.criteria.is_empty() {
+                    let old = statement.operations.insert(operation_id, None);
+
+                    // If an operation has no criteria, it is always executed.
+                    // There should be no identical operation, otherwise it would possibly
+                    // be executed twice in one cycle.
+                    assert!(old.is_none());
+                } else {
+                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
+                    match statement.operations.get_mut(&operation_id) {
+                        Some(Some(criteria)) => criteria.0.push(and),
+                        Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
+                        None => {
+                            statement.operations.insert(operation_id, Some(Or(vec1![and])));
+                        }
+                    }
+                }
+            }
             mir::Operation::Assignment(mir_assignment) => {
                 let operation =
                     Operation::Assignment(generate_assignment(mir_assignment, declarations));

@@ -5,6 +5,30 @@ use super::{
 use crate::vhdl::*;
 use compiler::mir;
 
+pub fn generate_read<'s>(read: &mir::Read<'s>, declarations: &Declarations<'s>) -> Read<'s> {
+    // TODO: internal error instead of unwrap?
+    let (_, (ar_name, _, ar_kind), (dr_name, _, dr_kind)) =
+        declarations.memories.iter().find(|(name, _, _)| *name == read.ident.node).unwrap();
+
+    Read {
+        memory: read.ident.node,
+        ar: Register { ident: *ar_name, range: None, kind: *ar_kind },
+        dr: Register { ident: *dr_name, range: None, kind: *dr_kind },
+    }
+}
+
+pub fn generate_write<'s>(write: &mir::Write<'s>, declarations: &Declarations<'s>) -> Write<'s> {
+    // TODO: internal error instead of unwrap?
+    let (_, (ar_name, _, ar_kind), (dr_name, _, dr_kind)) =
+        declarations.memories.iter().find(|(name, _, _)| *name == write.ident.node).unwrap();
+
+    Write {
+        memory: write.ident.node,
+        ar: Register { ident: *ar_name, range: None, kind: *ar_kind },
+        dr: Register { ident: *dr_name, range: None, kind: *dr_kind },
+    }
+}
+
 pub fn generate_assignment<'s>(
     assignment: &mir::Assignment<'s>,
     declarations: &Declarations<'s>,

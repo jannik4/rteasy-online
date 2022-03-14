@@ -1,0 +1,13 @@
+declare output OUT(7:0)
+declare register AR(3:0)
+
+declare memory MEM(AR, OUT)
+
+OUT <- 7; write MEM;
+AR <- 5, OUT <- -1; write MEM;
+
+OUT <- 3;
+
+AR <- 1; read MEM;
+AR <- 0; read MEM;
+AR <- 5; read MEM;

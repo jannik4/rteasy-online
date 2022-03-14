@@ -29,8 +29,26 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
                     ));
                 }
             }
-            mir::Declaration::Memory(_) => {
-                todo!()
+            mir::Declaration::Memory(declaration) => {
+                for memory in &declaration.memories {
+                    // TODO: internal error instead of unwrap?
+                    let (ar_name, ar_range, ar_kind) = declarations
+                        .registers
+                        .iter()
+                        .find(|(name, _, _)| *name == memory.range.address_register.node)
+                        .unwrap();
+                    let (dr_name, dr_range, dr_kind) = declarations
+                        .registers
+                        .iter()
+                        .find(|(name, _, _)| *name == memory.range.data_register.node)
+                        .unwrap();
+
+                    declarations.memories.push((
+                        memory.ident.node,
+                        (*ar_name, *ar_range, *ar_kind),
+                        (*dr_name, *dr_range, *dr_kind),
+                    ));
+                }
             }
             mir::Declaration::RegisterArray(_) => {
                 todo!()

@@ -15,13 +15,13 @@ impl Display for RenderAsRt<&Operation<'_>> {
 
 impl Display for RenderAsRt<&Write<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "write {}", self.0.ident.0)
+        write!(f, "write {}", self.0.memory.0)
     }
 }
 
 impl Display for RenderAsRt<&Read<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "read {}", self.0.ident.0)
+        write!(f, "read {}", self.0.memory.0)
     }
 }
 

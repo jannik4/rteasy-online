@@ -50,7 +50,8 @@ pub struct Declarations<'s> {
     pub registers: Vec<(Ident<'s>, BitRange, RegisterKind)>, // (Name, Range, Kind)
     pub buses: Vec<(Ident<'s>, BitRange, BusKind)>,          // (Name, Range, Kind)
     pub register_arrays: Vec<(Ident<'s>, BitRange, usize)>,  // (Name, Range, Len)
-    pub memories: Vec<(Ident<'s>, Ident<'s>, Ident<'s>)>,    // (Name, AR, DR)
+    pub memories:
+        Vec<(Ident<'s>, (Ident<'s>, BitRange, RegisterKind), (Ident<'s>, BitRange, RegisterKind))>, // (Name, AR, DR)
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -234,14 +235,16 @@ impl Operation<'_> {
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Write<'s> {
-    pub ident: Ident<'s>,
-    // TODO: ar, dr
+    pub memory: Ident<'s>,
+    pub ar: Register<'s>,
+    pub dr: Register<'s>,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Read<'s> {
-    pub ident: Ident<'s>,
-    // TODO: ar, dr
+    pub memory: Ident<'s>,
+    pub ar: Register<'s>,
+    pub dr: Register<'s>,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -299,4 +302,12 @@ pub enum ConcatPartExpr<'s> {
 pub enum BitRange {
     Downto(usize, usize),
     To(usize, usize),
+}
+
+impl BitRange {
+    pub fn size(&self) -> usize {
+        match *self {
+            BitRange::Downto(a, b) | BitRange::To(b, a) => a - b + 1,
+        }
+    }
 }

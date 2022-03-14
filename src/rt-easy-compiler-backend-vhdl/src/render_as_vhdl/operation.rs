@@ -17,15 +17,25 @@ impl Display for RenderAsVhdl<(&Operation<'_>, usize)> {
 
 impl Display for RenderAsVhdl<&Write<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        // TODO: get AR/DR from declarations ...
-        write!(f, "VHDL_write {};", self.0.ident.0)
+        write!(
+            f,
+            "memory_{}(to_integer({})) <= {};",
+            self.0.memory.0,
+            RenderAsVhdl(&self.0.ar),
+            RenderAsVhdl(&self.0.dr),
+        )
     }
 }
 
 impl Display for RenderAsVhdl<&Read<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        // TODO: get AR/DR from declarations ...
-        write!(f, "VHDL_read {};", self.0.ident.0)
+        write!(
+            f,
+            "{} <= memory_{}(to_integer({}));",
+            RenderAsVhdl(&self.0.dr),
+            self.0.memory.0,
+            RenderAsVhdl(&self.0.ar),
+        )
     }
 }
 
