@@ -10,11 +10,11 @@ For each test `X` the following steps are performed:
 
 1. Parse, compile and generate VHDL code for `src/X/X.rt`. The generated VHDL code is saved in `target/X/X.vhdl`.
 2. Analyze
-   - `ghdl -a --std=08 X.vhdl`
-   - `ghdl -a --std=08 X_tb.vhdl`
+   - `ghdl -a --std=93 X.vhdl`
+   - `ghdl -a --std=93 X_tb.vhdl`
 3. Elaborate
-   - `ghdl -e --std=08 X_tb`
+   - `ghdl -e --std=93 X_tb`
 4. Run
-   - `ghdl -r --std=08 X_tb --assert-level=error --wave=X.ghw`
+   - `ghdl -r --std=93 X_tb --assert-level=error --wave=X.ghw`
 
 After execution, the generated VHDL code can be viewed in `target/X/X.vhdl` and the waveform in `target/X/X.ghw`.

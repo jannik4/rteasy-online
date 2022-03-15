@@ -7,7 +7,7 @@ use std::{
     time::Instant,
 };
 
-const VHDL_STANDARD: &str = "08";
+const VHDL_STANDARD: &str = "93";
 
 fn main() {
     let start = Instant::now();
