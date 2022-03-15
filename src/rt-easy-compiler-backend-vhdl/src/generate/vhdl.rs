@@ -1,3 +1,5 @@
+use std::ops::RangeBounds;
+
 use super::{
     declarations::generate_declarations,
     statement::{gen_to_std, generate_statement, GenNextStateLogic},
@@ -18,6 +20,7 @@ pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
     };
 
     // Generate statements
+    let label_goto_prefix = calc_label_goto_prefix(&mir);
     let mut fix_labels_list = Vec::new();
     for (idx, mir_statement) in mir.statements.iter().enumerate() {
         let fix_labels = generate_statement(
@@ -25,7 +28,7 @@ pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
             mir_statement,
             mir.statements.get(idx + 1),
             &mut vhdl,
-            "_GOTO_", // TODO: Make sure is not in any label, otherwise inc "_"
+            &label_goto_prefix,
         );
         if let Some(fix_labels) = fix_labels {
             fix_labels_list.push(fix_labels);
@@ -63,4 +66,23 @@ fn fix_labels(logic: &mut NextStateLogic, fix_label: &Label, fix: &GenNextStateL
             fix_labels(&mut **default, fix_label, fix);
         }
     }
+}
+
+fn calc_label_goto_prefix(mir: &mir::Mir<'_>) -> String {
+    let mut prefix = "_GOTO_".to_string();
+
+    loop {
+        let any_label_contains_prefix = mir
+            .statements
+            .iter()
+            .filter_map(|statement| statement.label.map(|s| s.node))
+            .any(|label| label.0.contains(&prefix));
+        if any_label_contains_prefix {
+            prefix += "_";
+        } else {
+            break;
+        }
+    }
+
+    return prefix;
 }
