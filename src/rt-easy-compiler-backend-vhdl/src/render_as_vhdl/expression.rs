@@ -61,12 +61,7 @@ impl Display for RenderAsVhdl<&UnaryTerm<'_>> {
 
 impl Display for RenderAsVhdl<&Register<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        let prefix = match self.0.kind {
-            RegisterKind::Intern => "register",
-            RegisterKind::Output => "output",
-        };
-
-        write!(f, "{}_{}{}", prefix, self.0.ident.0, RenderAsVhdl(self.0.range))
+        write!(f, "register_{}{}", self.0.ident.0, RenderAsVhdl(self.0.range))
     }
 }
 

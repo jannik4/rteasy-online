@@ -271,7 +271,7 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     ATTRIBUTE KEEP : STRING;
 
     -- Registers
-    {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Intern) %}
+    {% for (name, range, _) in declarations.registers.iter() %}
         SIGNAL register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
         ATTRIBUTE KEEP OF register_{{ name.0 }} : SIGNAL IS "TRUE";
     {% endfor %}
@@ -304,6 +304,11 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     {% endfor %}
 BEGIN
     BusMux : PROCESS (ALL) -- TODO: List deps (...)
+    -- Map registers to output
+    {% for (name, _, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
+        output_{{ name.0 }} <= register_{{ name.0 }};
+    {% endfor %}
+
     -- Unclocked operations
         {% for (idx, range) in self.operations_tmp_var(false) %}
             VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
