@@ -249,19 +249,17 @@ ENTITY EU_{{ module_name }} IS
     PORT (
         clock : IN STD_LOGIC;
         c : IN STD_LOGIC_VECTOR({{ operations.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
-        k : OUT STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0);
+        k : OUT STD_LOGIC_VECTOR({{ criteria.len().checked_sub(1).unwrap_or(0) }} DOWNTO 0){% if self.any_port() %};{% endif %}
 
         -- Inputs
-        {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Input) %}
-            input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(*range) }};
+        {% for (name, range, is_last) in self.ports_input() %}
+            input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(range) }}{% if !is_last %};{% endif %}
         {% endfor %}
 
         -- Outputs
-        {% for (name, range, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
-            output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        {% for (name, range, is_last) in self.ports_output() %}
+            output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(range) }} := (OTHERS => '0'){% if !is_last %};{% endif %}
         {% endfor %}
-
-        dummy : OUT unsigned(0 DOWNTO 0){# TODO: dummy to bypass trailing semicolon #}
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
     ATTRIBUTE KEEP_HIERARCHY OF EU_{{ module_name }} : ENTITY IS "YES";

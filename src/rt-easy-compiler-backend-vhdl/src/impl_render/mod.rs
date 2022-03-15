@@ -1,8 +1,8 @@
 mod sensitivity_list;
 
 use crate::vhdl::{
-    BitRange, BusKind, Declarations, Expression, Lvalue, NextStateLogic, Operation, RegisterKind,
-    Statement, Vhdl,
+    BitRange, BusKind, Declarations, Expression, Ident, Lvalue, NextStateLogic, Operation,
+    RegisterKind, Statement, Vhdl,
 };
 use crate::{render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;
@@ -35,6 +35,43 @@ struct VhdlTemplate<'a> {
 }
 
 impl<'a> VhdlTemplate<'a> {
+    fn any_port(&self) -> bool {
+        self.declarations.buses.iter().any(|(_, _, kind)| *kind == BusKind::Input)
+            || self.declarations.registers.iter().any(|(_, _, kind)| *kind == RegisterKind::Output)
+    }
+
+    fn ports_input(&self) -> impl Iterator<Item = (Ident<'a>, BitRange, bool)> + '_ {
+        let any_output =
+            self.declarations.registers.iter().any(|(_, _, kind)| *kind == RegisterKind::Output);
+        let inputs = self
+            .declarations
+            .buses
+            .iter()
+            .filter(|(_, _, kind)| *kind == BusKind::Input)
+            .collect::<Vec<_>>();
+        let len = inputs.len();
+
+        inputs.into_iter().enumerate().map(move |(idx, (name, range, _))| {
+            let is_last = !any_output && idx == len - 1;
+            (*name, *range, is_last)
+        })
+    }
+
+    fn ports_output(&self) -> impl Iterator<Item = (Ident<'a>, BitRange, bool)> + '_ {
+        let outputs = self
+            .declarations
+            .registers
+            .iter()
+            .filter(|(_, _, kind)| *kind == RegisterKind::Output)
+            .collect::<Vec<_>>();
+        let len = outputs.len();
+
+        outputs.into_iter().enumerate().map(move |(idx, (name, range, _))| {
+            let is_last = idx == len - 1;
+            (*name, *range, is_last)
+        })
+    }
+
     fn operations(&self, clocked: bool) -> impl Iterator<Item = (usize, &Operation<'a>)> + '_ {
         self.operations.iter().enumerate().filter(move |(_, op)| op.is_clocked() == clocked)
     }
