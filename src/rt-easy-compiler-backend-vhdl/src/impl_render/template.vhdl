@@ -304,6 +304,7 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
     {% endfor %}
 BEGIN
     BusMux : PROCESS (ALL) -- TODO: List deps (...)
+    -- Unclocked operations
         {% for (idx, range) in self.operations_tmp_var(false) %}
             VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
         {% endfor %}
@@ -322,6 +323,7 @@ BEGIN
         {% endfor %}
     END PROCESS;
 
+    -- Clocked operations
     ClockedOp : PROCESS (clock)
         {% for (idx, range) in self.operations_tmp_var(true) %}
             VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
@@ -339,6 +341,7 @@ BEGIN
     END PROCESS;
     
     ConditionGen : PROCESS (ALL) -- TODO: List deps (...)
+    -- Generate criteria
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
             -- criterion {{ idx }}: {{ RenderAsRt(expression) }}
