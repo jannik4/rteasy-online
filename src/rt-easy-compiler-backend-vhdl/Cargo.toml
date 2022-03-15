@@ -10,7 +10,7 @@ publish = false
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
 compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
 
-temply = { git = "https://github.com/jannik4/temply", rev = "2ae66652063bdb597c43ca070c2fea77030e83d7" } # TODO: temply = "0.2.0"
+temply = { git = "https://github.com/jannik4/temply", rev = "6f2139416487b4a729a3176e221442142532e718" } # TODO: temply = "0.2.0"
 indexmap = "1.8.0"
 vec1 = "1.8.0"
 

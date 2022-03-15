@@ -479,7 +479,7 @@ dependencies = [
 [[package]]
 name = "temply"
 version = "0.1.0"
-source = "git+https://github.com/jannik4/temply?rev=2ae66652063bdb597c43ca070c2fea77030e83d7#2ae66652063bdb597c43ca070c2fea77030e83d7"
+source = "git+https://github.com/jannik4/temply?rev=6f2139416487b4a729a3176e221442142532e718#6f2139416487b4a729a3176e221442142532e718"
 dependencies = [
  "temply-derive",
 ]
@@ -487,7 +487,7 @@ dependencies = [
 [[package]]
 name = "temply-derive"
 version = "0.1.0"
-source = "git+https://github.com/jannik4/temply?rev=2ae66652063bdb597c43ca070c2fea77030e83d7#2ae66652063bdb597c43ca070c2fea77030e83d7"
+source = "git+https://github.com/jannik4/temply?rev=6f2139416487b4a729a3176e221442142532e718#6f2139416487b4a729a3176e221442142532e718"
 dependencies = [
  "proc-macro2",
  "quote",
