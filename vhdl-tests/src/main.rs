@@ -4,11 +4,13 @@ use std::{
     env, fs,
     path::PathBuf,
     process::{self, Command},
+    time::Instant,
 };
 
 const VHDL_STANDARD: &str = "08";
 
 fn main() {
+    let start = Instant::now();
     let test_results = match run() {
         Ok(test_results) => test_results,
         Err(e) => {
@@ -16,6 +18,7 @@ fn main() {
             process::exit(1);
         }
     };
+    let elapsed = start.elapsed();
 
     let mut passed = 0;
     let mut failed = Vec::new();
@@ -27,7 +30,12 @@ fn main() {
     }
 
     if failed.len() == 0 {
-        println!("PASSED\n\n{} passed; {} failed", passed, failed.len());
+        println!(
+            "PASSED (in {:.3}s)\n\n{} passed; {} failed",
+            elapsed.as_secs_f32(),
+            passed,
+            failed.len()
+        );
     } else {
         for (tb, err) in &failed {
             eprintln!("Test {} failed\n\n{:?}", tb.name, err);
