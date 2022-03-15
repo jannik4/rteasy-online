@@ -1,9 +1,12 @@
+mod sensitivity_list;
+
 use crate::vhdl::{
     BitRange, BusKind, Declarations, Expression, Lvalue, NextStateLogic, Operation, RegisterKind,
     Statement, Vhdl,
 };
 use crate::{render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;
+use std::fmt::Write;
 use temply::Template;
 
 pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
@@ -52,5 +55,48 @@ impl<'a> VhdlTemplate<'a> {
                 None
             }
         })
+    }
+
+    fn sensitivity_list_bus_mux(&self) -> String {
+        let expressions = self.operations.iter().filter_map(|op| match op {
+            Operation::Write(_) => None,
+            Operation::Read(_) => None,
+            Operation::Assignment(assignment) => {
+                if op.is_clocked() {
+                    None
+                } else {
+                    Some(&assignment.rhs)
+                }
+            }
+        });
+        let items = sensitivity_list::build(expressions);
+
+        let mut buffer = "(c".to_string();
+        for item in items {
+            write!(&mut buffer, ", {}", RenderAsVhdl(&item)).unwrap();
+        }
+        buffer += ")";
+
+        buffer
+    }
+
+    fn sensitivity_list_criteria_gen(&self) -> String {
+        let expressions = self.criteria.iter();
+        let mut items = sensitivity_list::build(expressions).into_iter();
+
+        match items.next() {
+            Some(item) => {
+                let mut buffer = "(".to_string();
+                write!(&mut buffer, "{}", RenderAsVhdl(&item)).unwrap();
+                for item in items {
+                    write!(&mut buffer, ", {}", RenderAsVhdl(&item)).unwrap();
+                }
+                buffer += ")";
+                buffer
+            }
+            None => "(c) -- c is used here because vhdl simulators would otherwise \
+                get stuck at an empty sensitivity list"
+                .to_string(),
+        }
     }
 }

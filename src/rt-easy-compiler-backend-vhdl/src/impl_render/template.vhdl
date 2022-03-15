@@ -303,13 +303,13 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
         ATTRIBUTE KEEP OF memory_{{ name.0 }} : SIGNAL IS "TRUE";
     {% endfor %}
 BEGIN
-    BusMux : PROCESS (ALL) -- TODO: List deps (...)
     -- Map registers to output
     {% for (name, _, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
         output_{{ name.0 }} <= register_{{ name.0 }};
     {% endfor %}
 
     -- Unclocked operations
+    BusMux : PROCESS {{ self.sensitivity_list_bus_mux() }}
         {% for (idx, range) in self.operations_tmp_var(false) %}
             VARIABLE tmp_c_{{ idx }} : unsigned{{ RenderAsVhdl(range) }};
         {% endfor %}
@@ -345,8 +345,8 @@ BEGIN
         END IF;
     END PROCESS;
     
-    ConditionGen : PROCESS (ALL) -- TODO: List deps (...)
     -- Generate criteria
+    CriteriaGen : PROCESS {{ self.sensitivity_list_criteria_gen() }}
     BEGIN
         {% for (idx, expression) in criteria.iter().enumerate() %}
             -- criterion {{ idx }}: {{ RenderAsRt(expression) }}
