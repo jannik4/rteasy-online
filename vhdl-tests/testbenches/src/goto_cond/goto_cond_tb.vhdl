@@ -2,29 +2,29 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-ENTITY goto_tb IS
-END goto_tb;
+ENTITY goto_cond_tb IS
+END goto_cond_tb;
 
-ARCHITECTURE tb OF goto_tb IS
+ARCHITECTURE tb OF goto_cond_tb IS
     SIGNAL clock_p : STD_LOGIC := '0';
     SIGNAL clock_n : STD_LOGIC;
     SIGNAL reset : STD_LOGIC := '0';
     SIGNAL c : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL k : STD_LOGIC_VECTOR(0 DOWNTO 0);
 
-    SIGNAL output_OUT : unsigned(1 DOWNTO 0);
+    SIGNAL output_OUT : unsigned(7 DOWNTO 0);
 BEGIN
     -- Clock
     clock_n <= NOT clock_p;
 
     -- Connect ports
-    MAP_EU : ENTITY work.EU_goto PORT MAP(
+    MAP_EU : ENTITY work.EU_goto_cond PORT MAP(
         clock => clock_p,
         c => c,
         k => k,
         output_OUT => output_OUT
         );
-    MAP_CU : ENTITY work.CU_goto PORT MAP(
+    MAP_CU : ENTITY work.CU_goto_cond PORT MAP(
         clock => clock_n,
         reset => reset,
         c => c,
@@ -55,11 +55,17 @@ BEGIN
         do_reset;
 
         -- Test
-        ASSERT output_OUT = 0;
-        advance_clock;
+        advance_clock(3);
         ASSERT output_OUT = 1;
-        advance_clock;
+
+        advance_clock(3);
+        ASSERT output_OUT = 2;
+
+        advance_clock(3);
         ASSERT output_OUT = 3;
+
+        advance_clock(3);
+        ASSERT output_OUT = 42;
 
         -- Finished
         REPORT "Testbench finished";
