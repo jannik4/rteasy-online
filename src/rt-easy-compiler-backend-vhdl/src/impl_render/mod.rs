@@ -9,10 +9,10 @@ use indexmap::IndexSet;
 use std::fmt::Write;
 use temply::Template;
 
-pub fn render(vhdl: &Vhdl) -> Result<String, std::fmt::Error> {
+pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, std::fmt::Error> {
     let mut buffer = String::new();
     VhdlTemplate {
-        module_name: &vhdl.module_name,
+        module_name,
         statements: &vhdl.statements,
         criteria: &vhdl.criteria,
         operations: &vhdl.operations,

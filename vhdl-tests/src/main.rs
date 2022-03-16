@@ -1,5 +1,5 @@
 use anyhow::{anyhow, bail, ensure, Context, Error, Result};
-use compiler_backend_vhdl::{Args, BackendVhdl};
+use compiler_backend_vhdl::BackendVhdl;
 use std::{
     env, fs,
     path::PathBuf,
@@ -173,17 +173,12 @@ impl Tb {
             Err(e) => bail!("{}", parser::pretty_print_error(&e, &rt_code, None, false)),
         };
 
-        let vhdl = match compiler::compile(
-            &BackendVhdl,
-            Args { module_name: self.name.clone() },
-            ast,
-            &Default::default(),
-        ) {
+        let vhdl = match compiler::compile(&BackendVhdl, (), ast, &Default::default()) {
             Ok(vhdl) => vhdl,
             Err(e) => bail!("{}", e.pretty_print(&rt_code, None, false)),
         };
 
-        fs::write(self.target_dir.join(self.vhdl_file_name()), vhdl.render()?)?;
+        fs::write(self.target_dir.join(self.vhdl_file_name()), vhdl.render(&self.name)?)?;
 
         Ok(())
     }

@@ -14,7 +14,6 @@ pub use rtcore::common::{BinaryOperator, BusKind, NumberKind, RegisterKind, Unar
 
 #[derive(Debug)]
 pub struct Vhdl {
-    pub module_name: String,
     pub statements: Vec<Statement>,
     pub criteria: IndexSet<Expression>,  // Index = CriterionId
     pub operations: IndexSet<Operation>, // Index = OperationId
@@ -27,8 +26,8 @@ impl Vhdl {
         Signals::new(self)
     }
 
-    pub fn render(&self) -> Result<String, std::fmt::Error> {
-        crate::impl_render::render(self)
+    pub fn render(&self, module_name: &str) -> Result<String, std::fmt::Error> {
+        crate::impl_render::render(self, module_name)
     }
 
     // pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Register> {

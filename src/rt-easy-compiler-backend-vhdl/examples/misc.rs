@@ -1,12 +1,12 @@
 use std::{fs, path::PathBuf};
 
-use rt_easy_compiler_backend_vhdl::{Args, BackendVhdl, Vhdl};
+use rt_easy_compiler_backend_vhdl::{BackendVhdl, Vhdl};
 
 fn main() {
     let vhdl = compile(SOURCE);
 
     let path = path("misc.vhdl");
-    fs::write(&path, vhdl.render().unwrap()).unwrap();
+    fs::write(&path, vhdl.render("misc").unwrap()).unwrap();
 
     println!("Saved vhdl code to: {:?}", path);
 }
@@ -48,12 +48,7 @@ fn compile(source: &str) -> Vhdl {
     };
 
     let backend = BackendVhdl;
-    match compiler::compile(
-        &backend,
-        Args { module_name: "misc".to_string() },
-        ast,
-        &Default::default(),
-    ) {
+    match compiler::compile(&backend, (), ast, &Default::default()) {
         Ok(vhdl) => vhdl,
         Err(e) => panic!("{}", e.pretty_print(source, None, false)),
     }

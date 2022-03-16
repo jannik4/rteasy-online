@@ -33,21 +33,16 @@ pub use self::{signals::Signals, vhdl::Vhdl};
 #[derive(Debug)]
 pub struct BackendVhdl;
 
-#[derive(Debug)]
-pub struct Args {
-    pub module_name: String,
-}
-
 impl compiler::Backend for BackendVhdl {
-    type Args = Args;
+    type Args = ();
     type Output = vhdl::Vhdl;
     type Error = std::convert::Infallible;
 
     fn generate(
         &self,
         mir: compiler::mir::Mir<'_>,
-        args: Self::Args,
+        (): Self::Args,
     ) -> Result<Self::Output, Self::Error> {
-        Ok(generate::generate(mir, args.module_name))
+        Ok(generate::generate(mir))
     }
 }
