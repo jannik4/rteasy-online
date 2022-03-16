@@ -9,7 +9,7 @@ use indexmap::IndexSet;
 use std::fmt::Write;
 use temply::Template;
 
-pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
+pub fn render(vhdl: &Vhdl) -> Result<String, std::fmt::Error> {
     let mut buffer = String::new();
     VhdlTemplate {
         module_name: &vhdl.module_name,
@@ -28,10 +28,10 @@ pub fn render(vhdl: &Vhdl<'_>) -> Result<String, std::fmt::Error> {
 struct VhdlTemplate<'a> {
     module_name: &'a str,
     statements: &'a [Statement],
-    criteria: &'a IndexSet<Expression<'a>>, // Index = CriterionId
-    operations: &'a IndexSet<Operation<'a>>, // Index = OperationId
+    criteria: &'a IndexSet<Expression>,  // Index = CriterionId
+    operations: &'a IndexSet<Operation>, // Index = OperationId
 
-    declarations: &'a Declarations<'a>,
+    declarations: &'a Declarations,
 }
 
 impl<'a> VhdlTemplate<'a> {
@@ -40,7 +40,7 @@ impl<'a> VhdlTemplate<'a> {
             || self.declarations.registers.iter().any(|(_, _, kind)| *kind == RegisterKind::Output)
     }
 
-    fn ports_input(&self) -> impl Iterator<Item = (Ident<'a>, BitRange, bool)> + '_ {
+    fn ports_input(&self) -> impl Iterator<Item = (&'a Ident, BitRange, bool)> + '_ {
         let any_output =
             self.declarations.registers.iter().any(|(_, _, kind)| *kind == RegisterKind::Output);
         let inputs = self
@@ -53,11 +53,11 @@ impl<'a> VhdlTemplate<'a> {
 
         inputs.into_iter().enumerate().map(move |(idx, (name, range, _))| {
             let is_last = !any_output && idx == len - 1;
-            (*name, *range, is_last)
+            (name, *range, is_last)
         })
     }
 
-    fn ports_output(&self) -> impl Iterator<Item = (Ident<'a>, BitRange, bool)> + '_ {
+    fn ports_output(&self) -> impl Iterator<Item = (&'a Ident, BitRange, bool)> + '_ {
         let outputs = self
             .declarations
             .registers
@@ -68,11 +68,11 @@ impl<'a> VhdlTemplate<'a> {
 
         outputs.into_iter().enumerate().map(move |(idx, (name, range, _))| {
             let is_last = idx == len - 1;
-            (*name, *range, is_last)
+            (name, *range, is_last)
         })
     }
 
-    fn operations(&self, clocked: bool) -> impl Iterator<Item = (usize, &Operation<'a>)> + '_ {
+    fn operations(&self, clocked: bool) -> impl Iterator<Item = (usize, &Operation)> + '_ {
         self.operations.iter().enumerate().filter(move |(_, op)| op.is_clocked() == clocked)
     }
 

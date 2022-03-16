@@ -253,12 +253,12 @@ ENTITY EU_{{ module_name }} IS
 
         -- Inputs
         {% for (name, range, is_last) in self.ports_input() %}
-            input_{{ name.0 }} : IN unsigned{{ RenderAsVhdl(range) }}{% if !is_last %};{% endif %}
+            input_{{ name }} : IN unsigned{{ RenderAsVhdl(range) }}{% if !is_last %};{% endif %}
         {% endfor %}
 
         -- Outputs
         {% for (name, range, is_last) in self.ports_output() %}
-            output_{{ name.0 }} : OUT unsigned{{ RenderAsVhdl(range) }} := (OTHERS => '0'){% if !is_last %};{% endif %}
+            output_{{ name }} : OUT unsigned{{ RenderAsVhdl(range) }} := (OTHERS => '0'){% if !is_last %};{% endif %}
         {% endfor %}
     );
     ATTRIBUTE KEEP_HIERARCHY : STRING;
@@ -270,40 +270,40 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
 
     -- Registers
     {% for (name, range, _) in declarations.registers.iter() %}
-        SIGNAL register_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-        ATTRIBUTE KEEP OF register_{{ name.0 }} : SIGNAL IS "TRUE";
+        SIGNAL register_{{ name }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        ATTRIBUTE KEEP OF register_{{ name }} : SIGNAL IS "TRUE";
     {% endfor %}
 
     -- Buses
     {% for (name, range, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
-        SIGNAL bus_{{ name.0 }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
-        ATTRIBUTE KEEP OF bus_{{ name.0 }} : SIGNAL IS "TRUE";
+        SIGNAL bus_{{ name }} : unsigned{{ RenderAsVhdl(*range) }} := (OTHERS => '0');
+        ATTRIBUTE KEEP OF bus_{{ name }} : SIGNAL IS "TRUE";
     {% endfor %}
 
     -- Register arrays
     {% for (name, range, length) in &declarations.register_arrays %}
-        TYPE type_of_register_array_{{ name.0 }} IS ARRAY(0 TO {{ length - 1 }}) OF unsigned{{ RenderAsVhdl(*range) }};
-        SIGNAL register_array_{{ name.0 }} : type_of_register_array_{{ name.0 }} := (
+        TYPE type_of_register_array_{{ name }} IS ARRAY(0 TO {{ length - 1 }}) OF unsigned{{ RenderAsVhdl(*range) }};
+        SIGNAL register_array_{{ name }} : type_of_register_array_{{ name }} := (
             OTHERS => (OTHERS => '0')
         );
-        ATTRIBUTE KEEP OF register_array_{{ name.0 }} : SIGNAL IS "TRUE";
+        ATTRIBUTE KEEP OF register_array_{{ name }} : SIGNAL IS "TRUE";
     {% endfor %}
 
     -- Memories
     {% for (name, ar, dr) in &declarations.memories %}
-        TYPE type_of_memory_{{ name.0 }} IS ARRAY(0 TO {{ 2usize.pow(ar.1.size() as u32) - 1 }}) OF unsigned{{ RenderAsVhdl(dr.1) }};
-        SIGNAL memory_{{ name.0 }} : type_of_memory_{{ name.0 }} := (
+        TYPE type_of_memory_{{ name }} IS ARRAY(0 TO {{ 2usize.pow(ar.1.size() as u32) - 1 }}) OF unsigned{{ RenderAsVhdl(dr.1) }};
+        SIGNAL memory_{{ name }} : type_of_memory_{{ name }} := (
             -- Initialize memory here
             -- 0 => "01010101",
             -- 1 => "01010101",
             OTHERS => (OTHERS => '0')
         );
-        ATTRIBUTE KEEP OF memory_{{ name.0 }} : SIGNAL IS "TRUE";
+        ATTRIBUTE KEEP OF memory_{{ name }} : SIGNAL IS "TRUE";
     {% endfor %}
 BEGIN
     -- Map registers to output
     {% for (name, _, _) in declarations.registers.iter().filter(|(_, _, kind)| *kind == RegisterKind::Output) %}
-        output_{{ name.0 }} <= register_{{ name.0 }};
+        output_{{ name }} <= register_{{ name }};
     {% endfor %}
 
     -- Unclocked operations
@@ -314,7 +314,7 @@ BEGIN
     BEGIN
         -- Set buses to zero
         {% for (name, _, _) in declarations.buses.iter().filter(|(_, _, kind)| *kind == BusKind::Intern) %}
-            bus_{{ name.0 }} <= (OTHERS => '0');
+            bus_{{ name }} <= (OTHERS => '0');
         {% endfor %}
 
         {% for (idx, operation) in self.operations(false) %}

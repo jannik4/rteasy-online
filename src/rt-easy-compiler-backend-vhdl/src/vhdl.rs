@@ -6,7 +6,6 @@ use vec1::Vec1;
 // Re-export
 // -------------------------------------------------------------------------------------------------
 
-pub use rtcore::ast::Ident;
 pub use rtcore::common::{BinaryOperator, BusKind, NumberKind, RegisterKind, UnaryOperator};
 
 // -------------------------------------------------------------------------------------------------
@@ -14,16 +13,16 @@ pub use rtcore::common::{BinaryOperator, BusKind, NumberKind, RegisterKind, Unar
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct Vhdl<'s> {
+pub struct Vhdl {
     pub module_name: String,
     pub statements: Vec<Statement>,
-    pub criteria: IndexSet<Expression<'s>>, // Index = CriterionId
-    pub operations: IndexSet<Operation<'s>>, // Index = OperationId
+    pub criteria: IndexSet<Expression>,  // Index = CriterionId
+    pub operations: IndexSet<Operation>, // Index = OperationId
 
-    pub declarations: Declarations<'s>,
+    pub declarations: Declarations,
 }
 
-impl<'s> Vhdl<'s> {
+impl Vhdl {
     pub fn signals(&self) -> Signals {
         Signals::new(self)
     }
@@ -32,11 +31,11 @@ impl<'s> Vhdl<'s> {
         crate::impl_render::render(self)
     }
 
-    // pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Register<'s>> {
+    // pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Register> {
     //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
     // }
     //
-    // pub fn buses(&self, kind: RegisterKind) -> impl Iterator<Item = &Register<'s>> {
+    // pub fn buses(&self, kind: RegisterKind) -> impl Iterator<Item = &Register> {
     //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
     // }
 }
@@ -46,12 +45,11 @@ impl<'s> Vhdl<'s> {
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug)]
-pub struct Declarations<'s> {
-    pub registers: Vec<(Ident<'s>, BitRange, RegisterKind)>, // (Name, Range, Kind)
-    pub buses: Vec<(Ident<'s>, BitRange, BusKind)>,          // (Name, Range, Kind)
-    pub register_arrays: Vec<(Ident<'s>, BitRange, usize)>,  // (Name, Range, Length)
-    pub memories:
-        Vec<(Ident<'s>, (Ident<'s>, BitRange, RegisterKind), (Ident<'s>, BitRange, RegisterKind))>, // (Name, AR, DR)
+pub struct Declarations {
+    pub registers: Vec<(Ident, BitRange, RegisterKind)>, // (Name, Range, Kind)
+    pub buses: Vec<(Ident, BitRange, BusKind)>,          // (Name, Range, Kind)
+    pub register_arrays: Vec<(Ident, BitRange, usize)>,  // (Name, Range, Length)
+    pub memories: Vec<(Ident, (Ident, BitRange, RegisterKind), (Ident, BitRange, RegisterKind))>, // (Name, AR, DR)
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -131,13 +129,28 @@ impl std::fmt::Display for Label {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
+pub struct Ident(pub String);
+
+impl From<compiler::mir::Ident<'_>> for Ident {
+    fn from(v: compiler::mir::Ident<'_>) -> Self {
+        Self(v.0.to_string())
+    }
+}
+
+impl std::fmt::Display for Ident {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)
+    }
+}
+
 // -------------------------------------------------------------------------------------------------
 // Expression
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Expression<'s> {
-    pub kind: ExpressionKind<'s>,
+pub struct Expression {
+    pub kind: ExpressionKind,
     pub extend_to: Extend,
 }
 
@@ -157,52 +170,52 @@ impl Extend {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ExpressionKind<'s> {
-    Atom(Atom<'s>),
-    BinaryTerm(Box<BinaryTerm<'s>>),
-    UnaryTerm(Box<UnaryTerm<'s>>),
+pub enum ExpressionKind {
+    Atom(Atom),
+    BinaryTerm(Box<BinaryTerm>),
+    UnaryTerm(Box<UnaryTerm>),
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Atom<'s> {
-    Concat(ConcatExpr<'s>),
-    Register(Register<'s>),
-    Bus(Bus<'s>),
-    RegisterArray(RegisterArray<'s>),
+pub enum Atom {
+    Concat(ConcatExpr),
+    Register(Register),
+    Bus(Bus),
+    RegisterArray(RegisterArray),
     Number(Number),
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct BinaryTerm<'s> {
-    pub lhs: Expression<'s>,
-    pub rhs: Expression<'s>,
+pub struct BinaryTerm {
+    pub lhs: Expression,
+    pub rhs: Expression,
     pub operator: BinaryOperator,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct UnaryTerm<'s> {
-    pub expression: Expression<'s>,
+pub struct UnaryTerm {
+    pub expression: Expression,
     pub operator: UnaryOperator,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Register<'s> {
-    pub ident: Ident<'s>,
+pub struct Register {
+    pub ident: Ident,
     pub range: Option<BitRange>,
     pub kind: RegisterKind,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Bus<'s> {
-    pub ident: Ident<'s>,
+pub struct Bus {
+    pub ident: Ident,
     pub range: Option<BitRange>,
     pub kind: BusKind,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct RegisterArray<'s> {
-    pub ident: Ident<'s>,
-    pub index: Box<Expression<'s>>,
+pub struct RegisterArray {
+    pub ident: Ident,
+    pub index: Box<Expression>,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
@@ -216,13 +229,13 @@ pub struct Number {
 // -------------------------------------------------------------------------------------------------
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Operation<'s> {
-    Write(Write<'s>),
-    Read(Read<'s>),
-    Assignment(Assignment<'s>),
+pub enum Operation {
+    Write(Write),
+    Read(Read),
+    Assignment(Assignment),
 }
 
-impl Operation<'_> {
+impl Operation {
     pub fn is_clocked(&self) -> bool {
         match self {
             Operation::Write(_) | Operation::Read(_) => true,
@@ -235,41 +248,41 @@ impl Operation<'_> {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Write<'s> {
-    pub memory: Ident<'s>,
-    pub ar: Register<'s>,
-    pub dr: Register<'s>,
+pub struct Write {
+    pub memory: Ident,
+    pub ar: Register,
+    pub dr: Register,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Read<'s> {
-    pub memory: Ident<'s>,
-    pub ar: Register<'s>,
-    pub dr: Register<'s>,
+pub struct Read {
+    pub memory: Ident,
+    pub ar: Register,
+    pub dr: Register,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Assignment<'s> {
-    pub lhs: Lvalue<'s>,
-    pub rhs: Expression<'s>,
+pub struct Assignment {
+    pub lhs: Lvalue,
+    pub rhs: Expression,
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Lvalue<'s> {
-    Register(Register<'s>),
-    Bus(Bus<'s>),
-    RegisterArray(RegisterArray<'s>),
-    ConcatClocked(ConcatLvalueClocked<'s>),
-    ConcatUnclocked(ConcatLvalueUnclocked<'s>),
+pub enum Lvalue {
+    Register(Register),
+    Bus(Bus),
+    RegisterArray(RegisterArray),
+    ConcatClocked(ConcatLvalueClocked),
+    ConcatUnclocked(ConcatLvalueUnclocked),
 }
 
 // -------------------------------------------------------------------------------------------------
 // Concat
 // -------------------------------------------------------------------------------------------------
 
-pub type ConcatLvalueClocked<'s> = Concat<ConcatPartLvalueClocked<'s>>;
-pub type ConcatLvalueUnclocked<'s> = Concat<ConcatPartLvalueUnclocked<'s>>;
-pub type ConcatExpr<'s> = Concat<ConcatPartExpr<'s>>;
+pub type ConcatLvalueClocked = Concat<ConcatPartLvalueClocked>;
+pub type ConcatLvalueUnclocked = Concat<ConcatPartLvalueUnclocked>;
+pub type ConcatExpr = Concat<ConcatPartExpr>;
 
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Concat<P> {
@@ -277,21 +290,21 @@ pub struct Concat<P> {
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartLvalueClocked<'s> {
-    Register(Register<'s>, usize),
-    RegisterArray(RegisterArray<'s>, usize),
+pub enum ConcatPartLvalueClocked {
+    Register(Register, usize),
+    RegisterArray(RegisterArray, usize),
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartLvalueUnclocked<'s> {
-    Bus(Bus<'s>, usize),
+pub enum ConcatPartLvalueUnclocked {
+    Bus(Bus, usize),
 }
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartExpr<'s> {
-    Register(Register<'s>),
-    Bus(Bus<'s>),
-    RegisterArray(RegisterArray<'s>),
+pub enum ConcatPartExpr {
+    Register(Register),
+    Bus(Bus),
+    RegisterArray(RegisterArray),
     Number(Number),
 }
 

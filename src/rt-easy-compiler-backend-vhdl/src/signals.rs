@@ -7,7 +7,7 @@ pub struct Signals {
 }
 
 impl Signals {
-    pub(crate) fn new(vhdl: &crate::Vhdl<'_>) -> Self {
+    pub(crate) fn new(vhdl: &crate::Vhdl) -> Self {
         Self {
             condition_signals: vhdl
                 .criteria

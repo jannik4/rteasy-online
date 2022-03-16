@@ -13,6 +13,6 @@ mod operation;
 mod statement;
 mod vhdl;
 
-pub fn generate<'s>(mir: compiler::mir::Mir<'s>, module_name: String) -> crate::vhdl::Vhdl<'s> {
+pub fn generate<'s>(mir: compiler::mir::Mir<'s>, module_name: String) -> crate::vhdl::Vhdl {
     self::vhdl::generate_vhdl(mir, module_name)
 }

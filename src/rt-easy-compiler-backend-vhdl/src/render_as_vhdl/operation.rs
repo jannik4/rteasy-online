@@ -2,7 +2,7 @@ use super::RenderAsVhdl;
 use crate::vhdl::*;
 use std::fmt::{Display, Formatter, Result};
 
-impl Display for RenderAsVhdl<(&Operation<'_>, usize)> {
+impl Display for RenderAsVhdl<(&Operation, usize)> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let (op, idx) = self.0;
         match op {
@@ -15,7 +15,7 @@ impl Display for RenderAsVhdl<(&Operation<'_>, usize)> {
     }
 }
 
-impl Display for RenderAsVhdl<&Write<'_>> {
+impl Display for RenderAsVhdl<&Write> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(
             f,
@@ -27,7 +27,7 @@ impl Display for RenderAsVhdl<&Write<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&Read<'_>> {
+impl Display for RenderAsVhdl<&Read> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(
             f,
@@ -39,7 +39,7 @@ impl Display for RenderAsVhdl<&Read<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<(&Assignment<'_>, usize)> {
+impl Display for RenderAsVhdl<(&Assignment, usize)> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let (assignment, idx) = self.0;
         match &assignment.lhs {

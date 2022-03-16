@@ -2,7 +2,7 @@ use super::RenderAsVhdl;
 use crate::vhdl::*;
 use std::fmt::{Display, Formatter, Result};
 
-impl Display for RenderAsVhdl<&Concat<ConcatPartExpr<'_>>> {
+impl Display for RenderAsVhdl<&Concat<ConcatPartExpr>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "(")?;
         let mut parts = self.0.parts.iter();
@@ -16,7 +16,7 @@ impl Display for RenderAsVhdl<&Concat<ConcatPartExpr<'_>>> {
     }
 }
 
-impl Display for RenderAsVhdl<&ConcatPartExpr<'_>> {
+impl Display for RenderAsVhdl<&ConcatPartExpr> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0 {
             ConcatPartExpr::Register(register) => write!(f, "{}", RenderAsVhdl(register)),

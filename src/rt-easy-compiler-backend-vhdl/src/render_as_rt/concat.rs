@@ -19,7 +19,7 @@ where
     }
 }
 
-impl Display for RenderAsRt<&ConcatPartLvalueClocked<'_>> {
+impl Display for RenderAsRt<&ConcatPartLvalueClocked> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         use ConcatPartLvalueClocked::*;
         match &self.0 {
@@ -29,7 +29,7 @@ impl Display for RenderAsRt<&ConcatPartLvalueClocked<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&ConcatPartLvalueUnclocked<'_>> {
+impl Display for RenderAsRt<&ConcatPartLvalueUnclocked> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         use ConcatPartLvalueUnclocked::*;
         match &self.0 {
@@ -38,7 +38,7 @@ impl Display for RenderAsRt<&ConcatPartLvalueUnclocked<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&ConcatPartExpr<'_>> {
+impl Display for RenderAsRt<&ConcatPartExpr> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         use ConcatPartExpr::*;
         match &self.0 {

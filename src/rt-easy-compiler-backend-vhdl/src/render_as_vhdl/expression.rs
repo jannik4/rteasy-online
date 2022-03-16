@@ -2,7 +2,7 @@ use super::RenderAsVhdl;
 use crate::vhdl::*;
 use std::fmt::{Display, Formatter, Result};
 
-impl Display for RenderAsVhdl<&Expression<'_>> {
+impl Display for RenderAsVhdl<&Expression> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0.extend_to {
             Extend::Zero(size) => {
@@ -15,7 +15,7 @@ impl Display for RenderAsVhdl<&Expression<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&ExpressionKind<'_>> {
+impl Display for RenderAsVhdl<&ExpressionKind> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0 {
             ExpressionKind::Atom(atom) => write!(f, "{}", RenderAsVhdl(atom)),
@@ -25,7 +25,7 @@ impl Display for RenderAsVhdl<&ExpressionKind<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&Atom<'_>> {
+impl Display for RenderAsVhdl<&Atom> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0 {
             Atom::Concat(concat) => write!(f, "{}", RenderAsVhdl(concat)),
@@ -37,7 +37,7 @@ impl Display for RenderAsVhdl<&Atom<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&BinaryTerm<'_>> {
+impl Display for RenderAsVhdl<&BinaryTerm> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(
             f,
@@ -51,7 +51,7 @@ impl Display for RenderAsVhdl<&BinaryTerm<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&UnaryTerm<'_>> {
+impl Display for RenderAsVhdl<&UnaryTerm> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{}({})", unary_operator(self.0.operator), RenderAsVhdl(&self.0.expression))?;
 
@@ -59,26 +59,26 @@ impl Display for RenderAsVhdl<&UnaryTerm<'_>> {
     }
 }
 
-impl Display for RenderAsVhdl<&Register<'_>> {
+impl Display for RenderAsVhdl<&Register> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "register_{}{}", self.0.ident.0, RenderAsVhdl(self.0.range))
+        write!(f, "register_{}{}", self.0.ident, RenderAsVhdl(self.0.range))
     }
 }
 
-impl Display for RenderAsVhdl<&Bus<'_>> {
+impl Display for RenderAsVhdl<&Bus> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let prefix = match self.0.kind {
             BusKind::Intern => "bus",
             BusKind::Input => "input",
         };
 
-        write!(f, "{}_{}{}", prefix, self.0.ident.0, RenderAsVhdl(self.0.range))
+        write!(f, "{}_{}{}", prefix, self.0.ident, RenderAsVhdl(self.0.range))
     }
 }
 
-impl Display for RenderAsVhdl<&RegisterArray<'_>> {
+impl Display for RenderAsVhdl<&RegisterArray> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "register_array_{}(to_integer({}))", self.0.ident.0, RenderAsVhdl(&*self.0.index))
+        write!(f, "register_array_{}(to_integer({}))", self.0.ident, RenderAsVhdl(&*self.0.index))
     }
 }
 

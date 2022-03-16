@@ -6,7 +6,7 @@ use crate::vhdl::*;
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
 
-pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl<'s> {
+pub fn generate_vhdl<'s>(mir: mir::Mir<'s>, module_name: String) -> Vhdl {
     // Create vhdl
     let mut vhdl = Vhdl {
         module_name,

@@ -40,7 +40,7 @@ pub struct Args {
 
 impl<'s> compiler::Backend<'s> for BackendVhdl {
     type Args = Args;
-    type Output = vhdl::Vhdl<'s>;
+    type Output = vhdl::Vhdl;
     type Error = std::convert::Infallible;
 
     fn generate(

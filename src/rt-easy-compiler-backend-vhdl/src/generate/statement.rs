@@ -12,7 +12,7 @@ pub fn generate_statement<'s>(
     idx: usize,
     mir_statement: &mir::Statement<'s>,
     next_mir_statement: Option<&mir::Statement<'s>>,
-    vhdl: &mut Vhdl<'s>,
+    vhdl: &mut Vhdl,
     label_goto_prefix: &str,
 ) -> Option<(Label, GenNextStateLogic)> {
     // ...
@@ -54,16 +54,15 @@ pub fn generate_statement<'s>(
         conditional: Vec::new(),
         default: Label(format!(
             "{}{}{}",
-            gen_statement.label.0, label_goto_prefix, gen_statement.next_state_logic.default.0
+            gen_statement.label, label_goto_prefix, gen_statement.next_state_logic.default.0
         )),
     };
     for (cond, label) in gen_statement.next_state_logic.conditional {
-        fix_labels.conditional.push((
-            cond,
-            Label(format!("{}{}{}", gen_statement.label.0, label_goto_prefix, label.0)),
-        ));
+        fix_labels
+            .conditional
+            .push((cond, Label(format!("{}{}{}", gen_statement.label, label_goto_prefix, label))));
         vhdl.statements.push(Statement {
-            label: Label(format!("{}{}{}", gen_statement.label.0, label_goto_prefix, label.0)),
+            label: Label(format!("{}{}{}", gen_statement.label, label_goto_prefix, label)),
             next_state_logic: NextStateLogic::Label(label),
             operations: gen_statement.operations.clone(),
         });
@@ -71,7 +70,7 @@ pub fn generate_statement<'s>(
     vhdl.statements.push(Statement {
         label: Label(format!(
             "{}{}{}",
-            gen_statement.label.0, label_goto_prefix, gen_statement.next_state_logic.default.0
+            gen_statement.label, label_goto_prefix, gen_statement.next_state_logic.default.0
         )),
         next_state_logic: NextStateLogic::Label(gen_statement.next_state_logic.default),
         operations: gen_statement.operations.clone(),
@@ -117,10 +116,10 @@ fn generate_statement_<'s>(
     idx: usize,
     mir_statement: &mir::Statement<'s>,
     next_mir_statement: Option<&mir::Statement<'s>>,
-    declarations: &Declarations<'s>,
+    declarations: &Declarations,
 
-    mut get_criterion_id: impl FnMut(Expression<'s>) -> CriterionId,
-    mut get_operation_id: impl FnMut(Operation<'s>) -> OperationId,
+    mut get_criterion_id: impl FnMut(Expression) -> CriterionId,
+    mut get_operation_id: impl FnMut(Operation) -> OperationId,
 ) -> GenStatement {
     // Create statement
     let mut statement = GenStatement {
@@ -324,9 +323,9 @@ impl std::ops::BitOr for NextStateLogicDeps {
     }
 }
 
-fn next_state_logic_deps<'s>(
+fn next_state_logic_deps(
     logic: &GenNextStateLogic,
-    criteria: &IndexSet<Expression<'s>>,
+    criteria: &IndexSet<Expression>,
 ) -> NextStateLogicDeps {
     let mut deps = NextStateLogicDeps::empty();
 
@@ -350,14 +349,14 @@ fn next_state_logic_deps<'s>(
     deps
 }
 
-fn deps_expr<'s>(expr: &Expression<'s>) -> NextStateLogicDeps {
+fn deps_expr(expr: &Expression) -> NextStateLogicDeps {
     match &expr.kind {
         ExpressionKind::Atom(e) => deps_atom(e),
         ExpressionKind::BinaryTerm(e) => deps_binary_term(e),
         ExpressionKind::UnaryTerm(e) => deps_unary_term(e),
     }
 }
-fn deps_atom<'s>(atom: &Atom<'s>) -> NextStateLogicDeps {
+fn deps_atom(atom: &Atom) -> NextStateLogicDeps {
     match atom {
         Atom::Concat(concat) => deps_concat(concat),
         Atom::Register(_) => NextStateLogicDeps::clocked(),
@@ -366,13 +365,13 @@ fn deps_atom<'s>(atom: &Atom<'s>) -> NextStateLogicDeps {
         Atom::Number(_) => NextStateLogicDeps::empty(),
     }
 }
-fn deps_binary_term<'s>(binary_term: &BinaryTerm<'s>) -> NextStateLogicDeps {
+fn deps_binary_term(binary_term: &BinaryTerm) -> NextStateLogicDeps {
     deps_expr(&binary_term.lhs) | deps_expr(&binary_term.rhs)
 }
-fn deps_unary_term<'s>(unary_term: &UnaryTerm<'s>) -> NextStateLogicDeps {
+fn deps_unary_term(unary_term: &UnaryTerm) -> NextStateLogicDeps {
     deps_expr(&unary_term.expression)
 }
-fn deps_concat<'s>(concat: &ConcatExpr<'s>) -> NextStateLogicDeps {
+fn deps_concat(concat: &ConcatExpr) -> NextStateLogicDeps {
     let mut deps = NextStateLogicDeps::empty();
     for part in &concat.parts {
         deps = deps

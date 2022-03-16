@@ -6,8 +6,8 @@ use compiler::mir;
 
 pub fn generate_concat_expr<'s>(
     concat: &mir::ConcatExpr<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatExpr<'s> {
+    declarations: &Declarations,
+) -> ConcatExpr {
     ConcatExpr {
         parts: concat
             .parts
@@ -19,8 +19,8 @@ pub fn generate_concat_expr<'s>(
 
 fn generate_concat_part_expr<'s>(
     part: &mir::ConcatPartExpr<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatPartExpr<'s> {
+    declarations: &Declarations,
+) -> ConcatPartExpr {
     match part {
         mir::ConcatPartExpr::Register(reg) => {
             ConcatPartExpr::Register(generate_register(reg, declarations))
@@ -37,8 +37,8 @@ fn generate_concat_part_expr<'s>(
 
 pub fn generate_concat_lvalue_clocked<'s>(
     concat: &mir::ConcatLvalueClocked<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatLvalueClocked<'s> {
+    declarations: &Declarations,
+) -> ConcatLvalueClocked {
     ConcatLvalueClocked {
         parts: concat
             .parts
@@ -50,8 +50,8 @@ pub fn generate_concat_lvalue_clocked<'s>(
 
 fn generate_concat_part_lvalue_clocked<'s>(
     part: &mir::ConcatPartLvalueClocked<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatPartLvalueClocked<'s> {
+    declarations: &Declarations,
+) -> ConcatPartLvalueClocked {
     match part {
         mir::ConcatPartLvalueClocked::Register(reg, size) => {
             ConcatPartLvalueClocked::Register(generate_register(reg, declarations), *size)
@@ -67,8 +67,8 @@ fn generate_concat_part_lvalue_clocked<'s>(
 
 pub fn generate_concat_lvalue_unclocked<'s>(
     concat: &mir::ConcatLvalueUnclocked<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatLvalueUnclocked<'s> {
+    declarations: &Declarations,
+) -> ConcatLvalueUnclocked {
     ConcatLvalueUnclocked {
         parts: concat
             .parts
@@ -80,8 +80,8 @@ pub fn generate_concat_lvalue_unclocked<'s>(
 
 fn generate_concat_part_lvalue_unclocked<'s>(
     part: &mir::ConcatPartLvalueUnclocked<'s>,
-    declarations: &Declarations<'s>,
-) -> ConcatPartLvalueUnclocked<'s> {
+    declarations: &Declarations,
+) -> ConcatPartLvalueUnclocked {
     match part {
         mir::ConcatPartLvalueUnclocked::Bus(bus, size) => {
             ConcatPartLvalueUnclocked::Bus(generate_bus(bus, declarations), *size)

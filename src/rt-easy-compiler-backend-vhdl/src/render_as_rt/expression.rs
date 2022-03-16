@@ -3,13 +3,13 @@ use crate::vhdl::*;
 use rtcore::util;
 use std::fmt::{Display, Formatter, Result};
 
-impl Display for RenderAsRt<&Expression<'_>> {
+impl Display for RenderAsRt<&Expression> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{}", RenderAsRt(&self.0.kind))
     }
 }
 
-impl Display for RenderAsRt<&ExpressionKind<'_>> {
+impl Display for RenderAsRt<&ExpressionKind> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         use ExpressionKind::*;
         match &self.0 {
@@ -20,7 +20,7 @@ impl Display for RenderAsRt<&ExpressionKind<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&Atom<'_>> {
+impl Display for RenderAsRt<&Atom> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         use Atom::*;
         match &self.0 {
@@ -33,7 +33,7 @@ impl Display for RenderAsRt<&Atom<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&BinaryTerm<'_>> {
+impl Display for RenderAsRt<&BinaryTerm> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         if util::parentheses_binary_left(
             self.0.operator.precedence(),
@@ -61,7 +61,7 @@ impl Display for RenderAsRt<&BinaryTerm<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&UnaryTerm<'_>> {
+impl Display for RenderAsRt<&UnaryTerm> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         let ws = match self.0.operator {
             UnaryOperator::Sign => "",
@@ -76,21 +76,21 @@ impl Display for RenderAsRt<&UnaryTerm<'_>> {
     }
 }
 
-impl Display for RenderAsRt<&Register<'_>> {
+impl Display for RenderAsRt<&Register> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{}{}", self.0.ident.0, RenderAsRt(self.0.range))
+        write!(f, "{}{}", self.0.ident, RenderAsRt(self.0.range))
     }
 }
 
-impl Display for RenderAsRt<&Bus<'_>> {
+impl Display for RenderAsRt<&Bus> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{}{}", self.0.ident.0, RenderAsRt(self.0.range))
+        write!(f, "{}{}", self.0.ident, RenderAsRt(self.0.range))
     }
 }
 
-impl Display for RenderAsRt<&RegisterArray<'_>> {
+impl Display for RenderAsRt<&RegisterArray> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "{}[{}]", self.0.ident.0, RenderAsRt(&*self.0.index))
+        write!(f, "{}[{}]", self.0.ident, RenderAsRt(&*self.0.index))
     }
 }
 
@@ -105,7 +105,7 @@ impl Display for RenderAsRt<&Number> {
     }
 }
 
-fn precedence(expression: &Expression<'_>) -> u32 {
+fn precedence(expression: &Expression) -> u32 {
     match &expression.kind {
         ExpressionKind::Atom(_) => u32::MAX,
         ExpressionKind::BinaryTerm(binary) => binary.operator.precedence(),

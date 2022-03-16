@@ -4,9 +4,9 @@ use compiler::mir;
 
 pub fn generate_expression<'s>(
     expression: &mir::Expression<'s>,
-    declarations: &Declarations<'s>,
+    declarations: &Declarations,
     ctx_size: usize,
-) -> Expression<'s> {
+) -> Expression {
     let (kind, extend_to) = match expression {
         mir::Expression::Atom(atom) => {
             (ExpressionKind::Atom(generate_atom(atom, declarations)), Extend::Zero(ctx_size))
@@ -41,7 +41,7 @@ pub fn generate_expression<'s>(
     Expression { kind, extend_to }
 }
 
-pub fn generate_atom<'s>(atom: &mir::Atom<'s>, declarations: &Declarations<'s>) -> Atom<'s> {
+pub fn generate_atom<'s>(atom: &mir::Atom<'s>, declarations: &Declarations) -> Atom {
     match atom {
         mir::Atom::Concat(concat) => Atom::Concat(generate_concat_expr(concat, declarations)),
         mir::Atom::Register(reg) => Atom::Register(generate_register(reg, declarations)),
@@ -53,28 +53,29 @@ pub fn generate_atom<'s>(atom: &mir::Atom<'s>, declarations: &Declarations<'s>) 
     }
 }
 
-pub fn generate_register<'s>(
-    reg: &mir::Register<'s>,
-    declarations: &Declarations<'s>,
-) -> Register<'s> {
+pub fn generate_register<'s>(reg: &mir::Register<'s>, declarations: &Declarations) -> Register {
+    let ident = reg.ident.node.into();
+
     // TODO: internal error instead of unwrap?
     let range_declaration =
-        declarations.registers.iter().find(|(name, _, _)| reg.ident.node == *name).unwrap().1;
+        declarations.registers.iter().find(|(name, _, _)| ident == *name).unwrap().1;
 
     Register {
-        ident: reg.ident.node,
+        ident,
         range: generate_bit_range(reg.range.map(|s| s.node), range_declaration),
         kind: reg.kind,
     }
 }
 
-pub fn generate_bus<'s>(bus: &mir::Bus<'s>, declarations: &Declarations<'s>) -> Bus<'s> {
+pub fn generate_bus<'s>(bus: &mir::Bus<'s>, declarations: &Declarations) -> Bus {
+    let ident = bus.ident.node.into();
+
     // TODO: internal error instead of unwrap?
     let range_declaration =
-        declarations.buses.iter().find(|(name, _, _)| bus.ident.node == *name).unwrap().1;
+        declarations.buses.iter().find(|(name, _, _)| ident == *name).unwrap().1;
 
     Bus {
-        ident: bus.ident.node,
+        ident,
         range: generate_bit_range(bus.range.map(|s| s.node), range_declaration),
         kind: bus.kind,
     }
@@ -82,8 +83,8 @@ pub fn generate_bus<'s>(bus: &mir::Bus<'s>, declarations: &Declarations<'s>) -> 
 
 pub fn generate_register_array<'s>(
     reg_array: &mir::RegisterArray<'s>,
-    declarations: &Declarations<'s>,
-) -> RegisterArray<'s> {
+    declarations: &Declarations,
+) -> RegisterArray {
     RegisterArray {
         ident: reg_array.ident.node.into(),
         index: Box::new(generate_expression(

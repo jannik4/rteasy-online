@@ -1,7 +1,7 @@
 use crate::vhdl::*;
 use compiler::mir;
 
-pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> Declarations<'s> {
+pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> Declarations {
     let mut declarations = Declarations {
         registers: Vec::new(),
         buses: Vec::new(),
@@ -14,7 +14,7 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             mir::Declaration::Register(declaration) => {
                 for register in &declaration.registers {
                     declarations.registers.push((
-                        register.ident.node,
+                        register.ident.node.into(),
                         generate_bit_range(register.range.map(|s| s.node)),
                         register.kind,
                     ));
@@ -23,7 +23,7 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             mir::Declaration::Bus(declaration) => {
                 for bus in &declaration.buses {
                     declarations.buses.push((
-                        bus.ident.node,
+                        bus.ident.node.into(),
                         generate_bit_range(bus.range.map(|s| s.node)),
                         bus.kind,
                     ));
@@ -35,25 +35,25 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
                     let (ar_name, ar_range, ar_kind) = declarations
                         .registers
                         .iter()
-                        .find(|(name, _, _)| *name == memory.range.address_register.node)
+                        .find(|(name, _, _)| *name == memory.range.address_register.node.into())
                         .unwrap();
                     let (dr_name, dr_range, dr_kind) = declarations
                         .registers
                         .iter()
-                        .find(|(name, _, _)| *name == memory.range.data_register.node)
+                        .find(|(name, _, _)| *name == memory.range.data_register.node.into())
                         .unwrap();
 
                     declarations.memories.push((
-                        memory.ident.node,
-                        (*ar_name, *ar_range, *ar_kind),
-                        (*dr_name, *dr_range, *dr_kind),
+                        memory.ident.node.into(),
+                        (ar_name.clone(), *ar_range, *ar_kind),
+                        (dr_name.clone(), *dr_range, *dr_kind),
                     ));
                 }
             }
             mir::Declaration::RegisterArray(declaration) => {
                 for register_array in &declaration.register_arrays {
                     declarations.register_arrays.push((
-                        register_array.ident.node,
+                        register_array.ident.node.into(),
                         generate_bit_range(register_array.range.map(|s| s.node)),
                         register_array.len,
                     ));

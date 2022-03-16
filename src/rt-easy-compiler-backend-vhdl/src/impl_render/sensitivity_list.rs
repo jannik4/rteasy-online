@@ -4,31 +4,31 @@ use indexmap::IndexSet;
 use std::fmt::{Display, Formatter, Result};
 
 #[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Item<'s> {
-    Register(Ident<'s>, RegisterKind),
-    Bus(Ident<'s>, BusKind),
-    RegisterArray(Ident<'s>),
+pub enum Item<'a> {
+    Register(&'a Ident, RegisterKind),
+    Bus(&'a Ident, BusKind),
+    RegisterArray(&'a Ident),
 }
 
 impl Display for RenderAsVhdl<&Item<'_>> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         match self.0 {
             Item::Register(name, _kind) => {
-                write!(f, "register_{}", name.0)
+                write!(f, "register_{}", name)
             }
             Item::Bus(name, kind) => {
                 let prefix = match kind {
                     BusKind::Intern => "bus",
                     BusKind::Input => "input",
                 };
-                write!(f, "{}_{}", prefix, name.0)
+                write!(f, "{}_{}", prefix, name)
             }
-            Item::RegisterArray(name) => write!(f, "register_array_{}", name.0),
+            Item::RegisterArray(name) => write!(f, "register_array_{}", name),
         }
     }
 }
 
-pub fn build<'s>(expressions: impl IntoIterator<Item = &'s Expression<'s>>) -> IndexSet<Item<'s>> {
+pub fn build<'a>(expressions: impl IntoIterator<Item = &'a Expression>) -> IndexSet<Item<'a>> {
     let mut items = IndexSet::new();
     for expr in expressions {
         insert_expression(expr, &mut items);
@@ -36,7 +36,7 @@ pub fn build<'s>(expressions: impl IntoIterator<Item = &'s Expression<'s>>) -> I
     items
 }
 
-fn insert_expression<'s>(expr: &Expression<'s>, items: &mut IndexSet<Item<'s>>) {
+fn insert_expression<'a>(expr: &'a Expression, items: &mut IndexSet<Item<'a>>) {
     match &expr.kind {
         ExpressionKind::Atom(Atom::Concat(concat)) => {
             for part in &concat.parts {
@@ -64,14 +64,14 @@ fn insert_expression<'s>(expr: &Expression<'s>, items: &mut IndexSet<Item<'s>>) 
     }
 }
 
-fn insert_register<'s>(reg: &Register<'s>, items: &mut IndexSet<Item<'s>>) {
-    items.insert(Item::Register(reg.ident, reg.kind));
+fn insert_register<'a>(reg: &'a Register, items: &mut IndexSet<Item<'a>>) {
+    items.insert(Item::Register(&reg.ident, reg.kind));
 }
 
-fn insert_bus<'s>(bus: &Bus<'s>, items: &mut IndexSet<Item<'s>>) {
-    items.insert(Item::Bus(bus.ident, bus.kind));
+fn insert_bus<'a>(bus: &'a Bus, items: &mut IndexSet<Item<'a>>) {
+    items.insert(Item::Bus(&bus.ident, bus.kind));
 }
 
-fn insert_register_array<'s>(reg_array: &RegisterArray<'s>, items: &mut IndexSet<Item<'s>>) {
-    items.insert(Item::RegisterArray(reg_array.ident));
+fn insert_register_array<'a>(reg_array: &'a RegisterArray, items: &mut IndexSet<Item<'a>>) {
+    items.insert(Item::RegisterArray(&reg_array.ident));
 }
