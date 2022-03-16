@@ -49,6 +49,20 @@ fn duplicate_full_range() {
 }
 
 #[test]
+fn duplicate_number_different_kind() {
+    const SOURCE: &'static str = r#"
+        declare register X(7:0)
+        X <- "1100";
+        X <- 0b1100; X <- 0B001100; X <- %0000000000000000001100;
+        X <- 12; X <- 012;
+        X <- 0xc; X <- 0X000C; X <- $00000c;
+    "#;
+
+    let vhdl = util::compile(SOURCE);
+    assert_eq!(vhdl.signals().control_signals.len(), 1);
+}
+
+#[test]
 fn different_ctx_size() {
     const SOURCE: &'static str = r#"
         declare register X(7:0)

@@ -95,7 +95,7 @@ pub fn generate_register_array<'s>(
 }
 
 pub fn generate_number<'s>(number: &mir::Number) -> Number {
-    Number { value: number.value.clone() }
+    Number { value: number.value.clone(), kind: DebugInfo(number.kind) }
 }
 
 fn generate_bit_range(

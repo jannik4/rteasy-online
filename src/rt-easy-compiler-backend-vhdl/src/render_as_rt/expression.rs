@@ -96,7 +96,12 @@ impl Display for RenderAsRt<&RegisterArray<'_>> {
 
 impl Display for RenderAsRt<&Number> {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        write!(f, "\"{}\"", self.0.value.as_bin(true))
+        match self.0.kind.0 {
+            NumberKind::BitString => write!(f, "\"{}\"", self.0.value.as_bin(true)),
+            NumberKind::Binary => write!(f, "0b{}", self.0.value.as_bin(false)),
+            NumberKind::Decimal => write!(f, "{}", self.0.value.as_dec()),
+            NumberKind::Hexadecimal => write!(f, "0x{}", self.0.value.as_hex()),
+        }
     }
 }
 

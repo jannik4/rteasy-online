@@ -7,7 +7,7 @@ use vec1::Vec1;
 // -------------------------------------------------------------------------------------------------
 
 pub use rtcore::ast::Ident;
-pub use rtcore::common::{BinaryOperator, BusKind, RegisterKind, UnaryOperator};
+pub use rtcore::common::{BinaryOperator, BusKind, NumberKind, RegisterKind, UnaryOperator};
 
 // -------------------------------------------------------------------------------------------------
 // Top
@@ -208,6 +208,7 @@ pub struct RegisterArray<'s> {
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct Number {
     pub value: rtcore::value::Value,
+    pub kind: DebugInfo<NumberKind>,
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -310,4 +311,22 @@ impl BitRange {
             BitRange::Downto(a, b) | BitRange::To(b, a) => a - b + 1,
         }
     }
+}
+
+// -------------------------------------------------------------------------------------------------
+// Debug Info
+// -------------------------------------------------------------------------------------------------
+
+/// Additional information that should not affect equality.
+#[derive(Debug, Clone, Copy)]
+pub struct DebugInfo<T>(pub T);
+
+impl<T> PartialEq for DebugInfo<T> {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+impl<T> Eq for DebugInfo<T> {}
+impl<T> std::hash::Hash for DebugInfo<T> {
+    fn hash<H: std::hash::Hasher>(&self, _state: &mut H) {}
 }
