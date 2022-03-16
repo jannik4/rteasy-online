@@ -38,14 +38,14 @@ pub struct Args {
     pub module_name: String,
 }
 
-impl<'s> compiler::Backend<'s> for BackendVhdl {
+impl compiler::Backend for BackendVhdl {
     type Args = Args;
     type Output = vhdl::Vhdl;
     type Error = std::convert::Infallible;
 
     fn generate(
         &self,
-        mir: compiler::mir::Mir<'s>,
+        mir: compiler::mir::Mir<'_>,
         args: Self::Args,
     ) -> Result<Self::Output, Self::Error> {
         Ok(generate::generate(mir, args.module_name))

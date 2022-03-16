@@ -11,12 +11,12 @@ pub mod mir;
 pub use self::error::{BackendError, CompilerError, CompilerErrorKind, Error, InternalError};
 pub use self::symbols::SymbolType;
 
-pub trait Backend<'s> {
+pub trait Backend {
     type Args;
     type Output;
     type Error: std::error::Error + Send + Sync + 'static;
 
-    fn generate(&self, mir: mir::Mir<'s>, args: Self::Args) -> Result<Self::Output, Self::Error>;
+    fn generate(&self, mir: mir::Mir<'_>, args: Self::Args) -> Result<Self::Output, Self::Error>;
 }
 
 #[derive(Debug, Default)]
@@ -25,14 +25,14 @@ pub struct Options {
     pub print_mir: bool,
 }
 
-pub fn compile<'s, B>(
+pub fn compile<B>(
     backend: &B,
     args: B::Args,
-    ast: rtcore::ast::Ast<'s>,
+    ast: rtcore::ast::Ast<'_>,
     options: &Options,
 ) -> Result<B::Output, Error>
 where
-    B: Backend<'s>,
+    B: Backend,
 {
     let (_symbols, mir) = check_(ast, options)?;
 

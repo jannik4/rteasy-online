@@ -10,7 +10,7 @@ mod program;
 #[derive(Debug)]
 pub struct BackendSimulator;
 
-impl compiler::Backend<'_> for BackendSimulator {
+impl compiler::Backend for BackendSimulator {
     type Args = ();
     type Output = rtcore::program::Program;
     type Error = std::convert::Infallible;
