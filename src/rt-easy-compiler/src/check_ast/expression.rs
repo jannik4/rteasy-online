@@ -216,7 +216,7 @@ impl<'s> CheckExpr<'s> for Number {
             size: Some(self.value.size()),
             fixed_size: match self.kind {
                 NumberKind::BitString => true,
-                NumberKind::Other => false,
+                NumberKind::Binary | NumberKind::Decimal | NumberKind::Hexadecimal => false,
             },
             constant: true,
         }
