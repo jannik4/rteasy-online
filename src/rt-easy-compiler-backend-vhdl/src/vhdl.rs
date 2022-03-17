@@ -29,14 +29,6 @@ impl Vhdl {
     pub fn render(&self, module_name: &str) -> Result<String, std::fmt::Error> {
         crate::impl_render::render(self, module_name)
     }
-
-    // pub fn registers(&self, kind: RegisterKind) -> impl Iterator<Item = &Register> {
-    //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
-    // }
-    //
-    // pub fn buses(&self, kind: RegisterKind) -> impl Iterator<Item = &Register> {
-    //     self.declarations.registers.iter().filter(move |reg| reg.kind == kind)
-    // }
 }
 
 // -------------------------------------------------------------------------------------------------
