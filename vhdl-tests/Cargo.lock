@@ -199,16 +199,18 @@ dependencies = [
 
 [[package]]
 name = "temply"
-version = "0.1.0"
-source = "git+https://github.com/jannik4/temply?rev=6f2139416487b4a729a3176e221442142532e718#6f2139416487b4a729a3176e221442142532e718"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ee2fc15a1cbc560f6ff1c2f2d6bb7e2b9446d39302878ab710af41f966d0cd73"
 dependencies = [
  "temply-derive",
 ]
 
 [[package]]
 name = "temply-derive"
-version = "0.1.0"
-source = "git+https://github.com/jannik4/temply?rev=6f2139416487b4a729a3176e221442142532e718#6f2139416487b4a729a3176e221442142532e718"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e4c94518e2adf6492cfda068b3ec030f18ac31f04a1dc9b0ae2684ddede97375"
 dependencies = [
  "proc-macro2",
  "quote",
