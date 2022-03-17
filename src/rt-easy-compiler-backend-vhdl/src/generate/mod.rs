@@ -1,11 +1,3 @@
-//! Generate VHDL from MIR.
-//!
-//! The criteria of the individual states are combined in a global set.
-//!
-//! The same happens with all operations. Nop and assert are discarded.
-//!
-//! Goto operations go into next_state_logic.
-
 mod concat;
 mod declarations;
 mod expression;
