@@ -342,7 +342,7 @@ BEGIN
             {% endfor %}
         END IF;
     END PROCESS;
-    
+
     -- Generate criteria
     CriteriaGen : PROCESS {{ self.sensitivity_list_criteria_gen() }}
     BEGIN
