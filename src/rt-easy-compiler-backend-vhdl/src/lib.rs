@@ -6,6 +6,7 @@ mod render_as_rt;
 mod render_as_vhdl;
 mod signals;
 
+pub mod error;
 pub mod vhdl;
 
 pub use self::{signals::Signals, vhdl::Vhdl};
@@ -16,13 +17,13 @@ pub struct BackendVhdl;
 impl compiler::Backend for BackendVhdl {
     type Args = ();
     type Output = vhdl::Vhdl;
-    type Error = std::convert::Infallible;
+    type Error = error::SynthError;
 
     fn generate(
         &self,
         mir: compiler::mir::Mir<'_>,
         (): Self::Args,
     ) -> Result<Self::Output, Self::Error> {
-        Ok(generate::generate(mir))
+        generate::generate(mir)
     }
 }

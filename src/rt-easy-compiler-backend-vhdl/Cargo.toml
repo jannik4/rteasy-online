@@ -10,6 +10,7 @@ publish = false
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
 compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
 
+thiserror = "1.0.30"
 temply = "0.2.0"
 indexmap = "1.8.0"
 vec1 = "1.8.0"

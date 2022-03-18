@@ -1,5 +1,5 @@
 use super::{declarations::generate_declarations, statement::StatementBuilder};
-use crate::vhdl::*;
+use crate::{error::SynthError, vhdl::*};
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
 use std::collections::HashMap;
@@ -16,7 +16,7 @@ pub struct VhdlBuilder {
 }
 
 impl VhdlBuilder {
-    pub fn build(mir: mir::Mir<'_>) -> Vhdl {
+    pub fn build(mir: mir::Mir<'_>) -> Result<Vhdl, SynthError> {
         // Create builder
         let mut builder = Self {
             statements: Vec::new(),
@@ -33,7 +33,7 @@ impl VhdlBuilder {
             let label = make_label(idx, Some(statement));
             let label_next = make_label(idx + 1, mir.statements.get(idx + 1));
 
-            StatementBuilder::build(label, label_next, &statement.steps.node, &mut builder);
+            StatementBuilder::build(label, label_next, &statement.steps.node, &mut builder)?;
         }
 
         // Transform labels
@@ -51,12 +51,12 @@ impl VhdlBuilder {
         });
 
         // Finish
-        Vhdl {
+        Ok(Vhdl {
             statements: builder.statements,
             criteria: builder.criteria,
             operations: builder.operations,
             declarations: builder.declarations,
-        }
+        })
     }
 
     pub fn push_statement(&mut self, statement: Statement) {

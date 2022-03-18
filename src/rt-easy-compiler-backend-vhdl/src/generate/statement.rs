@@ -4,6 +4,7 @@ use super::{
     transform,
     vhdl::VhdlBuilder,
 };
+use crate::error::SynthError;
 use crate::vhdl::*;
 use compiler::mir;
 use indexmap::IndexMap;
@@ -27,7 +28,7 @@ impl StatementBuilder {
         label_next: Label,
         steps: &[mir::Step<'_>],
         vhdl_builder: &mut VhdlBuilder,
-    ) {
+    ) -> Result<(), SynthError> {
         // Create builder
         let mut builder = Self {
             label,
@@ -146,15 +147,15 @@ impl StatementBuilder {
         }
     }
 
-    fn finish(self, vhdl_builder: &mut VhdlBuilder) {
+    fn finish(self, vhdl_builder: &mut VhdlBuilder) -> Result<(), SynthError> {
         // Push if no transform is needed
-        if !self.should_transform_next_state_logic(&*vhdl_builder) {
+        if !self.should_transform_next_state_logic(&*vhdl_builder)? {
             vhdl_builder.push_statement(Statement {
                 label: self.label,
                 operations: self.operations,
                 next_state_logic: build_logic(self.next_state_conditional, self.next_state_default),
             });
-            return;
+            return Ok(());
         }
 
         // Transform
@@ -195,11 +196,16 @@ impl StatementBuilder {
                 build_logic(transform_to_conditional, transform_to_default),
             );
         }
+
+        Ok(())
     }
 
-    fn should_transform_next_state_logic(&self, vhdl_builder: &VhdlBuilder) -> bool {
+    fn should_transform_next_state_logic(
+        &self,
+        vhdl_builder: &VhdlBuilder,
+    ) -> Result<bool, SynthError> {
         if self.has_pipe || self.next_state_conditional.is_empty() {
-            return false;
+            return Ok(false);
         }
 
         let operations = self

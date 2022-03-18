@@ -1,3 +1,4 @@
+use crate::error::SynthError;
 use crate::vhdl::*;
 
 /// Checks if, given the operations performed and the criteria for the next state logic, it is
@@ -5,7 +6,7 @@ use crate::vhdl::*;
 pub fn should_transform_next_state_logic(
     _operations: &[&Operation],
     criteria: &[&Expression],
-) -> bool {
+) -> Result<bool, SynthError> {
     // TODO: Count criteria as dependencies only if they are actually assigned in operations.
 
     let mut deps = NextStateLogicDeps::empty();
@@ -15,8 +16,8 @@ pub fn should_transform_next_state_logic(
     }
 
     match (deps.clocked, deps.unclocked) {
-        (_, true) => panic!("synth error"), // TODO: Error instead of panic
-        (c, _) => c,
+        (_, true) => Err(SynthError::NextStateUnclockedDependency),
+        (c, _) => Ok(c),
     }
 }
 
