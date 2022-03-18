@@ -1,11 +1,12 @@
 use super::{
     expression::generate_expression,
     operation::{generate_assignment, generate_read, generate_write},
+    util::CriteriaMapping,
 };
 use crate::vhdl::*;
 use compiler::mir;
-use indexmap::{IndexMap, IndexSet};
-use std::collections::{HashMap, HashSet};
+use indexmap::IndexMap;
+use std::collections::HashSet;
 use vec1::{vec1, Vec1};
 
 pub fn generate_statement<'s>(
@@ -14,119 +15,14 @@ pub fn generate_statement<'s>(
     next_mir_statement: Option<&mir::Statement<'s>>,
     vhdl: &mut Vhdl,
     label_goto_prefix: &str,
-) -> Option<(Label, GenNextStateLogic)> {
-    // ...
-    let gen_statement = generate_statement_(
-        idx,
-        mir_statement,
-        next_mir_statement,
-        &vhdl.declarations,
-        |cond| CriterionId(vhdl.criteria.insert_full(cond).0),
-        |op| OperationId(vhdl.operations.insert_full(op).0),
-    );
-
-    // ...
-    let fix_needed = if mir_statement_has_pipe(mir_statement)
-        || gen_statement.next_state_logic.conditional.is_empty()
-    {
-        false
-    } else {
-        let deps = next_state_logic_deps(&gen_statement.next_state_logic, &vhdl.criteria);
-        match (deps.clocked, deps.unclocked) {
-            (true, true) => panic!("synth error"), // TODO: Error instead of panic
-            (true, false) => true,
-            (false, _) => false,
-        }
-    };
-
-    // ...
-    if !fix_needed {
-        vhdl.statements.push(Statement {
-            label: gen_statement.label,
-            next_state_logic: gen_to_std(gen_statement.next_state_logic),
-            operations: gen_statement.operations,
-        });
-        return None;
-    }
-
-    // ...
-    let mut fix_labels = GenNextStateLogic {
-        conditional: Vec::new(),
-        default: Label(format!(
-            "{}{}{}",
-            gen_statement.label, label_goto_prefix, gen_statement.next_state_logic.default.0
-        )),
-    };
-    for (cond, label) in gen_statement.next_state_logic.conditional {
-        fix_labels
-            .conditional
-            .push((cond, Label(format!("{}{}{}", gen_statement.label, label_goto_prefix, label))));
-        vhdl.statements.push(Statement {
-            label: Label(format!("{}{}{}", gen_statement.label, label_goto_prefix, label)),
-            next_state_logic: NextStateLogic::Label(label),
-            operations: gen_statement.operations.clone(),
-        });
-    }
-    vhdl.statements.push(Statement {
-        label: Label(format!(
-            "{}{}{}",
-            gen_statement.label, label_goto_prefix, gen_statement.next_state_logic.default.0
-        )),
-        next_state_logic: NextStateLogic::Label(gen_statement.next_state_logic.default),
-        operations: gen_statement.operations.clone(),
-    });
-    Some((gen_statement.label, fix_labels))
-}
-
-pub fn gen_to_std(gen: GenNextStateLogic) -> NextStateLogic {
-    if gen.conditional.is_empty() {
-        NextStateLogic::Label(gen.default)
-    } else {
-        NextStateLogic::Cond {
-            conditional: Vec1::try_from_vec(
-                gen.conditional
-                    .into_iter()
-                    .map(|(or, label)| (or, NextStateLogic::Label(label)))
-                    .collect(),
-            )
-            .unwrap(),
-            default: Box::new(NextStateLogic::Label(gen.default)),
-        }
-    }
-}
-
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
-
-#[derive(Debug)]
-struct GenStatement {
-    label: Label,
-    next_state_logic: GenNextStateLogic,
-    operations: IndexMap<OperationId, Option<Or<And<Criterion>>>>,
-}
-
-#[derive(Debug, Clone)]
-pub struct GenNextStateLogic {
-    pub conditional: Vec<(Or<And<Criterion>>, Label)>,
-    pub default: Label,
-}
-
-fn generate_statement_<'s>(
-    idx: usize,
-    mir_statement: &mir::Statement<'s>,
-    next_mir_statement: Option<&mir::Statement<'s>>,
-    declarations: &Declarations,
-
-    mut get_criterion_id: impl FnMut(Expression) -> CriterionId,
-    mut get_operation_id: impl FnMut(Operation) -> OperationId,
-) -> GenStatement {
-    // Create statement
+) -> Option<(Label, NextStateLogic)> {
+    // Create gen statement
     let mut statement = GenStatement {
         label: match mir_statement.label.as_ref() {
             Some(label) => Label::named(label.node.0),
             None => Label::unnamed(idx),
         },
+        operations: IndexMap::new(),
         next_state_logic: GenNextStateLogic {
             conditional: Vec::new(),
             default: match next_mir_statement {
@@ -137,21 +33,57 @@ fn generate_statement_<'s>(
                 None => Label::terminated(),
             },
         },
-        operations: IndexMap::new(),
+
+        has_pipe: mir_statement.steps.node.iter().any(|step| step.annotation.is_post_pipe),
+        criteria_mapping: CriteriaMapping::new(),
     };
 
-    // Since all criteria are combined in the VHDL code,
-    // the MIR criteria IDs must be mapped to the new ones.
-    let mut criteria_mapping: HashMap<mir::CriterionId, CriterionId> = HashMap::new();
-
-    // Map steps
+    // Add steps
     for mir_step in &mir_statement.steps.node {
+        statement.add_step(
+            mir_step,
+            &vhdl.declarations,
+            |cond| CriterionId(vhdl.criteria.insert_full(cond).0),
+            |op| OperationId(vhdl.operations.insert_full(op).0),
+        );
+    }
+
+    // Sort operations by operation id ASC
+    statement.operations.sort_keys();
+
+    // Finish
+    statement.finish(vhdl, label_goto_prefix)
+}
+
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+// -------------------------------------------------------------------------------------------------
+
+#[derive(Debug)]
+struct GenStatement {
+    label: Label,
+    operations: IndexMap<OperationId, Option<Or<And<Criterion>>>>,
+    next_state_logic: GenNextStateLogic,
+
+    has_pipe: bool,
+    criteria_mapping: CriteriaMapping,
+}
+
+impl GenStatement {
+    fn add_step(
+        &mut self,
+        mir_step: &mir::Step<'_>,
+        declarations: &Declarations,
+
+        mut get_criterion_id: impl FnMut(Expression) -> CriterionId,
+        mut get_operation_id: impl FnMut(Operation) -> OperationId,
+    ) {
         match &mir_step.operation {
             // MIR criteria are inserted in the global VHDL criteria set.
             // In addition, an entry is created in the mapping.
             mir::Operation::EvalCriterion(mir_eval_criterion) => {
                 let condition = generate_expression(&mir_eval_criterion.condition, declarations, 1);
-                criteria_mapping
+                self.criteria_mapping
                     .insert(mir_eval_criterion.criterion_id, get_criterion_id(condition));
             }
             mir::Operation::EvalCriterionSwitchGroup(_) => todo!(),
@@ -163,18 +95,16 @@ fn generate_statement_<'s>(
                 let label = Label::named(mir_goto.label.node.0);
 
                 if mir_step.criteria.is_empty() {
-                    statement.next_state_logic.default = label;
+                    self.next_state_logic.default = label;
                 } else {
-                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
-                    let entry = statement
-                        .next_state_logic
-                        .conditional
-                        .iter_mut()
-                        .find(|(_, l)| l == &label);
+                    let and =
+                        And(Vec1::try_from(self.criteria_mapping.map(&mir_step.criteria)).unwrap());
+                    let entry =
+                        self.next_state_logic.conditional.iter_mut().find(|(_, l)| l == &label);
                     match entry {
                         Some((criteria, _)) => criteria.0.push(and),
                         None => {
-                            statement.next_state_logic.conditional.push((Or(vec1![and]), label));
+                            self.next_state_logic.conditional.push((Or(vec1![and]), label));
                         }
                     }
                 }
@@ -182,73 +112,21 @@ fn generate_statement_<'s>(
 
             // First, map the operation, insert it into the global VHDL operations set and get the id.
             // Then upsert the operation id into the statement operations and update the criteria.
-            // TODO: Deduplicate code
             mir::Operation::Write(mir_write) => {
                 let operation = Operation::Write(generate_write(mir_write, declarations));
                 let operation_id = get_operation_id(operation);
-
-                if mir_step.criteria.is_empty() {
-                    let old = statement.operations.insert(operation_id, None);
-
-                    // If an operation has no criteria, it is always executed.
-                    // There should be no identical operation, otherwise it would possibly
-                    // be executed twice in one cycle.
-                    assert!(old.is_none());
-                } else {
-                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
-                    match statement.operations.get_mut(&operation_id) {
-                        Some(Some(criteria)) => criteria.0.push(and),
-                        Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
-                        None => {
-                            statement.operations.insert(operation_id, Some(Or(vec1![and])));
-                        }
-                    }
-                }
+                self.add_op(operation_id, &mir_step.criteria);
             }
             mir::Operation::Read(mir_read) => {
                 let operation = Operation::Read(generate_read(mir_read, declarations));
                 let operation_id = get_operation_id(operation);
-
-                if mir_step.criteria.is_empty() {
-                    let old = statement.operations.insert(operation_id, None);
-
-                    // If an operation has no criteria, it is always executed.
-                    // There should be no identical operation, otherwise it would possibly
-                    // be executed twice in one cycle.
-                    assert!(old.is_none());
-                } else {
-                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
-                    match statement.operations.get_mut(&operation_id) {
-                        Some(Some(criteria)) => criteria.0.push(and),
-                        Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
-                        None => {
-                            statement.operations.insert(operation_id, Some(Or(vec1![and])));
-                        }
-                    }
-                }
+                self.add_op(operation_id, &mir_step.criteria);
             }
             mir::Operation::Assignment(mir_assignment) => {
                 let operation =
                     Operation::Assignment(generate_assignment(mir_assignment, declarations));
                 let operation_id = get_operation_id(operation);
-
-                if mir_step.criteria.is_empty() {
-                    let old = statement.operations.insert(operation_id, None);
-
-                    // If an operation has no criteria, it is always executed.
-                    // There should be no identical operation, otherwise it would possibly
-                    // be executed twice in one cycle.
-                    assert!(old.is_none());
-                } else {
-                    let and = And(map_criteria(&mir_step.criteria, &criteria_mapping));
-                    match statement.operations.get_mut(&operation_id) {
-                        Some(Some(criteria)) => criteria.0.push(and),
-                        Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
-                        None => {
-                            statement.operations.insert(operation_id, Some(Or(vec1![and])));
-                        }
-                    }
-                }
+                self.add_op(operation_id, &mir_step.criteria);
             }
 
             // Ignore nop and assert
@@ -257,40 +135,126 @@ fn generate_statement_<'s>(
         }
     }
 
-    // Sort operations by operation id ASC
-    statement.operations.sort_keys();
+    fn add_op(&mut self, operation_id: OperationId, mir_criteria: &[mir::Criterion]) {
+        if mir_criteria.is_empty() {
+            let old = self.operations.insert(operation_id, None);
 
-    statement
+            // If an operation has no criteria, it is always executed.
+            // There should be no identical operation, otherwise it would possibly
+            // be executed twice in one cycle.
+            assert!(old.is_none());
+        } else {
+            let and = And(Vec1::try_from(self.criteria_mapping.map(mir_criteria)).unwrap());
+            match self.operations.get_mut(&operation_id) {
+                Some(Some(criteria)) => criteria.0.push(and),
+                Some(None) => unreachable!(), // This should be unreachable for the same reason see above.
+                None => {
+                    self.operations.insert(operation_id, Some(Or(vec1![and])));
+                }
+            }
+        }
+    }
+
+    fn should_transform(&self, vhdl: &Vhdl) -> bool {
+        if self.has_pipe || self.next_state_logic.conditional.is_empty() {
+            false
+        } else {
+            let deps = self.next_state_logic.deps(vhdl);
+            match (deps.clocked, deps.unclocked) {
+                (true, true) => panic!("synth error"), // TODO: Error instead of panic
+                (true, false) => true,
+                (false, _) => false,
+            }
+        }
+    }
+
+    fn finish(self, vhdl: &mut Vhdl, label_goto_prefix: &str) -> Option<(Label, NextStateLogic)> {
+        // ...
+        if !self.should_transform(vhdl) {
+            vhdl.statements.push(Statement {
+                label: self.label,
+                next_state_logic: self.next_state_logic.build(),
+                operations: self.operations,
+            });
+            return None;
+        }
+
+        // ...
+        let mut fix_labels = GenNextStateLogic {
+            conditional: Vec::new(),
+            default: Label(format!(
+                "{}{}{}",
+                self.label, label_goto_prefix, self.next_state_logic.default.0
+            )),
+        };
+        for (cond, label) in self.next_state_logic.conditional {
+            fix_labels
+                .conditional
+                .push((cond, Label(format!("{}{}{}", self.label, label_goto_prefix, label))));
+            vhdl.statements.push(Statement {
+                label: Label(format!("{}{}{}", self.label, label_goto_prefix, label)),
+                next_state_logic: NextStateLogic::Label(label),
+                operations: self.operations.clone(),
+            });
+        }
+        vhdl.statements.push(Statement {
+            label: Label(format!(
+                "{}{}{}",
+                self.label, label_goto_prefix, self.next_state_logic.default.0
+            )),
+            next_state_logic: NextStateLogic::Label(self.next_state_logic.default),
+            operations: self.operations.clone(),
+        });
+        Some((self.label, fix_labels.build()))
+    }
 }
 
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
-// -------------------------------------------------------------------------------------------------
-
-fn mir_statement_has_pipe(statement: &mir::Statement<'_>) -> bool {
-    statement.steps.node.iter().any(|step| step.annotation.is_post_pipe)
+#[derive(Debug, Clone)]
+struct GenNextStateLogic {
+    pub conditional: Vec<(Or<And<Criterion>>, Label)>,
+    pub default: Label,
 }
 
-/// `mir_criteria` must not be empty.
-/// All `mir_criteria` must be in `criteria_mapping`.
-///
-/// # Panics
-///
-/// Panics if `mir_criteria` is empty or any `mir_criteria` is not in `criteria_mapping`.
-fn map_criteria(
-    mir_criteria: &[mir::Criterion],
-    criteria_mapping: &HashMap<mir::CriterionId, CriterionId>,
-) -> Vec1<Criterion> {
-    Vec1::try_from_vec(
-        mir_criteria
+impl GenNextStateLogic {
+    fn deps(&self, vhdl: &Vhdl) -> NextStateLogicDeps {
+        let mut deps = NextStateLogicDeps::empty();
+
+        let mut logic_criteria = HashSet::new();
+        for (or, _) in &self.conditional {
+            for and in &or.0 {
+                for criterion in &and.0 {
+                    logic_criteria.insert(criterion.id());
+                }
+            }
+        }
+
+        vhdl.criteria
             .iter()
-            .map(|criterion| match criterion {
-                mir::Criterion::True(id) => Criterion::True(*criteria_mapping.get(id).unwrap()),
-                mir::Criterion::False(id) => Criterion::False(*criteria_mapping.get(id).unwrap()),
-            })
-            .collect(),
-    )
-    .unwrap()
+            .enumerate()
+            .filter(|(idx, _)| logic_criteria.contains(&CriterionId(*idx)))
+            .for_each(|(_, expr)| {
+                deps = deps | deps_expr(expr);
+            });
+
+        deps
+    }
+
+    fn build(self) -> NextStateLogic {
+        if self.conditional.is_empty() {
+            NextStateLogic::Label(self.default)
+        } else {
+            NextStateLogic::Cond {
+                conditional: Vec1::try_from_vec(
+                    self.conditional
+                        .into_iter()
+                        .map(|(or, label)| (or, NextStateLogic::Label(label)))
+                        .collect(),
+                )
+                .unwrap(),
+                default: Box::new(NextStateLogic::Label(self.default)),
+            }
+        }
+    }
 }
 
 // -------------------------------------------------------------------------------------------------
@@ -321,32 +285,6 @@ impl std::ops::BitOr for NextStateLogicDeps {
     fn bitor(self, rhs: Self) -> Self::Output {
         Self { clocked: self.clocked || rhs.clocked, unclocked: self.unclocked || rhs.unclocked }
     }
-}
-
-fn next_state_logic_deps(
-    logic: &GenNextStateLogic,
-    criteria: &IndexSet<Expression>,
-) -> NextStateLogicDeps {
-    let mut deps = NextStateLogicDeps::empty();
-
-    let mut logic_criteria = HashSet::new();
-    for (or, _) in &logic.conditional {
-        for and in &or.0 {
-            for criterion in &and.0 {
-                logic_criteria.insert(criterion.id());
-            }
-        }
-    }
-
-    criteria
-        .iter()
-        .enumerate()
-        .filter(|(idx, _)| logic_criteria.contains(&CriterionId(*idx)))
-        .for_each(|(_, expr)| {
-            deps = deps | deps_expr(expr);
-        });
-
-    deps
 }
 
 fn deps_expr(expr: &Expression) -> NextStateLogicDeps {

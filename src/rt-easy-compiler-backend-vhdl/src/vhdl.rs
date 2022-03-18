@@ -50,11 +50,11 @@ pub struct Declarations {
 #[derive(Debug)]
 pub struct Statement {
     pub label: Label,
-    pub next_state_logic: NextStateLogic,
     pub operations: IndexMap<OperationId, Option<Or<And<Criterion>>>>,
+    pub next_state_logic: NextStateLogic,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum NextStateLogic {
     Label(Label),
     Cond { conditional: Vec1<(Or<And<Criterion>>, NextStateLogic)>, default: Box<NextStateLogic> },

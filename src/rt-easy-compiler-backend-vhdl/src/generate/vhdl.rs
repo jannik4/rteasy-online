@@ -1,7 +1,4 @@
-use super::{
-    declarations::generate_declarations,
-    statement::{gen_to_std, generate_statement, GenNextStateLogic},
-};
+use super::{declarations::generate_declarations, statement::generate_statement};
 use crate::vhdl::*;
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
@@ -35,7 +32,7 @@ pub fn generate_vhdl<'s>(mir: mir::Mir<'s>) -> Vhdl {
     // Fix labels
     for (fix_label, fix) in fix_labels_list {
         for statement in &mut vhdl.statements {
-            fix_labels(&mut statement.next_state_logic, &fix_label, &fix);
+            fix_labels(&mut statement.next_state_logic, &fix_label, fix.clone());
         }
     }
 
@@ -49,16 +46,16 @@ pub fn generate_vhdl<'s>(mir: mir::Mir<'s>) -> Vhdl {
     vhdl
 }
 
-fn fix_labels(logic: &mut NextStateLogic, fix_label: &Label, fix: &GenNextStateLogic) {
+fn fix_labels(logic: &mut NextStateLogic, fix_label: &Label, fix: NextStateLogic) {
     match logic {
         NextStateLogic::Label(label) => {
             if label == fix_label {
-                *logic = gen_to_std(fix.clone());
+                *logic = fix;
             }
         }
         NextStateLogic::Cond { conditional, default } => {
             for (_, logic) in conditional {
-                fix_labels(logic, fix_label, fix);
+                fix_labels(logic, fix_label, fix.clone());
             }
             fix_labels(&mut **default, fix_label, fix);
         }
