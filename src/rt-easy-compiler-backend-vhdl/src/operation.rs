@@ -2,15 +2,16 @@ use super::{
     concat::{generate_concat_lvalue_clocked, generate_concat_lvalue_unclocked},
     expression::{generate_bus, generate_expression, generate_register, generate_register_array},
 };
-use crate::vhdl::*;
+use crate::gen_ident;
 use compiler::mir;
+use rtvhdl::*;
 
 pub fn generate_read<'s>(read: &mir::Read<'s>, declarations: &Declarations) -> Read {
     let (_, (ar_name, _, ar_kind), (dr_name, _, dr_kind)) =
         declarations.memories.iter().find(|(name, _, _)| name.0 == read.ident.node.0).unwrap();
 
     Read {
-        memory: read.ident.node.into(),
+        memory: gen_ident(read.ident.node),
         ar: Register { ident: ar_name.clone(), range: None, kind: *ar_kind },
         dr: Register { ident: dr_name.clone(), range: None, kind: *dr_kind },
     }
@@ -21,7 +22,7 @@ pub fn generate_write<'s>(write: &mir::Write<'s>, declarations: &Declarations) -
         declarations.memories.iter().find(|(name, _, _)| name.0 == write.ident.node.0).unwrap();
 
     Write {
-        memory: write.ident.node.into(),
+        memory: gen_ident(write.ident.node),
         ar: Register { ident: ar_name.clone(), range: None, kind: *ar_kind },
         dr: Register { ident: dr_name.clone(), range: None, kind: *dr_kind },
     }

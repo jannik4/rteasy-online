@@ -3,11 +3,9 @@ use super::{
     operation::{generate_assignment, generate_read, generate_write},
     vhdl::VhdlBuilder,
 };
-use crate::vhdl::*;
 use compiler::mir;
-use indexmap::IndexMap;
+use rtvhdl::*;
 use std::collections::HashMap;
-use vec1::{vec1, Vec1};
 
 #[derive(Debug)]
 pub struct StatementBuilder {

@@ -1,337 +1,155 @@
-use crate::error::RenderError;
-use crate::Signals;
-use indexmap::{IndexMap, IndexSet};
-use vec1::Vec1;
-
-// -------------------------------------------------------------------------------------------------
-// Re-export
-// -------------------------------------------------------------------------------------------------
-
-pub use rtcore::common::{BinaryOperator, BusKind, NumberKind, RegisterKind, UnaryOperator};
-
-// -------------------------------------------------------------------------------------------------
-// Top
-// -------------------------------------------------------------------------------------------------
+use super::{
+    declarations::generate_declarations, next_state_logic_deps::next_state_logic_deps,
+    statement::StatementBuilder,
+};
+use crate::error::SynthError;
+use compiler::mir;
+use rtvhdl::*;
+use rtvhdl::{IndexMap, IndexSet};
+use std::collections::HashMap;
 
 #[derive(Debug)]
-pub struct Vhdl {
-    pub statements: Vec<Statement>,
-    pub criteria: IndexSet<Expression>,  // Index = CriterionId
-    pub operations: IndexSet<Operation>, // Index = OperationId
+pub struct VhdlBuilder {
+    statements: Vec<Statement>,
+    criteria: IndexSet<Expression>,
+    operations: IndexSet<Operation>,
+    declarations: Declarations,
 
-    pub declarations: Declarations,
+    transform: HashMap<Label, NextStateLogic>,
+    transform_goto_prefix: String,
 }
 
-impl Vhdl {
-    pub fn signals(&self) -> Signals {
-        Signals::new(self)
+impl VhdlBuilder {
+    pub fn build(mir: mir::Mir<'_>) -> Result<Vhdl, SynthError> {
+        // Create builder
+        let mut builder = Self {
+            statements: Vec::new(),
+            criteria: IndexSet::new(),
+            operations: IndexSet::new(),
+            declarations: generate_declarations(&mir.declarations),
+
+            transform: HashMap::new(),
+            transform_goto_prefix: calc_label_goto_prefix(&mir),
+        };
+
+        // Generate statements
+        for (idx, statement) in mir.statements.iter().enumerate() {
+            // Labels
+            let label = make_label(idx, Some(statement));
+            let label_next = make_label(idx + 1, mir.statements.get(idx + 1));
+
+            // Next state logic
+            let deps = next_state_logic_deps(statement);
+            let transform = match (deps.clocked, deps.unclocked) {
+                (_, true) => return Err(SynthError::UnclockedGotoDependency),
+                (true, false) => {
+                    if idx == 0 {
+                        return Err(SynthError::ConditionalGotoInFirstState);
+                    }
+                    true
+                }
+                (false, false) => false,
+            };
+
+            // Build
+            StatementBuilder::build(
+                label,
+                label_next,
+                &statement.steps.node,
+                transform,
+                &mut builder,
+            );
+        }
+
+        // Transform labels
+        for (from, to) in builder.transform {
+            for statement in &mut builder.statements {
+                transform(&mut statement.next_state_logic, &from, &to);
+            }
+        }
+
+        // Add terminated statement
+        builder.statements.push(Statement {
+            label: Label::terminated(),
+            next_state_logic: NextStateLogic::Label(Label::terminated()),
+            operations: IndexMap::new(),
+        });
+
+        // Finish
+        Ok(Vhdl {
+            statements: builder.statements,
+            criteria: builder.criteria,
+            operations: builder.operations,
+            declarations: builder.declarations,
+        })
     }
 
-    pub fn render(&self, module_name: &str) -> Result<String, RenderError> {
-        crate::impl_render::render(self, module_name)
+    pub fn push_statement(&mut self, statement: Statement) {
+        self.statements.push(statement);
+    }
+
+    pub fn insert_criterion(&mut self, expr: Expression) -> CriterionId {
+        CriterionId(self.criteria.insert_full(expr).0)
+    }
+
+    pub fn insert_operation(&mut self, op: Operation) -> OperationId {
+        OperationId(self.operations.insert_full(op).0)
+    }
+
+    pub fn insert_transform(&mut self, from: Label, to: NextStateLogic) {
+        self.transform.insert(from, to);
+    }
+
+    pub fn transform_goto_prefix(&self) -> &str {
+        &self.transform_goto_prefix
+    }
+
+    pub fn declarations(&self) -> &Declarations {
+        &self.declarations
     }
 }
 
-// -------------------------------------------------------------------------------------------------
-// Declarations
-// -------------------------------------------------------------------------------------------------
+fn calc_label_goto_prefix(mir: &mir::Mir<'_>) -> String {
+    let mut prefix = "_GOTO_".to_string();
 
-#[derive(Debug)]
-pub struct Declarations {
-    pub registers: Vec<(Ident, BitRange, RegisterKind)>, // (Name, Range, Kind)
-    pub buses: Vec<(Ident, BitRange, BusKind)>,          // (Name, Range, Kind)
-    pub register_arrays: Vec<(Ident, BitRange, usize)>,  // (Name, Range, Length)
-    pub memories: Vec<(Ident, (Ident, BitRange, RegisterKind), (Ident, BitRange, RegisterKind))>, // (Name, AR, DR)
-}
-
-// -------------------------------------------------------------------------------------------------
-// Statement
-// -------------------------------------------------------------------------------------------------
-
-#[derive(Debug)]
-pub struct Statement {
-    pub label: Label,
-    pub operations: IndexMap<OperationId, Option<Or<And<Criterion>>>>,
-    pub next_state_logic: NextStateLogic,
-}
-
-#[derive(Debug, Clone)]
-pub enum NextStateLogic {
-    Label(Label),
-    Cond { conditional: Vec1<(Or<And<Criterion>>, NextStateLogic)>, default: Box<NextStateLogic> },
-}
-
-impl NextStateLogic {
-    pub fn as_label(&self) -> Option<&Label> {
-        if let Self::Label(v) = self {
-            Some(v)
+    loop {
+        let any_label_contains_prefix = mir
+            .statements
+            .iter()
+            .filter_map(|statement| statement.label.map(|s| s.node))
+            .any(|label| label.0.contains(&prefix));
+        if any_label_contains_prefix {
+            prefix += "_";
         } else {
-            None
+            break;
         }
     }
+
+    return prefix;
 }
 
-#[derive(Debug, Clone)]
-pub struct Or<T>(pub Vec1<T>);
-
-#[derive(Debug, Clone)]
-pub struct And<T>(pub Vec1<T>);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct OperationId(pub usize);
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct CriterionId(pub usize);
-
-#[derive(Debug, Clone, Copy)]
-pub enum Criterion {
-    True(CriterionId),
-    False(CriterionId),
+fn make_label(idx: usize, statement: Option<&mir::Statement<'_>>) -> Label {
+    match statement {
+        Some(statement) => match statement.label.as_ref() {
+            Some(label) => Label::named(label.node.0),
+            None => Label::unnamed(idx),
+        },
+        None => Label::terminated(),
+    }
 }
 
-impl Criterion {
-    pub fn id(self) -> CriterionId {
-        match self {
-            Criterion::True(id) => id,
-            Criterion::False(id) => id,
+fn transform(logic: &mut NextStateLogic, from: &Label, to: &NextStateLogic) {
+    match logic {
+        NextStateLogic::Label(label) => {
+            if label == from {
+                *logic = to.clone();
+            }
+        }
+        NextStateLogic::Cond { conditional, default } => {
+            for (_, logic) in conditional {
+                transform(logic, from, &to);
+            }
+            transform(&mut **default, from, to);
         }
     }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Label(pub String);
-
-impl Label {
-    pub fn terminated() -> Self {
-        Self("TERMINATED".to_string())
-    }
-
-    pub fn named(name: &str) -> Self {
-        Self(format!("NAMED_{}", name))
-    }
-
-    pub fn unnamed(idx: usize) -> Self {
-        Self(format!("UNNAMED_{}", idx))
-    }
-}
-
-impl std::fmt::Display for Label {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-pub struct Ident(pub String);
-
-impl From<compiler::mir::Ident<'_>> for Ident {
-    fn from(v: compiler::mir::Ident<'_>) -> Self {
-        Self(v.0.to_string())
-    }
-}
-
-impl std::fmt::Display for Ident {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.0)
-    }
-}
-
-// -------------------------------------------------------------------------------------------------
-// Expression
-// -------------------------------------------------------------------------------------------------
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Expression {
-    pub kind: ExpressionKind,
-    pub extend_to: Extend,
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum Extend {
-    Zero(usize),
-    Sign(usize),
-}
-
-impl Extend {
-    pub fn size(&self) -> usize {
-        match *self {
-            Extend::Zero(size) => size,
-            Extend::Sign(size) => size,
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ExpressionKind {
-    Atom(Atom),
-    BinaryTerm(Box<BinaryTerm>),
-    UnaryTerm(Box<UnaryTerm>),
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Atom {
-    Concat(ConcatExpr),
-    Register(Register),
-    Bus(Bus),
-    RegisterArray(RegisterArray),
-    Number(Number),
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct BinaryTerm {
-    pub lhs: Expression,
-    pub rhs: Expression,
-    pub operator: BinaryOperator,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct UnaryTerm {
-    pub expression: Expression,
-    pub operator: UnaryOperator,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Register {
-    pub ident: Ident,
-    pub range: Option<BitRange>,
-    pub kind: RegisterKind,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Bus {
-    pub ident: Ident,
-    pub range: Option<BitRange>,
-    pub kind: BusKind,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct RegisterArray {
-    pub ident: Ident,
-    pub index: Box<Expression>,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Number {
-    pub value: rtcore::value::Value,
-    pub kind: DebugInfo<NumberKind>,
-}
-
-// -------------------------------------------------------------------------------------------------
-// Operation
-// -------------------------------------------------------------------------------------------------
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Operation {
-    Write(Write),
-    Read(Read),
-    Assignment(Assignment),
-}
-
-impl Operation {
-    pub fn is_clocked(&self) -> bool {
-        match self {
-            Operation::Write(_) | Operation::Read(_) => true,
-            Operation::Assignment(assignment) => match &assignment.lhs {
-                Lvalue::Register(_) | Lvalue::RegisterArray(_) | Lvalue::ConcatClocked(_) => true,
-                Lvalue::Bus(_) | Lvalue::ConcatUnclocked(_) => false,
-            },
-        }
-    }
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Write {
-    pub memory: Ident,
-    pub ar: Register,
-    pub dr: Register,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Read {
-    pub memory: Ident,
-    pub ar: Register,
-    pub dr: Register,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Assignment {
-    pub lhs: Lvalue,
-    pub rhs: Expression,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum Lvalue {
-    Register(Register),
-    Bus(Bus),
-    RegisterArray(RegisterArray),
-    ConcatClocked(ConcatLvalueClocked),
-    ConcatUnclocked(ConcatLvalueUnclocked),
-}
-
-// -------------------------------------------------------------------------------------------------
-// Concat
-// -------------------------------------------------------------------------------------------------
-
-pub type ConcatLvalueClocked = Concat<ConcatPartLvalueClocked>;
-pub type ConcatLvalueUnclocked = Concat<ConcatPartLvalueUnclocked>;
-pub type ConcatExpr = Concat<ConcatPartExpr>;
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub struct Concat<P> {
-    pub parts: Vec<P>,
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartLvalueClocked {
-    Register(Register, usize),
-    RegisterArray(RegisterArray, usize),
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartLvalueUnclocked {
-    Bus(Bus, usize),
-}
-
-#[derive(Debug, PartialEq, Eq, Hash)]
-pub enum ConcatPartExpr {
-    Register(Register),
-    Bus(Bus),
-    RegisterArray(RegisterArray),
-    Number(Number),
-}
-
-// -------------------------------------------------------------------------------------------------
-// Bit Range
-// -------------------------------------------------------------------------------------------------
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub enum BitRange {
-    Downto(usize, usize),
-    To(usize, usize),
-}
-
-impl BitRange {
-    pub fn size(&self) -> usize {
-        match *self {
-            BitRange::Downto(a, b) | BitRange::To(b, a) => a - b + 1,
-        }
-    }
-}
-
-// -------------------------------------------------------------------------------------------------
-// Debug Info
-// -------------------------------------------------------------------------------------------------
-
-/// Additional information that should not affect equality.
-#[derive(Debug, Clone, Copy)]
-pub struct DebugInfo<T>(pub T);
-
-impl<T> PartialEq for DebugInfo<T> {
-    fn eq(&self, _other: &Self) -> bool {
-        true
-    }
-}
-impl<T> Eq for DebugInfo<T> {}
-impl<T> std::hash::Hash for DebugInfo<T> {
-    fn hash<H: std::hash::Hasher>(&self, _state: &mut H) {}
 }

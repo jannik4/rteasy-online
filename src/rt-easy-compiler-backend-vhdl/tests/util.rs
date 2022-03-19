@@ -1,5 +1,6 @@
 use compiler::Error;
-use rt_easy_compiler_backend_vhdl::{BackendVhdl, Vhdl};
+use rt_easy_compiler_backend_vhdl::BackendVhdl;
+use rtvhdl::Vhdl;
 
 #[allow(dead_code)] // Not used by every test file
 pub fn compile(source: &str) -> Vhdl {

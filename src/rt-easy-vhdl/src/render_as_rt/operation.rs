@@ -1,5 +1,5 @@
 use super::RenderAsRt;
-use crate::vhdl::*;
+use crate::*;
 use std::fmt::{Display, Formatter, Result};
 
 impl Display for RenderAsRt<&Operation> {

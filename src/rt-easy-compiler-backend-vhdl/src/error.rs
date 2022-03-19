@@ -1,5 +1,7 @@
 use thiserror::Error;
 
+pub type Result<T> = std::result::Result<T, SynthError>;
+
 #[derive(Debug, Error)]
 pub enum SynthError {
     #[error("next state depends on an unclocked item")]
@@ -7,6 +9,3 @@ pub enum SynthError {
     #[error("conditional goto in first state")]
     ConditionalGotoInFirstState,
 }
-
-#[derive(Debug, Error)]
-pub enum RenderError {}

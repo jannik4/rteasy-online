@@ -1,5 +1,6 @@
-use crate::vhdl::*;
+use crate::gen_ident;
 use compiler::mir;
+use rtvhdl::*;
 
 pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> Declarations {
     let mut declarations = Declarations {
@@ -14,7 +15,7 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             mir::Declaration::Register(declaration) => {
                 for register in &declaration.registers {
                     declarations.registers.push((
-                        register.ident.node.into(),
+                        gen_ident(register.ident.node),
                         generate_bit_range(register.range.map(|s| s.node)),
                         register.kind,
                     ));
@@ -23,7 +24,7 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             mir::Declaration::Bus(declaration) => {
                 for bus in &declaration.buses {
                     declarations.buses.push((
-                        bus.ident.node.into(),
+                        gen_ident(bus.ident.node),
                         generate_bit_range(bus.range.map(|s| s.node)),
                         bus.kind,
                     ));
@@ -34,16 +35,16 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
                     let (ar_name, ar_range, ar_kind) = declarations
                         .registers
                         .iter()
-                        .find(|(name, _, _)| *name == memory.range.address_register.node.into())
+                        .find(|(name, _, _)| name.0 == memory.range.address_register.node.0)
                         .unwrap();
                     let (dr_name, dr_range, dr_kind) = declarations
                         .registers
                         .iter()
-                        .find(|(name, _, _)| *name == memory.range.data_register.node.into())
+                        .find(|(name, _, _)| name.0 == memory.range.data_register.node.0)
                         .unwrap();
 
                     declarations.memories.push((
-                        memory.ident.node.into(),
+                        gen_ident(memory.ident.node),
                         (ar_name.clone(), *ar_range, *ar_kind),
                         (dr_name.clone(), *dr_range, *dr_kind),
                     ));
@@ -52,7 +53,7 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             mir::Declaration::RegisterArray(declaration) => {
                 for register_array in &declaration.register_arrays {
                     declarations.register_arrays.push((
-                        register_array.ident.node.into(),
+                        gen_ident(register_array.ident.node),
                         generate_bit_range(register_array.range.map(|s| s.node)),
                         register_array.len,
                     ));

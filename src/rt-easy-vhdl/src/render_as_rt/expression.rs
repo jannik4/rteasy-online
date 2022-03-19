@@ -1,5 +1,5 @@
 use super::RenderAsRt;
-use crate::vhdl::*;
+use crate::*;
 use rtcore::util;
 use std::fmt::{Display, Formatter, Result};
 

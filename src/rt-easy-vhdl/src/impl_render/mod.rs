@@ -1,10 +1,10 @@
 mod sensitivity_list;
 
-use crate::vhdl::{
+use crate::{error::RenderError, render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
+use crate::{
     BitRange, BusKind, Declarations, Expression, Ident, Lvalue, NextStateLogic, Operation,
     RegisterKind, Statement, Vhdl,
 };
-use crate::{error::RenderError, render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;
 use std::fmt::Write;
 use temply::Template;

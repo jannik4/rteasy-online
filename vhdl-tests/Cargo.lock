@@ -159,12 +159,10 @@ dependencies = [
 name = "rt-easy-compiler-backend-vhdl"
 version = "0.1.0"
 dependencies = [
- "indexmap",
  "rt-easy-compiler",
  "rt-easy-core",
- "temply",
+ "rt-easy-vhdl",
  "thiserror",
- "vec1",
 ]
 
 [[package]]
@@ -183,6 +181,17 @@ dependencies = [
  "rt-easy-core",
  "toktok",
  "toktok-generator",
+]
+
+[[package]]
+name = "rt-easy-vhdl"
+version = "0.1.0"
+dependencies = [
+ "indexmap",
+ "rt-easy-core",
+ "temply",
+ "thiserror",
+ "vec1",
 ]
 
 [[package]]

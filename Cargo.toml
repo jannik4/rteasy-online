@@ -10,6 +10,7 @@ members = [
     "src/rt-easy-core",
     "src/rt-easy-ast",
     "src/rt-easy-program",
+    "src/rt-easy-vhdl",
     "src/rt-easy-parser",
     "src/rt-easy-compiler",
     "src/rt-easy-compiler-backend-simulator",

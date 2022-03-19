@@ -1,6 +1,7 @@
 use super::concat::generate_concat_expr;
-use crate::vhdl::*;
+use crate::gen_ident;
 use compiler::mir;
+use rtvhdl::*;
 
 pub fn generate_expression<'s>(
     expression: &mir::Expression<'s>,
@@ -54,7 +55,7 @@ pub fn generate_atom<'s>(atom: &mir::Atom<'s>, declarations: &Declarations) -> A
 }
 
 pub fn generate_register<'s>(reg: &mir::Register<'s>, declarations: &Declarations) -> Register {
-    let ident = reg.ident.node.into();
+    let ident = gen_ident(reg.ident.node);
 
     let range_declaration =
         declarations.registers.iter().find(|(name, _, _)| ident == *name).unwrap().1;
@@ -67,7 +68,7 @@ pub fn generate_register<'s>(reg: &mir::Register<'s>, declarations: &Declaration
 }
 
 pub fn generate_bus<'s>(bus: &mir::Bus<'s>, declarations: &Declarations) -> Bus {
-    let ident = bus.ident.node.into();
+    let ident = gen_ident(bus.ident.node);
 
     let range_declaration =
         declarations.buses.iter().find(|(name, _, _)| ident == *name).unwrap().1;
@@ -84,7 +85,7 @@ pub fn generate_register_array<'s>(
     declarations: &Declarations,
 ) -> RegisterArray {
     RegisterArray {
-        ident: reg_array.ident.node.into(),
+        ident: gen_ident(reg_array.ident.node),
         index: Box::new(generate_expression(
             &reg_array.index,
             declarations,

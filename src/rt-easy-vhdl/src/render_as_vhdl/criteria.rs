@@ -1,5 +1,5 @@
 use super::RenderAsVhdl;
-use crate::vhdl::*;
+use crate::*;
 use std::fmt::{Display, Formatter, Result};
 
 impl Display for RenderAsVhdl<&Or<And<Criterion>>> {

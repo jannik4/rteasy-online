@@ -1,8 +1,8 @@
 use super::expression::{
     generate_bus, generate_number, generate_register, generate_register_array,
 };
-use crate::vhdl::*;
 use compiler::mir;
+use rtvhdl::*;
 
 pub fn generate_concat_expr<'s>(
     concat: &mir::ConcatExpr<'s>,

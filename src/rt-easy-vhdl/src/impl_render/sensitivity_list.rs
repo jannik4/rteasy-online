@@ -1,5 +1,5 @@
 use crate::render_as_vhdl::RenderAsVhdl;
-use crate::vhdl::*;
+use crate::*;
 use indexmap::IndexSet;
 use std::fmt::{Display, Formatter, Result};
 
