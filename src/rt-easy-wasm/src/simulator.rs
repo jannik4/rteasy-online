@@ -3,9 +3,10 @@ use crate::{
     Signals, Span, StepResult,
 };
 use rt_easy::rtcore::{
-    program::{BusKind, Ident, RegisterKind},
+    common::{BusKind, RegisterKind},
     value::{SignedValue, Value},
 };
+use rt_easy::rtprogram::Ident;
 use wasm_bindgen::prelude::*;
 
 type Result<T> = std::result::Result<T, JsValue>;

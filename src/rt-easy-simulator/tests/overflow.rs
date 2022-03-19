@@ -1,7 +1,8 @@
 mod util;
 
 use rt_easy_simulator::Simulator;
-use rtcore::{program::Ident, value::Value};
+use rtcore::value::Value;
+use rtprogram::Ident;
 
 const SOURCE: &'static str = r#"
 declare bus A(3:0), B(1:0)

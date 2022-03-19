@@ -1,5 +1,7 @@
-pub use crate::common::*;
+#![deny(rust_2018_idioms)]
+
 pub use either::Either;
+pub use rtcore::common::*;
 
 #[derive(Debug, Clone)]
 pub struct Ast<'s> {

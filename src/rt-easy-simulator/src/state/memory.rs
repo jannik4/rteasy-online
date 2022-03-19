@@ -1,7 +1,8 @@
 use super::State;
 use crate::Error;
 use anyhow::anyhow;
-use rtcore::{program::MemoryRange, value::Value};
+use rtcore::value::Value;
+use rtprogram::MemoryRange;
 use std::cell::RefCell;
 use std::collections::HashMap;
 use std::io;

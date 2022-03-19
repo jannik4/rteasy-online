@@ -1,7 +1,8 @@
 mod util;
 
 use rt_easy_simulator::Simulator;
-use rtcore::{program::Ident, value::Value};
+use rtcore::value::Value;
+use rtprogram::Ident;
 
 #[test]
 fn dr_then_write() {

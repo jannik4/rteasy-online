@@ -277,12 +277,22 @@ checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 name = "rt-easy"
 version = "0.1.0"
 dependencies = [
+ "rt-easy-ast",
  "rt-easy-compiler",
  "rt-easy-compiler-backend-simulator",
  "rt-easy-compiler-backend-vhdl",
  "rt-easy-core",
  "rt-easy-parser",
+ "rt-easy-program",
  "rt-easy-simulator",
+]
+
+[[package]]
+name = "rt-easy-ast"
+version = "0.1.0"
+dependencies = [
+ "either",
+ "rt-easy-core",
 ]
 
 [[package]]
@@ -304,6 +314,7 @@ name = "rt-easy-compiler"
 version = "0.1.0"
 dependencies = [
  "pretty-error",
+ "rt-easy-ast",
  "rt-easy-core",
  "rt-easy-parser",
 ]
@@ -314,6 +325,7 @@ version = "0.1.0"
 dependencies = [
  "rt-easy-compiler",
  "rt-easy-core",
+ "rt-easy-program",
 ]
 
 [[package]]
@@ -333,11 +345,6 @@ dependencies = [
 name = "rt-easy-core"
 version = "0.1.0"
 dependencies = [
- "either",
- "rt-easy-compiler",
- "rt-easy-compiler-backend-simulator",
- "rt-easy-parser",
- "split-vec",
  "value",
 ]
 
@@ -346,9 +353,21 @@ name = "rt-easy-parser"
 version = "0.1.0"
 dependencies = [
  "logos",
+ "rt-easy-ast",
  "rt-easy-core",
  "toktok",
  "toktok-generator",
+]
+
+[[package]]
+name = "rt-easy-program"
+version = "0.1.0"
+dependencies = [
+ "rt-easy-compiler",
+ "rt-easy-compiler-backend-simulator",
+ "rt-easy-core",
+ "rt-easy-parser",
+ "split-vec",
 ]
 
 [[package]]
@@ -360,6 +379,7 @@ dependencies = [
  "rt-easy-compiler-backend-simulator",
  "rt-easy-core",
  "rt-easy-parser",
+ "rt-easy-program",
  "serde",
  "serde_json",
 ]
@@ -370,10 +390,12 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "logos",
+ "rt-easy-ast",
  "rt-easy-compiler",
  "rt-easy-compiler-backend-simulator",
  "rt-easy-core",
  "rt-easy-parser",
+ "rt-easy-program",
  "rt-easy-simulator",
  "toktok",
  "toktok-generator",

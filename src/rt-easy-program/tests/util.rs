@@ -1,4 +1,4 @@
-use rt_easy_core::program::Program;
+use rt_easy_program::Program;
 
 pub fn compile(source: &str) -> Program {
     let ast = match parser::parse(source) {

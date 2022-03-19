@@ -5,7 +5,7 @@ use crate::{
     Error,
 };
 use anyhow::anyhow;
-use rtcore::program::{Criterion, CriterionId, Label, Step};
+use rtprogram::{Criterion, CriterionId, Label, Step};
 use std::{collections::HashSet, mem};
 
 impl Simulator {

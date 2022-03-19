@@ -1,11 +1,10 @@
 use super::operation::CheckOp;
 use crate::{symbols::Symbols, CompilerError, CompilerErrorKind, InternalError};
-use rtcore::ast;
 
 pub type Result = std::result::Result<(), InternalError>;
 
 pub fn check(
-    statements: &[ast::Statement<'_>],
+    statements: &[rtast::Statement<'_>],
     symbols: &Symbols<'_>,
     error_sink: &mut impl FnMut(CompilerError),
 ) -> Result {
@@ -17,7 +16,7 @@ pub fn check(
 }
 
 fn check_statement(
-    statement: &ast::Statement<'_>,
+    statement: &rtast::Statement<'_>,
     symbols: &Symbols<'_>,
     error_sink: &mut impl FnMut(CompilerError),
 ) -> Result {

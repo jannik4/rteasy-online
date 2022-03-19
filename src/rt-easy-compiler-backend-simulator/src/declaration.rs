@@ -1,6 +1,6 @@
-use crate::{Generate, Result};
+use crate::{gen_ident, Generate, Result};
 use compiler::mir;
-use rtcore::program::*;
+use rtprogram::*;
 
 impl Generate<mir::Declaration<'_>> for Declaration {
     fn generate(declaration: mir::Declaration<'_>) -> Result<Self> {
@@ -28,10 +28,10 @@ impl Generate<mir::Declaration<'_>> for Declaration {
 impl Generate<mir::Memory<'_>> for Memory {
     fn generate(memory: mir::Memory<'_>) -> Result<Self> {
         Ok(Memory {
-            ident: memory.ident.node.into(),
+            ident: gen_ident(memory.ident.node),
             range: MemoryRange {
-                address_register: memory.range.address_register.node.into(),
-                data_register: memory.range.data_register.node.into(),
+                address_register: gen_ident(memory.range.address_register.node),
+                data_register: gen_ident(memory.range.data_register.node),
             },
         })
     }
@@ -40,7 +40,7 @@ impl Generate<mir::Memory<'_>> for Memory {
 impl Generate<mir::DeclareRegisterArrayItem<'_>> for DeclareRegisterArrayItem {
     fn generate(declare_register_array_item: mir::DeclareRegisterArrayItem<'_>) -> Result<Self> {
         Ok(DeclareRegisterArrayItem {
-            ident: declare_register_array_item.ident.node.into(),
+            ident: gen_ident(declare_register_array_item.ident.node),
             range: declare_register_array_item.range.map(|s| s.node),
             len: declare_register_array_item.len,
         })

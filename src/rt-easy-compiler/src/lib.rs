@@ -28,7 +28,7 @@ pub struct Options {
 pub fn compile<B>(
     backend: &B,
     args: B::Args,
-    ast: rtcore::ast::Ast<'_>,
+    ast: rtast::Ast<'_>,
     options: &Options,
 ) -> Result<B::Output, Error>
 where
@@ -42,13 +42,13 @@ where
     }
 }
 
-pub fn check(ast: rtcore::ast::Ast<'_>, options: &Options) -> Result<(), Error> {
+pub fn check(ast: rtast::Ast<'_>, options: &Options) -> Result<(), Error> {
     check_(ast, options)?;
     Ok(())
 }
 
 fn check_<'s>(
-    ast: rtcore::ast::Ast<'s>,
+    ast: rtast::Ast<'s>,
     options: &Options,
 ) -> Result<(symbols::Symbols<'s>, mir::Mir<'s>), Error> {
     // Check ast

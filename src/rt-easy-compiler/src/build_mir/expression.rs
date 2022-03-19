@@ -4,7 +4,7 @@ use crate::{
     symbols::{Symbol, Symbols},
     InternalError,
 };
-use rtcore::ast::{self, Either};
+use rtast::{self as ast, Either};
 
 pub trait BuildExpr<I>: Sized {
     fn build(item: I, symbols: &Symbols<'_>) -> Result<Expr<Self>>;

@@ -5,7 +5,7 @@ mod impl_display;
 mod operation;
 
 pub use self::{concat::*, declaration::*, expression::*, operation::*};
-pub use rtcore::ast::{Ident, Label};
+pub use rtast::{Ident, Label};
 pub use rtcore::common::{
     BinaryOperator, BitRange, BusKind, CtxSize, Number, RegisterKind, Span, Spanned, UnaryOperator,
 };

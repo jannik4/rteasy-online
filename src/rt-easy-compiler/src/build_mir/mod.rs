@@ -4,11 +4,10 @@ mod step;
 
 use crate::mir::*;
 use crate::{symbols::Symbols, InternalError};
-use rtcore::ast;
 
 type Result<T> = std::result::Result<T, InternalError>;
 
-pub fn build_mir<'s>(ast: ast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>> {
+pub fn build_mir<'s>(ast: rtast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>> {
     let mut statements = build_statements(ast.statements, symbols)?;
     if let Some(trailing_label) = ast.trailing_label {
         statements.push(Statement {
@@ -39,7 +38,7 @@ pub fn build_mir<'s>(ast: ast::Ast<'s>, symbols: &Symbols<'s>) -> Result<Mir<'s>
 }
 
 fn build_statements<'s>(
-    statements: Vec<ast::Statement<'s>>,
+    statements: Vec<rtast::Statement<'s>>,
     symbols: &Symbols<'s>,
 ) -> Result<Vec<Statement<'s>>> {
     statements

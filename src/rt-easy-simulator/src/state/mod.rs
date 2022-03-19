@@ -10,9 +10,10 @@ use self::{
 use crate::{Changed, Result};
 use anyhow::anyhow;
 use rtcore::{
-    program::{BusKind, Declaration, Ident, Program, RegisterKind},
+    common::{BusKind, RegisterKind},
     value::Value,
 };
+use rtprogram::{Declaration, Ident, Program};
 use std::collections::{HashMap, HashSet};
 
 #[derive(Debug)]

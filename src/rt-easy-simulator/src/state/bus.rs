@@ -1,7 +1,7 @@
 use super::util::slice_idx;
 use crate::Error;
 use rtcore::{
-    program::{BitRange, BusKind},
+    common::{BitRange, BusKind},
     value::Value,
 };
 use std::cell::RefCell;

@@ -3,7 +3,7 @@ use crate::{
     symbols::{Symbol, Symbols},
     util, CompilerError, CompilerErrorKind, InternalError, SymbolType,
 };
-use rtcore::ast::*;
+use rtast::*;
 
 pub type Result = std::result::Result<Res, InternalError>;
 

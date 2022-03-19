@@ -1,5 +1,4 @@
 use crate::{CompilerError, CompilerErrorKind};
-use rtcore::ast;
 use std::collections::{HashMap, HashSet};
 use std::fmt;
 
@@ -7,18 +6,18 @@ const MAX_BIT_RANGE_SIZE: usize = u16::MAX as usize;
 
 #[derive(Debug, Default)]
 pub struct Symbols<'s> {
-    symbols: HashMap<ast::Ident<'s>, Symbol<'s>>,
-    labels: HashSet<ast::Label<'s>>,
+    symbols: HashMap<rtast::Ident<'s>, Symbol<'s>>,
+    labels: HashSet<rtast::Label<'s>>,
 }
 
 impl<'s> Symbols<'s> {
-    pub fn build(ast: &ast::Ast<'s>, error_sink: &mut impl FnMut(CompilerError)) -> Self {
+    pub fn build(ast: &rtast::Ast<'s>, error_sink: &mut impl FnMut(CompilerError)) -> Self {
         let mut symbols = Self::default();
 
         // Check declarations
         for declaration in &ast.declarations {
             match declaration {
-                ast::Declaration::Register(declare_register) => {
+                rtast::Declaration::Register(declare_register) => {
                     for reg in &declare_register.registers {
                         if symbols
                             .symbols
@@ -48,7 +47,7 @@ impl<'s> Symbols<'s> {
                         }
                     }
                 }
-                ast::Declaration::Bus(declare_bus) => {
+                rtast::Declaration::Bus(declare_bus) => {
                     for bus in &declare_bus.buses {
                         if symbols
                             .symbols
@@ -78,7 +77,7 @@ impl<'s> Symbols<'s> {
                         }
                     }
                 }
-                ast::Declaration::Memory(declare_memory) => {
+                rtast::Declaration::Memory(declare_memory) => {
                     for memory in &declare_memory.memories {
                         if symbols
                             .symbols
@@ -114,7 +113,7 @@ impl<'s> Symbols<'s> {
                         }
                     }
                 }
-                ast::Declaration::RegisterArray(declare_register_array) => {
+                rtast::Declaration::RegisterArray(declare_register_array) => {
                     for reg_array in &declare_register_array.register_arrays {
                         if !reg_array.len.is_power_of_two() {
                             error_sink(CompilerError::new(
@@ -184,21 +183,21 @@ impl<'s> Symbols<'s> {
         symbols
     }
 
-    pub fn symbol(&self, ident: ast::Ident<'s>) -> Option<Symbol<'s>> {
+    pub fn symbol(&self, ident: rtast::Ident<'s>) -> Option<Symbol<'s>> {
         self.symbols.get(&ident).copied()
     }
 
-    pub fn contains_label(&self, label: ast::Label<'s>) -> bool {
+    pub fn contains_label(&self, label: rtast::Label<'s>) -> bool {
         self.labels.contains(&label)
     }
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum Symbol<'s> {
-    Register(Option<ast::BitRange>, ast::RegisterKind),
-    Bus(Option<ast::BitRange>, ast::BusKind),
-    Memory(ast::MemoryRange<'s>),
-    RegisterArray { range: Option<ast::BitRange>, len: usize },
+    Register(Option<rtast::BitRange>, rtast::RegisterKind),
+    Bus(Option<rtast::BitRange>, rtast::BusKind),
+    Memory(rtast::MemoryRange<'s>),
+    RegisterArray { range: Option<rtast::BitRange>, len: usize },
 }
 
 impl Symbol<'_> {

@@ -1,6 +1,6 @@
-use crate::{Generate, Result};
+use crate::{gen_ident, Generate, Result};
 use compiler::mir;
-use rtcore::program::*;
+use rtprogram::*;
 
 impl Generate<mir::Expression<'_>> for Expression {
     fn generate(expression: mir::Expression<'_>) -> Result<Self> {
@@ -45,7 +45,7 @@ impl Generate<mir::Atom<'_>> for Atom {
 impl Generate<mir::Register<'_>> for Register {
     fn generate(reg: mir::Register<'_>) -> Result<Self> {
         Ok(Register {
-            ident: reg.ident.node.into(),
+            ident: gen_ident(reg.ident.node),
             range: reg.range.map(|s| s.node),
             kind: reg.kind,
         })
@@ -54,14 +54,18 @@ impl Generate<mir::Register<'_>> for Register {
 
 impl Generate<mir::Bus<'_>> for Bus {
     fn generate(bus: mir::Bus<'_>) -> Result<Self> {
-        Ok(Bus { ident: bus.ident.node.into(), range: bus.range.map(|s| s.node), kind: bus.kind })
+        Ok(Bus {
+            ident: gen_ident(bus.ident.node),
+            range: bus.range.map(|s| s.node),
+            kind: bus.kind,
+        })
     }
 }
 
 impl Generate<mir::RegisterArray<'_>> for RegisterArray {
     fn generate(reg_array: mir::RegisterArray<'_>) -> Result<Self> {
         Ok(RegisterArray {
-            ident: reg_array.ident.node.into(),
+            ident: gen_ident(reg_array.ident.node),
             index: Box::new(Generate::generate(*reg_array.index)?),
             index_ctx_size: reg_array.index_ctx_size,
         })

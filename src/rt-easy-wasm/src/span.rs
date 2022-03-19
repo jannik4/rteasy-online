@@ -7,8 +7,8 @@ pub struct Span {
     pub end: usize,
 }
 
-impl From<rt_easy::rtcore::program::Span> for Span {
-    fn from(span: rt_easy::rtcore::program::Span) -> Self {
+impl From<rt_easy::rtcore::common::Span> for Span {
+    fn from(span: rt_easy::rtcore::common::Span) -> Self {
         Self { start: span.start, end: span.end }
     }
 }

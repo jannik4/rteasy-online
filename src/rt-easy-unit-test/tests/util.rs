@@ -1,5 +1,5 @@
 use rt_easy_unit_test::unit_test::UnitTest;
-use rtcore::program::Program;
+use rtprogram::Program;
 
 #[allow(dead_code)] // Not used by every test file
 pub fn compile(source: &str) -> Program {

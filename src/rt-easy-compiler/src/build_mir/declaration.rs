@@ -1,7 +1,7 @@
 use super::{expression::BuildExpr, Result};
 use crate::mir::*;
 use crate::symbols::Symbols;
-use rtcore::ast;
+use rtast as ast;
 
 pub fn build<'s>(
     declaration: ast::Declaration<'s>,

@@ -2,7 +2,7 @@ use crate::{
     symbols::{Symbol, Symbols},
     util, CompilerError, CompilerErrorKind, SymbolType,
 };
-use rtcore::ast::*;
+use rtast::*;
 
 #[derive(Debug)]
 pub struct Res {

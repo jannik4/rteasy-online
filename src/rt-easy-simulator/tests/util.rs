@@ -1,4 +1,4 @@
-use rtcore::program::Program;
+use rtprogram::Program;
 
 pub fn compile(source: &str) -> Program {
     let ast = match parser::parse(source) {

@@ -1,7 +1,8 @@
 mod util;
 
 use rt_easy_simulator::Simulator;
-use rtcore::{program::Ident, value::Value};
+use rtcore::value::Value;
+use rtprogram::Ident;
 
 const SOURCE: &'static str = r#"
     declare register AR(5:0), DR(7:0)

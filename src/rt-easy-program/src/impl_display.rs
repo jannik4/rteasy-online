@@ -1,5 +1,5 @@
 use super::*;
-use crate::util;
+use rtcore::util;
 use std::fmt::{Display, Formatter, Result};
 
 impl Display for Program {
@@ -227,17 +227,6 @@ impl Display for Bus {
 impl Display for RegisterArray {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, "{}[{}]", self.ident.0, self.index)
-    }
-}
-
-impl Display for Number {
-    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        match self.kind {
-            NumberKind::BitString => write!(f, "\"{}\"", self.value.as_bin(true)),
-            NumberKind::Binary => write!(f, "0b{}", self.value.as_bin(false)),
-            NumberKind::Decimal => write!(f, "{}", self.value.as_dec()),
-            NumberKind::Hexadecimal => write!(f, "0x{}", self.value.as_hex()),
-        }
     }
 }
 

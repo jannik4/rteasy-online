@@ -3,11 +3,9 @@ use crate::unit_test::{
     Step, UnitTest,
 };
 use anyhow::{anyhow, bail, Context, Result};
-use rtcore::{
-    ast,
-    common::{BusKind, RegisterKind, Span, Spanned},
-    program::{Declaration, Label as ProgramLabel, Program},
-};
+use rtast as ast;
+use rtcore::common::{BusKind, RegisterKind, Span, Spanned};
+use rtprogram::{Declaration, Label as ProgramLabel, Program};
 use simulator::{Simulator, StepResult, StepResultKind};
 
 // TODO: Better errrors (custom_error+pretty_print instead of anyhow)

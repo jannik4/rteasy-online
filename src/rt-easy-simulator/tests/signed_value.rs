@@ -1,10 +1,8 @@
 mod util;
 
 use rt_easy_simulator::Simulator;
-use rtcore::{
-    program::Ident,
-    value::{SignedValue, Value},
-};
+use rtcore::value::{SignedValue, Value};
+use rtprogram::Ident;
 
 const SOURCE: &'static str = r#"
     declare register X(7:0), Y(3:0)

@@ -1,3 +1,5 @@
+#![deny(rust_2018_idioms)]
+
 mod concat;
 mod declaration;
 mod expression;
@@ -6,7 +8,7 @@ mod operation;
 mod signals;
 
 pub use self::{concat::*, declaration::*, expression::*, operation::*, signals::*};
-pub use crate::common::*;
+pub use rtcore::common::*;
 pub use split_vec::SplitVec;
 
 #[derive(Debug)]
@@ -62,17 +64,5 @@ pub enum Criterion {
 #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Ident(pub String);
 
-impl From<crate::ast::Ident<'_>> for Ident {
-    fn from(v: crate::ast::Ident<'_>) -> Self {
-        Self(v.0.to_string())
-    }
-}
-
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct Label(pub String);
-
-impl From<crate::ast::Label<'_>> for Label {
-    fn from(v: crate::ast::Label<'_>) -> Self {
-        Self(v.0.to_string())
-    }
-}

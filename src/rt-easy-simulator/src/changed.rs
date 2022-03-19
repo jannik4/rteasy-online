@@ -1,4 +1,5 @@
-use rtcore::{program::Ident, value::Value};
+use rtcore::value::Value;
+use rtprogram::Ident;
 use std::collections::HashSet;
 
 #[derive(Debug, Default)]

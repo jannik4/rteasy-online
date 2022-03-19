@@ -1,9 +1,10 @@
 use super::Simulator;
 use crate::Error;
 use rtcore::{
-    program::{BusKind, Ident, RegisterKind},
+    common::{BusKind, RegisterKind},
     value::{SignedValue, Value},
 };
+use rtprogram::Ident;
 
 impl Simulator {
     // ------------------------------------------------------------

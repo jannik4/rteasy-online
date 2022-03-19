@@ -2,7 +2,7 @@ use crate::{
     symbols::{Symbol, Symbols},
     CompilerError, CompilerErrorKind,
 };
-use rtcore::ast::{BinaryOperator, BitRange, Concat, ConcatPart, NumberKind, UnaryOperator};
+use rtast::{BinaryOperator, BitRange, Concat, ConcatPart, NumberKind, UnaryOperator};
 use rtcore::common::{CtxSize, Spanned};
 use std::cmp;
 

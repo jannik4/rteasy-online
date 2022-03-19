@@ -1,6 +1,6 @@
-use crate::{Generate, Result};
+use crate::{gen_ident, gen_label, Generate, Result};
 use compiler::mir;
-use rtcore::program::*;
+use rtprogram::*;
 
 impl Generate<mir::Operation<'_>> for Operation {
     fn generate(operation: mir::Operation<'_>) -> Result<Self> {
@@ -43,19 +43,19 @@ impl Generate<mir::EvalCriterionSwitchGroup<'_>> for EvalCriterionGroup {
 
 impl Generate<mir::Goto<'_>> for Goto {
     fn generate(goto: mir::Goto<'_>) -> Result<Self> {
-        Ok(Goto { label: goto.label.node.into() })
+        Ok(Goto { label: gen_label(goto.label.node) })
     }
 }
 
 impl Generate<mir::Write<'_>> for Write {
     fn generate(write: mir::Write<'_>) -> Result<Self> {
-        Ok(Write { ident: write.ident.node.into() })
+        Ok(Write { ident: gen_ident(write.ident.node) })
     }
 }
 
 impl Generate<mir::Read<'_>> for Read {
     fn generate(read: mir::Read<'_>) -> Result<Self> {
-        Ok(Read { ident: read.ident.node.into() })
+        Ok(Read { ident: gen_ident(read.ident.node) })
     }
 }
 

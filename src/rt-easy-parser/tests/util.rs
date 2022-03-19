@@ -1,4 +1,4 @@
-use rtcore::ast::Ast;
+use rtast::Ast;
 
 #[allow(dead_code)] // Not used by every test file
 pub fn parse(source: &str) -> Ast<'_> {

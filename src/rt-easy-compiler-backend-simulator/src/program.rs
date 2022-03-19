@@ -1,6 +1,6 @@
-use crate::{Generate, Result};
+use crate::{gen_label, Generate, Result};
 use compiler::mir;
-use rtcore::program::*;
+use rtprogram::*;
 
 impl Generate<mir::Mir<'_>> for Program {
     fn generate(mir: mir::Mir<'_>) -> Result<Self> {
@@ -13,7 +13,7 @@ impl Generate<mir::Mir<'_>> for Program {
 impl Generate<mir::Statement<'_>> for Statement {
     fn generate(statement: mir::Statement<'_>) -> Result<Self> {
         Ok(Statement {
-            label: statement.label.map(|s| Spanned { node: s.node.into(), span: s.span }),
+            label: statement.label.map(|s| Spanned { node: gen_label(s.node), span: s.span }),
             steps: {
                 let split_at = statement
                     .steps

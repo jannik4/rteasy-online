@@ -4,7 +4,7 @@ mod statements;
 
 use crate::{symbols::Symbols, Error};
 
-pub fn check<'s>(ast: &rtcore::ast::Ast<'s>) -> Result<Symbols<'s>, Error> {
+pub fn check<'s>(ast: &rtast::Ast<'s>) -> Result<Symbols<'s>, Error> {
     // Errors
     let mut errors = Vec::new();
     let mut error_sink = |e| errors.push(e);

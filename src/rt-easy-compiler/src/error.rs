@@ -1,5 +1,5 @@
 use crate::SymbolType;
-use rtcore::program::{BitRange, Span};
+use rtcore::common::{BitRange, Span};
 use std::fmt;
 
 #[derive(Debug)]

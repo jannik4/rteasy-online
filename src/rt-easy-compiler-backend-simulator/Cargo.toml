@@ -8,4 +8,5 @@ publish = false
 
 [dependencies]
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+rtprogram = { path = "../rt-easy-program", package = "rt-easy-program" }
 compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }

@@ -17,7 +17,7 @@ fn lex(source: &str) -> Result<Vec<toktok::SpannedToken<Token>>, toktok::Error<T
     Ok(tokens)
 }
 
-pub fn parse(source: &str) -> Result<rtcore::ast::Ast<'_>, toktok::Error<Token>> {
+pub fn parse(source: &str) -> Result<rtast::Ast<'_>, toktok::Error<Token>> {
     let tokens = lex(source)?;
     let state = toktok::State::new(source, &tokens);
     let (_, ast) = parser::ast_eoi(state)?;
@@ -25,7 +25,7 @@ pub fn parse(source: &str) -> Result<rtcore::ast::Ast<'_>, toktok::Error<Token>>
     Ok(ast)
 }
 
-pub fn parse_assignment(source: &str) -> Result<rtcore::ast::Assignment<'_>, toktok::Error<Token>> {
+pub fn parse_assignment(source: &str) -> Result<rtast::Assignment<'_>, toktok::Error<Token>> {
     let tokens = lex(source)?;
     let state = toktok::State::new(source, &tokens);
     let (_, assignment) = parser::assignment_eoi(state)?;
@@ -33,7 +33,7 @@ pub fn parse_assignment(source: &str) -> Result<rtcore::ast::Assignment<'_>, tok
     Ok(assignment)
 }
 
-pub fn parse_assert(source: &str) -> Result<rtcore::ast::Assert<'_>, toktok::Error<Token>> {
+pub fn parse_assert(source: &str) -> Result<rtast::Assert<'_>, toktok::Error<Token>> {
     let tokens = lex(source)?;
     let state = toktok::State::new(source, &tokens);
     let (_, assert) = parser::assert_eoi(state)?;

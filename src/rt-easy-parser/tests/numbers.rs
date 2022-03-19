@@ -1,6 +1,6 @@
 mod util;
 
-use rtcore::ast::*;
+use rtast::*;
 use rtcore::value::Value;
 
 #[test]

@@ -1,11 +1,9 @@
 use crate::{evaluate::Evaluate, state::State, Error};
-use rtcore::{
-    program::{
-        Assert, Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, Criterion,
-        EvalCriterion, EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind,
-        Read, Span, Write,
-    },
-    value::Value,
+use rtcore::value::Value;
+use rtprogram::{
+    Assert, Assignment, ConcatPartLvalueClocked, ConcatPartLvalueUnclocked, Criterion,
+    EvalCriterion, EvalCriterionGroup, Goto, Label, Lvalue, Nop, Operation, OperationKind, Read,
+    Span, Write,
 };
 
 type Result = std::result::Result<ExecuteResult, Error>;

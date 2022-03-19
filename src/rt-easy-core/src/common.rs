@@ -116,6 +116,17 @@ pub struct Number {
     pub kind: NumberKind,
 }
 
+impl fmt::Display for Number {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self.kind {
+            NumberKind::BitString => write!(f, "\"{}\"", self.value.as_bin(true)),
+            NumberKind::Binary => write!(f, "0b{}", self.value.as_bin(false)),
+            NumberKind::Decimal => write!(f, "{}", self.value.as_dec()),
+            NumberKind::Hexadecimal => write!(f, "0x{}", self.value.as_hex()),
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum NumberKind {
     BitString,

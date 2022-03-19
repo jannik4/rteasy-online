@@ -2,7 +2,7 @@ use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
 #[derive(Debug)]
-pub struct Signals(pub(crate) rt_easy::rtcore::program::Signals);
+pub struct Signals(pub(crate) rt_easy::rtprogram::Signals);
 
 #[wasm_bindgen]
 impl Signals {

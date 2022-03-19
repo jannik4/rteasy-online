@@ -1,5 +1,5 @@
 [package]
-name = "rt-easy-parser"
+name = "rt-easy-ast"
 version = "0.1.0"
 authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
 edition = "2021"
@@ -8,10 +8,5 @@ publish = false
 
 [dependencies]
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
-rtast = { path = "../rt-easy-ast", package = "rt-easy-ast" }
 
-toktok = { path = "../lib/toktok" }
-logos = "0.12.0"
-
-[build-dependencies]
-toktok-generator = { path = "../lib/toktok-generator" }
+either = "1.6.1"

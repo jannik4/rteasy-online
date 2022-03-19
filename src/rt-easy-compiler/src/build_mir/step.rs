@@ -1,11 +1,11 @@
 use super::{expression::BuildExpr, Result};
 use crate::symbols::Symbols;
 use crate::{mir::*, util, InternalError};
-use rtcore::ast::{self, Either};
+use rtast::{self as ast, Either};
 
 pub fn build<'s>(
-    operations: Vec<ast::Operation<'s>>,
-    operations_post: Option<Vec<ast::Operation<'s>>>,
+    operations: Vec<rtast::Operation<'s>>,
+    operations_post: Option<Vec<rtast::Operation<'s>>>,
     symbols: &Symbols<'_>,
 ) -> Result<Vec<Step<'s>>> {
     let mut build = Build::new();

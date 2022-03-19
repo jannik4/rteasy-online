@@ -7,12 +7,4 @@ rust-version = "1.56"
 publish = false
 
 [dependencies]
-split-vec = { path = "../lib/split-vec" }
 value = { path = "../lib/value" }
-
-either = "1.6.1"
-
-[dev-dependencies]
-parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
-compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
-compiler-backend-simulator = { path = "../rt-easy-compiler-backend-simulator", package = "rt-easy-compiler-backend-simulator" }

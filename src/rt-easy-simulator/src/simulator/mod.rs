@@ -3,7 +3,7 @@ mod impl_step;
 
 use self::impl_step::Cursor;
 use crate::{state::State, Changed};
-use rtcore::program::{Ident, Label, Program, Signals, Span};
+use rtprogram::{Ident, Label, Program, Signals, Span};
 use std::collections::{BTreeSet, HashSet};
 
 pub struct Simulator {

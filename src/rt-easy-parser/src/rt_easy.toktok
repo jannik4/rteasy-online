@@ -279,7 +279,8 @@ label -> Label<'s>: exact(Token::Identifier) { Label($1) };
 
 +++
 
-use rtcore::{ast::*, value::Value};
+use rtcore::value::Value;
+use rtast::*;
 use crate::lexer::Token;
 use toktok::combinator::{sep1, eoi, many0, many1, exact, opt, preceded, terminated, either, positioned, pair};
 use toktok::Error;

@@ -139,10 +139,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 
 [[package]]
+name = "rt-easy-ast"
+version = "0.1.0"
+dependencies = [
+ "either",
+ "rt-easy-core",
+]
+
+[[package]]
 name = "rt-easy-compiler"
 version = "0.1.0"
 dependencies = [
  "pretty-error",
+ "rt-easy-ast",
  "rt-easy-core",
 ]
 
@@ -162,8 +171,6 @@ dependencies = [
 name = "rt-easy-core"
 version = "0.1.0"
 dependencies = [
- "either",
- "split-vec",
  "value",
 ]
 
@@ -172,6 +179,7 @@ name = "rt-easy-parser"
 version = "0.1.0"
 dependencies = [
  "logos",
+ "rt-easy-ast",
  "rt-easy-core",
  "toktok",
  "toktok-generator",
@@ -182,10 +190,6 @@ name = "smawk"
 version = "0.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f67ad224767faa3c7d8b6d91985b78e70a1324408abcb1cfcc2be4c06bc06043"
-
-[[package]]
-name = "split-vec"
-version = "0.1.0"
 
 [[package]]
 name = "syn"

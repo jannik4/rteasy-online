@@ -1,6 +1,6 @@
 use crate::Error;
 use anyhow::anyhow;
-use rtcore::program::BitRange;
+use rtcore::common::BitRange;
 use std::ops::Range;
 
 pub fn slice_idx(range: BitRange, idx: BitRange) -> Result<Range<usize>, Error> {

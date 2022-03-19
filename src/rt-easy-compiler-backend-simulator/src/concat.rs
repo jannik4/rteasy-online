@@ -1,6 +1,6 @@
 use crate::{Generate, Result};
 use compiler::mir;
-use rtcore::program::*;
+use rtprogram::*;
 
 impl<P1, P2> Generate<mir::Concat<P1>> for Concat<P2>
 where

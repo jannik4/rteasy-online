@@ -8,6 +8,7 @@ publish = false
 
 [dependencies]
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+rtast = { path = "../rt-easy-ast", package = "rt-easy-ast" }
 pretty-error = { path = "../lib/pretty-error" }
 
 [dev-dependencies]

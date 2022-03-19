@@ -1,10 +1,8 @@
 use crate::{state::State, Error};
-use rtcore::{
-    program::{
-        Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, ExpressionKind,
-        Number, Register, RegisterArray, UnaryOperator, UnaryTerm,
-    },
-    value::{Bit, Value},
+use rtcore::value::{Bit, Value};
+use rtprogram::{
+    Atom, BinaryOperator, BinaryTerm, Bus, Concat, ConcatPartExpr, Expression, ExpressionKind,
+    Number, Register, RegisterArray, UnaryOperator, UnaryTerm,
 };
 use std::convert::Infallible;
 
