@@ -19,13 +19,13 @@ pub fn check(
 
 #[derive(Debug, Clone)]
 struct State<'s> {
-    symbols: &'s Symbols<'s>,
+    _symbols: &'s Symbols<'s>,
     reads: HashMap<Ident<'s>, usize>,
 }
 
 impl<'s> State<'s> {
     fn new(symbols: &'s Symbols<'s>) -> Self {
-        Self { symbols, reads: HashMap::new() }
+        Self { _symbols: symbols, reads: HashMap::new() }
     }
 
     fn insert(&mut self, name: Ident<'s>) {

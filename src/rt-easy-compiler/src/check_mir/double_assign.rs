@@ -32,7 +32,7 @@ struct AssignTarget<'s> {
 #[derive(Debug, Clone)]
 struct AssignInfo {
     range: Option<BitRange>,
-    span: Span,
+    _span: Span,
 }
 
 impl<'s> State<'s> {
@@ -44,7 +44,7 @@ impl<'s> State<'s> {
         self.assigned
             .entry(AssignTarget { name, type_ })
             .or_default()
-            .push(AssignInfo { range, span });
+            .push(AssignInfo { range, _span: span });
     }
 }
 

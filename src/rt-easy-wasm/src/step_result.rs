@@ -62,10 +62,7 @@ impl StepResult {
         changed
             .iter()
             .map(|(reg_array, idx)| {
-                std::array::IntoIter::new([
-                    JsValue::from_str(&reg_array.0),
-                    JsValue::from_f64(*idx as f64),
-                ])
+                [JsValue::from_str(&reg_array.0), JsValue::from_f64(*idx as f64)]
             })
             .flatten()
             .collect()
@@ -79,12 +76,7 @@ impl StepResult {
         };
         changed
             .iter()
-            .map(|(mem, addr)| {
-                std::array::IntoIter::new([
-                    JsValue::from_str(&mem.0),
-                    JsValue::from_str(&addr.as_hex()),
-                ])
-            })
+            .map(|(mem, addr)| [JsValue::from_str(&mem.0), JsValue::from_str(&addr.as_hex())])
             .flatten()
             .collect()
     }
