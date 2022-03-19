@@ -1,0 +1,20 @@
+[package]
+name = "rt-easy-compiler-backend-vhdl"
+version = "0.1.0"
+authors = ["Jannik Obermann <jannik.obermann@gmail.com>"]
+edition = "2021"
+rust-version = "1.56"
+publish = false
+
+[dependencies]
+rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+
+thiserror = "1.0.30"
+temply = "0.2.0"
+indexmap = "1.8.0"
+vec1 = "1.8.0"
+
+[dev-dependencies]
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }

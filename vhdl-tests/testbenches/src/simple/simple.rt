@@ -1,0 +1,2 @@
+declare output OUTPUT
+OUTPUT <- 1;

@@ -1,0 +1,40 @@
+name: test-vhdl
+
+on: [push, pull_request]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Cache crate
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            vhdl-tests/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('vhdl-tests/Cargo.lock') }}
+
+      - name: Setup toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+
+      - run: sudo apt-get update
+      - name: Setup ghdl
+        uses: ghdl/setup-ghdl-ci@nightly
+        with:
+          backend: mcode
+      - run: ghdl --version
+
+      - name: Run tests
+        run: cargo run
+        working-directory: vhdl-tests

@@ -1,0 +1,4 @@
+declare output OUTPUT
+
+# This assert will fail in the simulator, but should be ignored in VHDL.
+assert 1 = 0, OUTPUT <- 1;

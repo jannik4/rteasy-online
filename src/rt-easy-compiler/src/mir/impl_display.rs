@@ -166,7 +166,7 @@ impl Display for Atom<'_> {
             Register(atom) => write!(f, "{}", atom),
             Bus(atom) => write!(f, "{}", atom),
             RegisterArray(atom) => write!(f, "{}", atom),
-            Number(atom) => write!(f, "{}", atom.node.value.as_dec()),
+            Number(atom) => write!(f, "{}", atom.node),
         }
     }
 }
@@ -281,7 +281,7 @@ impl Display for ConcatPartExpr<'_> {
             Register(reg) => write!(f, "{}", reg),
             Bus(bus) => write!(f, "{}", bus),
             RegisterArray(reg_array) => write!(f, "{}", reg_array),
-            Number(number) => write!(f, "{}", number.node.value.as_dec()),
+            Number(number) => write!(f, "{}", number.node),
         }
     }
 }

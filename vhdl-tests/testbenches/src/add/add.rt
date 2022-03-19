@@ -1,0 +1,4 @@
+declare input A(7:0), B(7:0)
+declare output OUT(7:0)
+
+OUT <- A + B;

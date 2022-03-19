@@ -297,7 +297,7 @@ fn parse_bin(s: &str, span: Range<usize>) -> Result<Number> {
     match Value::parse_bin(s) {
         Ok(mut value) => {
           value.remove_leading_zeros();
-          Ok(Number { value, kind: NumberKind::Other })
+          Ok(Number { value, kind: NumberKind::Binary })
         },
         Err(()) => Err(Error::new_custom(span, "invalid binary number".into())),
     }
@@ -305,7 +305,7 @@ fn parse_bin(s: &str, span: Range<usize>) -> Result<Number> {
 
 fn parse_dec(s: &str, span: Range<usize>) -> Result<Number> {
     match Value::parse_dec(s) {
-        Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
+        Ok(value) => Ok(Number { value, kind: NumberKind::Decimal }),
         Err(()) => Err(Error::new_custom(span, "invalid decimal number".into())),
     }
 }
@@ -318,7 +318,7 @@ fn parse_hex(s: &str, span: Range<usize>) -> Result<Number> {
     };
 
     match Value::parse_hex(s) {
-        Ok(value) => Ok(Number { value, kind: NumberKind::Other }),
+        Ok(value) => Ok(Number { value, kind: NumberKind::Hexadecimal }),
         Err(()) => Err(Error::new_custom(span, "invalid hexadecimal number".into())),
     }
 }

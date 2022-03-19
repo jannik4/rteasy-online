@@ -43,11 +43,11 @@ _:
     ARRAY[IN(2:6) + 1] <- B and BUS
 
 _:
-    A <- B.B.0.BUS(7).IN(6)
+    A <- B.B."0".BUS(7).IN(6)
 
 _:
-    BUS(7).BUS2 <- 15
-    A.ARRAY[2].OUT <- sxt 9
+    BUS(7).BUS2 <- 0xF
+    A.ARRAY[2].OUT <- sxt 0b1001
 
 _:
     goto MAIN

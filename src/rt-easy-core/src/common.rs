@@ -3,13 +3,13 @@ use std::fmt;
 use std::ops::Range;
 use value::Value;
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum OperatorAssociativity {
     Left,
     Right,
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum BinaryOperator {
     Eq,
     Ne,
@@ -72,7 +72,7 @@ impl fmt::Display for BinaryOperator {
     }
 }
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 pub enum UnaryOperator {
     Sign,
     Neg,
@@ -116,19 +116,21 @@ pub struct Number {
     pub kind: NumberKind,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum NumberKind {
     BitString,
-    Other,
+    Binary,
+    Decimal,
+    Hexadecimal,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum RegisterKind {
     Intern,
     Output,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum BusKind {
     Intern,
     Input,
@@ -170,10 +172,10 @@ impl BitRange {
     pub fn contains_range(&self, idx: Self) -> bool {
         let contains_msb = self.contains(idx.msb);
         let contains_lsb = self.contains(idx.lsb());
-        let msb_lsb_order = if idx.lsb.is_some() {
-            (self.msb >= self.lsb()) == (idx.msb >= idx.lsb())
-        } else {
+        let msb_lsb_order = if idx.lsb() == idx.msb {
             true
+        } else {
+            (self.msb >= self.lsb()) == (idx.msb >= idx.lsb())
         };
 
         contains_msb && contains_lsb && msb_lsb_order

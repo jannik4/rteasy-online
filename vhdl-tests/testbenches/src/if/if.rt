@@ -1,0 +1,4 @@
+declare input IN
+declare output OUT
+
+if IN then OUT <- 1 fi;

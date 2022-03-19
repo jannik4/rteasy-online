@@ -9,9 +9,9 @@ fn binary() {
         X <- 0b101101, X <- 0B101, X <- %001;
     "#;
     let expected = vec![
-        Number { value: Value::parse_bin("101101").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_bin("101").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_bin("1").unwrap(), kind: NumberKind::Other },
+        Number { value: Value::parse_bin("101101").unwrap(), kind: NumberKind::Binary },
+        Number { value: Value::parse_bin("101").unwrap(), kind: NumberKind::Binary },
+        Number { value: Value::parse_bin("1").unwrap(), kind: NumberKind::Binary },
     ];
 
     test_numbers_util(SOURCE, &expected);
@@ -23,9 +23,9 @@ fn decimal() {
         X <- 2334, X <- 0097082, X <- 1234567890;
     "#;
     let expected = vec![
-        Number { value: Value::parse_dec("2334").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_dec("0097082").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_dec("1234567890").unwrap(), kind: NumberKind::Other },
+        Number { value: Value::parse_dec("2334").unwrap(), kind: NumberKind::Decimal },
+        Number { value: Value::parse_dec("0097082").unwrap(), kind: NumberKind::Decimal },
+        Number { value: Value::parse_dec("1234567890").unwrap(), kind: NumberKind::Decimal },
     ];
 
     test_numbers_util(SOURCE, &expected);
@@ -37,9 +37,12 @@ fn hexadecimal() {
         X <- 0xFF0, X <- 0X01234567890ABCDEF, X <- $FA0;
     "#;
     let expected = vec![
-        Number { value: Value::parse_hex("FF0").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_hex("01234567890ABCDEF").unwrap(), kind: NumberKind::Other },
-        Number { value: Value::parse_hex("FA0").unwrap(), kind: NumberKind::Other },
+        Number { value: Value::parse_hex("FF0").unwrap(), kind: NumberKind::Hexadecimal },
+        Number {
+            value: Value::parse_hex("01234567890ABCDEF").unwrap(),
+            kind: NumberKind::Hexadecimal,
+        },
+        Number { value: Value::parse_hex("FA0").unwrap(), kind: NumberKind::Hexadecimal },
     ];
 
     test_numbers_util(SOURCE, &expected);
