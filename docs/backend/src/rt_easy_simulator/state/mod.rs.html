@@ -251,6 +251,7 @@
 <span id="249">249</span>
 <span id="250">250</span>
 <span id="251">251</span>
+<span id="252">252</span>
 </pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">bus</span>;
 <span class="kw">mod</span> <span class="ident">memory</span>;
 <span class="kw">mod</span> <span class="ident">register</span>;
@@ -263,9 +264,10 @@
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Changed</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">anyhow::anyhow</span>;
 <span class="kw">use</span> <span class="ident">rtcore</span>::{
-    <span class="ident">program</span>::{<span class="ident">BusKind</span>, <span class="ident">Declaration</span>, <span class="ident">Ident</span>, <span class="ident">Program</span>, <span class="ident">RegisterKind</span>},
+    <span class="ident">common</span>::{<span class="ident">BusKind</span>, <span class="ident">RegisterKind</span>},
     <span class="ident">value::Value</span>,
 };
+<span class="kw">use</span> <span class="ident">rtprogram</span>::{<span class="ident">Declaration</span>, <span class="ident">Ident</span>, <span class="ident">Program</span>};
 <span class="kw">use</span> <span class="ident">std::collections</span>::{<span class="ident">HashMap</span>, <span class="ident">HashSet</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>

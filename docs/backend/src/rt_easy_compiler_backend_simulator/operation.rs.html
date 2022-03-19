@@ -94,9 +94,9 @@
 <span id="92">92</span>
 <span id="93">93</span>
 <span id="94">94</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Generate</span>, <span class="prelude-ty">Result</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">gen_ident</span>, <span class="ident">gen_label</span>, <span class="ident">Generate</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">compiler::mir</span>;
-<span class="kw">use</span> <span class="ident">rtcore::program</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">rtprogram</span>::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Operation</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Operation</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">operation</span>: <span class="ident">mir::Operation</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
@@ -139,19 +139,19 @@
 
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Goto</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Goto</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">goto</span>: <span class="ident">mir::Goto</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Goto</span> { <span class="ident">label</span>: <span class="ident">goto</span>.<span class="ident">label</span>.<span class="ident">node</span>.<span class="ident">into</span>() })
+        <span class="prelude-val">Ok</span>(<span class="ident">Goto</span> { <span class="ident">label</span>: <span class="ident">gen_label</span>(<span class="ident">goto</span>.<span class="ident">label</span>.<span class="ident">node</span>) })
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Write</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Write</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">write</span>: <span class="ident">mir::Write</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Write</span> { <span class="ident">ident</span>: <span class="ident">write</span>.<span class="ident">ident</span>.<span class="ident">node</span>.<span class="ident">into</span>() })
+        <span class="prelude-val">Ok</span>(<span class="ident">Write</span> { <span class="ident">ident</span>: <span class="ident">gen_ident</span>(<span class="ident">write</span>.<span class="ident">ident</span>.<span class="ident">node</span>) })
     }
 }
 
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Read</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Read</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">read</span>: <span class="ident">mir::Read</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Ok</span>(<span class="ident">Read</span> { <span class="ident">ident</span>: <span class="ident">read</span>.<span class="ident">ident</span>.<span class="ident">node</span>.<span class="ident">into</span>() })
+        <span class="prelude-val">Ok</span>(<span class="ident">Read</span> { <span class="ident">ident</span>: <span class="ident">gen_ident</span>(<span class="ident">read</span>.<span class="ident">ident</span>.<span class="ident">node</span>) })
     }
 }
 

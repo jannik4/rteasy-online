@@ -281,14 +281,16 @@
 <span id="279">279</span>
 <span id="280">280</span>
 <span id="281">281</span>
+<span id="282">282</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">util</span>::{<span class="ident">JsError</span>, <span class="kw-2">*</span>},
     <span class="ident">Signals</span>, <span class="ident">Span</span>, <span class="ident">StepResult</span>,
 };
 <span class="kw">use</span> <span class="ident">rt_easy::rtcore</span>::{
-    <span class="ident">program</span>::{<span class="ident">BusKind</span>, <span class="ident">Ident</span>, <span class="ident">RegisterKind</span>},
+    <span class="ident">common</span>::{<span class="ident">BusKind</span>, <span class="ident">RegisterKind</span>},
     <span class="ident">value</span>::{<span class="ident">SignedValue</span>, <span class="ident">Value</span>},
 };
+<span class="kw">use</span> <span class="ident">rt_easy::rtprogram::Ident</span>;
 <span class="kw">use</span> <span class="ident">wasm_bindgen::prelude</span>::<span class="kw-2">*</span>;
 
 <span class="kw">type</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">JsValue</span><span class="op">&gt;</span>;

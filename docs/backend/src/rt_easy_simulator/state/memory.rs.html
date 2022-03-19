@@ -227,10 +227,12 @@
 <span id="225">225</span>
 <span id="226">226</span>
 <span id="227">227</span>
+<span id="228">228</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">super</span>::State</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::Error</span>;
 <span class="kw">use</span> <span class="ident">anyhow::anyhow</span>;
-<span class="kw">use</span> <span class="ident">rtcore</span>::{<span class="ident">program::MemoryRange</span>, <span class="ident">value::Value</span>};
+<span class="kw">use</span> <span class="ident">rtcore::value::Value</span>;
+<span class="kw">use</span> <span class="ident">rtprogram::MemoryRange</span>;
 <span class="kw">use</span> <span class="ident">std::cell::RefCell</span>;
 <span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 <span class="kw">use</span> <span class="ident">std::io</span>;

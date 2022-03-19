@@ -129,13 +129,13 @@
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span> {
-    <span class="ident">symbols</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">Symbols</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>,
+    <span class="ident">_symbols</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">Symbols</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>,
     <span class="ident">reads</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>, <span class="ident">usize</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span> <span class="ident">State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">symbols</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">Symbols</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) -&gt; <span class="self">Self</span> {
-        <span class="self">Self</span> { <span class="ident">symbols</span>, <span class="ident">reads</span>: <span class="ident">HashMap::new</span>() }
+        <span class="self">Self</span> { <span class="ident">_symbols</span>: <span class="ident">symbols</span>, <span class="ident">reads</span>: <span class="ident">HashMap::new</span>() }
     }
 
     <span class="kw">fn</span> <span class="ident">insert</span>(<span class="kw-2">&amp;mut</span> <span class="self">self</span>, <span class="ident">name</span>: <span class="ident">Ident</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>) {

@@ -59,9 +59,9 @@
 <span id="57">57</span>
 <span id="58">58</span>
 <span id="59">59</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">Generate</span>, <span class="prelude-ty">Result</span>};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">gen_label</span>, <span class="ident">Generate</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">compiler::mir</span>;
-<span class="kw">use</span> <span class="ident">rtcore::program</span>::<span class="kw-2">*</span>;
+<span class="kw">use</span> <span class="ident">rtprogram</span>::<span class="kw-2">*</span>;
 
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Mir</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Program</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">mir</span>: <span class="ident">mir::Mir</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
@@ -74,7 +74,7 @@
 <span class="kw">impl</span> <span class="ident">Generate</span><span class="op">&lt;</span><span class="ident">mir::Statement</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Statement</span> {
     <span class="kw">fn</span> <span class="ident">generate</span>(<span class="ident">statement</span>: <span class="ident">mir::Statement</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="prelude-val">Ok</span>(<span class="ident">Statement</span> {
-            <span class="ident">label</span>: <span class="ident">statement</span>.<span class="ident">label</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">Spanned</span> { <span class="ident">node</span>: <span class="ident">s</span>.<span class="ident">node</span>.<span class="ident">into</span>(), <span class="ident">span</span>: <span class="ident">s</span>.<span class="ident">span</span> }),
+            <span class="ident">label</span>: <span class="ident">statement</span>.<span class="ident">label</span>.<span class="ident">map</span>(<span class="op">|</span><span class="ident">s</span><span class="op">|</span> <span class="ident">Spanned</span> { <span class="ident">node</span>: <span class="ident">gen_label</span>(<span class="ident">s</span>.<span class="ident">node</span>), <span class="ident">span</span>: <span class="ident">s</span>.<span class="ident">span</span> }),
             <span class="ident">steps</span>: {
                 <span class="kw">let</span> <span class="ident">split_at</span> <span class="op">=</span> <span class="ident">statement</span>
                     .<span class="ident">steps</span>

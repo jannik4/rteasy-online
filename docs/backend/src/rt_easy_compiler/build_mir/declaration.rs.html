@@ -63,7 +63,7 @@
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">expression::BuildExpr</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::mir</span>::<span class="kw-2">*</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::symbols::Symbols</span>;
-<span class="kw">use</span> <span class="ident">rtcore::ast</span>;
+<span class="kw">use</span> <span class="ident">rtast</span> <span class="kw">as</span> <span class="ident">ast</span>;
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>(
     <span class="ident">declaration</span>: <span class="ident">ast::Declaration</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span>,

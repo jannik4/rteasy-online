@@ -154,16 +154,12 @@
 <span id="152">152</span>
 <span id="153">153</span>
 <span id="154">154</span>
-<span id="155">155</span>
-<span id="156">156</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">evaluate::Evaluate</span>, <span class="ident">state::State</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="ident">rtcore</span>::{
-    <span class="ident">program</span>::{
-        <span class="ident">Assert</span>, <span class="ident">Assignment</span>, <span class="ident">ConcatPartLvalueClocked</span>, <span class="ident">ConcatPartLvalueUnclocked</span>, <span class="ident">Criterion</span>,
-        <span class="ident">EvalCriterion</span>, <span class="ident">EvalCriterionGroup</span>, <span class="ident">Goto</span>, <span class="ident">Label</span>, <span class="ident">Lvalue</span>, <span class="ident">Nop</span>, <span class="ident">Operation</span>, <span class="ident">OperationKind</span>,
-        <span class="ident">Read</span>, <span class="ident">Span</span>, <span class="ident">Write</span>,
-    },
-    <span class="ident">value::Value</span>,
+<span class="kw">use</span> <span class="ident">rtcore::value::Value</span>;
+<span class="kw">use</span> <span class="ident">rtprogram</span>::{
+    <span class="ident">Assert</span>, <span class="ident">Assignment</span>, <span class="ident">ConcatPartLvalueClocked</span>, <span class="ident">ConcatPartLvalueUnclocked</span>, <span class="ident">Criterion</span>,
+    <span class="ident">EvalCriterion</span>, <span class="ident">EvalCriterionGroup</span>, <span class="ident">Goto</span>, <span class="ident">Label</span>, <span class="ident">Lvalue</span>, <span class="ident">Nop</span>, <span class="ident">Operation</span>, <span class="ident">OperationKind</span>, <span class="ident">Read</span>,
+    <span class="ident">Span</span>, <span class="ident">Write</span>,
 };
 
 <span class="kw">type</span> <span class="prelude-ty">Result</span> <span class="op">=</span> <span class="ident">std::result::Result</span><span class="op">&lt;</span><span class="ident">ExecuteResult</span>, <span class="ident">Error</span><span class="op">&gt;</span>;

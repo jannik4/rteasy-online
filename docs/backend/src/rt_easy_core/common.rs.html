@@ -276,6 +276,17 @@
 <span id="274">274</span>
 <span id="275">275</span>
 <span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">std::cmp::Ordering</span>;
 <span class="kw">use</span> <span class="ident">std::fmt</span>;
 <span class="kw">use</span> <span class="ident">std::ops::Range</span>;
@@ -392,6 +403,17 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Number</span> {
     <span class="kw">pub</span> <span class="ident">value</span>: <span class="ident">Value</span>,
     <span class="kw">pub</span> <span class="ident">kind</span>: <span class="ident">NumberKind</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Number</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) -&gt; <span class="ident">fmt::Result</span> {
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">kind</span> {
+            <span class="ident">NumberKind::BitString</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;\&quot;{}\&quot;&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_bin</span>(<span class="bool-val">true</span>)),
+            <span class="ident">NumberKind::Binary</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;0b{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_bin</span>(<span class="bool-val">false</span>)),
+            <span class="ident">NumberKind::Decimal</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_dec</span>()),
+            <span class="ident">NumberKind::Hexadecimal</span> =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;0x{}&quot;</span>, <span class="self">self</span>.<span class="ident">value</span>.<span class="ident">as_hex</span>()),
+        }
+    }
 }
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>, <span class="ident">Eq</span>, <span class="ident">Hash</span>)]</span>

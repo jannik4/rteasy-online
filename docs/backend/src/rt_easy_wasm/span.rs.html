@@ -23,8 +23,8 @@
     <span class="kw">pub</span> <span class="ident">end</span>: <span class="ident">usize</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">rt_easy::rtcore::program::Span</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Span</span> {
-    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">span</span>: <span class="ident">rt_easy::rtcore::program::Span</span>) -&gt; <span class="self">Self</span> {
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">rt_easy::rtcore::common::Span</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Span</span> {
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">span</span>: <span class="ident">rt_easy::rtcore::common::Span</span>) -&gt; <span class="self">Self</span> {
         <span class="self">Self</span> { <span class="ident">start</span>: <span class="ident">span</span>.<span class="ident">start</span>, <span class="ident">end</span>: <span class="ident">span</span>.<span class="ident">end</span> }
     }
 }

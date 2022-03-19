@@ -1,1 +1,1 @@
-initSidebarItems({"mod":[["error",""],["vhdl",""]],"struct":[["BackendVhdl",""],["Signals",""]]});
+initSidebarItems({"mod":[["error",""]],"struct":[["BackendVhdl",""]]});

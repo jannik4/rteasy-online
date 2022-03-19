@@ -1784,6 +1784,7 @@
 <span id="1782">1782</span>
 <span id="1783">1783</span>
 <span id="1784">1784</span>
+<span id="1785">1785</span>
 </pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">parser</span>{
     <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
     <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">unused_braces</span>)]</span>
@@ -1796,7 +1797,8 @@
 
 
 
-    <span class="kw">use</span> <span class="ident">rtcore</span>::{<span class="ident">ast</span>::<span class="kw-2">*</span>, <span class="ident">value::Value</span>};
+    <span class="kw">use</span> <span class="ident">rtcore::value::Value</span>;
+    <span class="kw">use</span> <span class="ident">rtast</span>::<span class="kw-2">*</span>;
     <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::lexer::Token</span>;
     <span class="kw">use</span> <span class="ident">toktok::combinator</span>::{<span class="ident">sep1</span>, <span class="ident">eoi</span>, <span class="ident">many0</span>, <span class="ident">many1</span>, <span class="ident">exact</span>, <span class="ident">opt</span>, <span class="ident">preceded</span>, <span class="ident">terminated</span>, <span class="ident">either</span>, <span class="ident">positioned</span>, <span class="ident">pair</span>};
     <span class="kw">use</span> <span class="ident">toktok::Error</span>;

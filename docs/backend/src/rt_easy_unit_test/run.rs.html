@@ -202,18 +202,14 @@
 <span id="200">200</span>
 <span id="201">201</span>
 <span id="202">202</span>
-<span id="203">203</span>
-<span id="204">204</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::unit_test</span>::{
     <span class="ident">Assert</span>, <span class="ident">Assignment</span>, <span class="ident">MicroStep</span>, <span class="ident">OperationKind</span>, <span class="ident">RemoveBreakpoint</span>, <span class="ident">Reset</span>, <span class="ident">Run</span>, <span class="ident">SetBreakpoint</span>,
     <span class="ident">Step</span>, <span class="ident">UnitTest</span>,
 };
 <span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">anyhow</span>, <span class="ident">bail</span>, <span class="ident">Context</span>, <span class="prelude-ty">Result</span>};
-<span class="kw">use</span> <span class="ident">rtcore</span>::{
-    <span class="ident">ast</span>,
-    <span class="ident">common</span>::{<span class="ident">BusKind</span>, <span class="ident">RegisterKind</span>, <span class="ident">Span</span>, <span class="ident">Spanned</span>},
-    <span class="ident">program</span>::{<span class="ident">Declaration</span>, <span class="ident">Label</span> <span class="kw">as</span> <span class="ident">ProgramLabel</span>, <span class="ident">Program</span>},
-};
+<span class="kw">use</span> <span class="ident">rtast</span> <span class="kw">as</span> <span class="ident">ast</span>;
+<span class="kw">use</span> <span class="ident">rtcore::common</span>::{<span class="ident">BusKind</span>, <span class="ident">RegisterKind</span>, <span class="ident">Span</span>, <span class="ident">Spanned</span>};
+<span class="kw">use</span> <span class="ident">rtprogram</span>::{<span class="ident">Declaration</span>, <span class="ident">Label</span> <span class="kw">as</span> <span class="ident">ProgramLabel</span>, <span class="ident">Program</span>};
 <span class="kw">use</span> <span class="ident">simulator</span>::{<span class="ident">Simulator</span>, <span class="ident">StepResult</span>, <span class="ident">StepResultKind</span>};
 
 <span class="comment">// TODO: Better errrors (custom_error+pretty_print instead of anyhow)</span>

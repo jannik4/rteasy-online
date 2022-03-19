@@ -142,15 +142,11 @@
 <span id="140">140</span>
 <span id="141">141</span>
 <span id="142">142</span>
-<span id="143">143</span>
-<span id="144">144</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">state::State</span>, <span class="ident">Error</span>};
-<span class="kw">use</span> <span class="ident">rtcore</span>::{
-    <span class="ident">program</span>::{
-        <span class="ident">Atom</span>, <span class="ident">BinaryOperator</span>, <span class="ident">BinaryTerm</span>, <span class="ident">Bus</span>, <span class="ident">Concat</span>, <span class="ident">ConcatPartExpr</span>, <span class="ident">Expression</span>, <span class="ident">ExpressionKind</span>,
-        <span class="ident">Number</span>, <span class="ident">Register</span>, <span class="ident">RegisterArray</span>, <span class="ident">UnaryOperator</span>, <span class="ident">UnaryTerm</span>,
-    },
-    <span class="ident">value</span>::{<span class="ident">Bit</span>, <span class="ident">Value</span>},
+<span class="kw">use</span> <span class="ident">rtcore::value</span>::{<span class="ident">Bit</span>, <span class="ident">Value</span>};
+<span class="kw">use</span> <span class="ident">rtprogram</span>::{
+    <span class="ident">Atom</span>, <span class="ident">BinaryOperator</span>, <span class="ident">BinaryTerm</span>, <span class="ident">Bus</span>, <span class="ident">Concat</span>, <span class="ident">ConcatPartExpr</span>, <span class="ident">Expression</span>, <span class="ident">ExpressionKind</span>,
+    <span class="ident">Number</span>, <span class="ident">Register</span>, <span class="ident">RegisterArray</span>, <span class="ident">UnaryOperator</span>, <span class="ident">UnaryTerm</span>,
 };
 <span class="kw">use</span> <span class="ident">std::convert::Infallible</span>;
 

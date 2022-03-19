@@ -216,7 +216,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">struct</span> <span class="ident">AssignInfo</span> {
     <span class="ident">range</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">BitRange</span><span class="op">&gt;</span>,
-    <span class="ident">span</span>: <span class="ident">Span</span>,
+    <span class="ident">_span</span>: <span class="ident">Span</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span> <span class="ident">State</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span><span class="op">&gt;</span> {
@@ -228,7 +228,7 @@
         <span class="self">self</span>.<span class="ident">assigned</span>
             .<span class="ident">entry</span>(<span class="ident">AssignTarget</span> { <span class="ident">name</span>, <span class="ident">type_</span> })
             .<span class="ident">or_default</span>()
-            .<span class="ident">push</span>(<span class="ident">AssignInfo</span> { <span class="ident">range</span>, <span class="ident">span</span> });
+            .<span class="ident">push</span>(<span class="ident">AssignInfo</span> { <span class="ident">range</span>, <span class="ident">_span</span>: <span class="ident">span</span> });
     }
 }
 
