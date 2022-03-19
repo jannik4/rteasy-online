@@ -4,12 +4,12 @@ use crate::vhdl::{
     BitRange, BusKind, Declarations, Expression, Ident, Lvalue, NextStateLogic, Operation,
     RegisterKind, Statement, Vhdl,
 };
-use crate::{render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
+use crate::{error::RenderError, render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use indexmap::IndexSet;
 use std::fmt::Write;
 use temply::Template;
 
-pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, std::fmt::Error> {
+pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, RenderError> {
     let mut buffer = String::new();
     VhdlTemplate {
         module_name,
@@ -18,7 +18,8 @@ pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, std::fmt::Error>
         operations: &vhdl.operations,
         declarations: &vhdl.declarations,
     }
-    .render(&mut buffer)?;
+    .render(&mut buffer)
+    .unwrap();
     Ok(buffer)
 }
 

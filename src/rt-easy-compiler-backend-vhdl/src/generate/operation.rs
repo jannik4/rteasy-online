@@ -6,9 +6,8 @@ use crate::vhdl::*;
 use compiler::mir;
 
 pub fn generate_read<'s>(read: &mir::Read<'s>, declarations: &Declarations) -> Read {
-    // TODO: internal error instead of unwrap?
     let (_, (ar_name, _, ar_kind), (dr_name, _, dr_kind)) =
-        declarations.memories.iter().find(|(name, _, _)| *name == read.ident.node.into()).unwrap();
+        declarations.memories.iter().find(|(name, _, _)| name.0 == read.ident.node.0).unwrap();
 
     Read {
         memory: read.ident.node.into(),
@@ -18,9 +17,8 @@ pub fn generate_read<'s>(read: &mir::Read<'s>, declarations: &Declarations) -> R
 }
 
 pub fn generate_write<'s>(write: &mir::Write<'s>, declarations: &Declarations) -> Write {
-    // TODO: internal error instead of unwrap?
     let (_, (ar_name, _, ar_kind), (dr_name, _, dr_kind)) =
-        declarations.memories.iter().find(|(name, _, _)| *name == write.ident.node.into()).unwrap();
+        declarations.memories.iter().find(|(name, _, _)| name.0 == write.ident.node.0).unwrap();
 
     Write {
         memory: write.ident.node.into(),

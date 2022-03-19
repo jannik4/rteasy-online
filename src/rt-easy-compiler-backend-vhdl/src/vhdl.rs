@@ -1,3 +1,4 @@
+use crate::error::RenderError;
 use crate::Signals;
 use indexmap::{IndexMap, IndexSet};
 use vec1::Vec1;
@@ -26,7 +27,7 @@ impl Vhdl {
         Signals::new(self)
     }
 
-    pub fn render(&self, module_name: &str) -> Result<String, std::fmt::Error> {
+    pub fn render(&self, module_name: &str) -> Result<String, RenderError> {
         crate::impl_render::render(self, module_name)
     }
 }

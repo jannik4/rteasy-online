@@ -56,7 +56,6 @@ pub fn generate_atom<'s>(atom: &mir::Atom<'s>, declarations: &Declarations) -> A
 pub fn generate_register<'s>(reg: &mir::Register<'s>, declarations: &Declarations) -> Register {
     let ident = reg.ident.node.into();
 
-    // TODO: internal error instead of unwrap?
     let range_declaration =
         declarations.registers.iter().find(|(name, _, _)| ident == *name).unwrap().1;
 
@@ -70,7 +69,6 @@ pub fn generate_register<'s>(reg: &mir::Register<'s>, declarations: &Declaration
 pub fn generate_bus<'s>(bus: &mir::Bus<'s>, declarations: &Declarations) -> Bus {
     let ident = bus.ident.node.into();
 
-    // TODO: internal error instead of unwrap?
     let range_declaration =
         declarations.buses.iter().find(|(name, _, _)| ident == *name).unwrap().1;
 

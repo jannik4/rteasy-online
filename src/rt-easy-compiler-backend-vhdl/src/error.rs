@@ -8,3 +8,5 @@ pub enum SynthError {
     ConditionalGotoInFirstState,
 }
 
+#[derive(Debug, Error)]
+pub enum RenderError {}

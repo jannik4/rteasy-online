@@ -31,7 +31,6 @@ pub fn generate_declarations<'s>(mir_declarations: &[mir::Declaration<'s>]) -> D
             }
             mir::Declaration::Memory(declaration) => {
                 for memory in &declaration.memories {
-                    // TODO: internal error instead of unwrap?
                     let (ar_name, ar_range, ar_kind) = declarations
                         .registers
                         .iter()

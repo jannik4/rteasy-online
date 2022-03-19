@@ -31,6 +31,15 @@ fn unclocked_goto_dependency() {
         },
         Example {
             source: r#"
+                declare input IN(7:0)
+
+                START: nop;
+                if IN(0) then goto START fi;
+            "#,
+            is_ok: true, // TODO: ???
+        },
+        Example {
+            source: r#"
                 declare bus B(7:0)
 
                 START: nop;

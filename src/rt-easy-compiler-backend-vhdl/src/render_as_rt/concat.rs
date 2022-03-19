@@ -7,12 +7,10 @@ where
     for<'a> RenderAsRt<&'a P>: Display,
 {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        if !self.0.parts.is_empty() {
-            let mut parts = self.0.parts.iter();
-            write!(f, "{}", RenderAsRt(parts.next().unwrap()))?;
-            for part in parts {
-                write!(f, ".{}", RenderAsRt(part))?;
-            }
+        let mut parts = self.0.parts.iter();
+        write!(f, "{}", RenderAsRt(parts.next().unwrap()))?;
+        for part in parts {
+            write!(f, ".{}", RenderAsRt(part))?;
         }
 
         Ok(())
