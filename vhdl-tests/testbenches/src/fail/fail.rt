@@ -1,0 +1,2 @@
+declare output OUT
+OUT <- 1;

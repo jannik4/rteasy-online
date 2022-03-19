@@ -1,0 +1,13 @@
+declare output OUTPUT(7:0)
+declare register REG(3:0), REG2(3:0)
+declare bus BUS(3:0), BUS2(3:0)
+declare register array ARR(1:0)[2]
+
+REG.OUTPUT(3:1).REG2(0) <- "101011";
+OUTPUT(0) <- REG2(0), OUTPUT(7:4) <- REG;
+
+BUS(1:0).BUS(3:2).BUS2(0) <- "10111",
+OUTPUT(3:0) <- BUS, OUTPUT(7:4) <- BUS2;
+
+ARR[1].OUTPUT(5:0) <- "10111000";
+OUTPUT(7:6) <- ARR[1] + 1;

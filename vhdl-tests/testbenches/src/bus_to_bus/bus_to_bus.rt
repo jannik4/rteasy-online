@@ -1,0 +1,10 @@
+declare bus BUS_A(7:0), BUS_B(7:0)
+declare output OUTPUT(7:0)
+
+OUTPUT <- BUS_A,     BUS_A <- BUS_B,     BUS_B <- 1;
+OUTPUT <- BUS_A + 3, BUS_A <- BUS_B + 2, BUS_B <- 1;
+
+BUS_A(7:4) <- BUS_B(3:0), BUS_A(3:0) <- "1010",
+BUS_B(7:4) <- BUS_A(3:0), BUS_B(3:0) <- "0101",
+OUTPUT <- BUS_A;
+

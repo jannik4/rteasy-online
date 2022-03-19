@@ -1,0 +1,11 @@
+declare output OUT(7:0)
+declare register REG(1:0)
+
+START:
+    REG <- REG + 1;
+    if REG = 0 then goto END fi;
+
+OUT <- REG, goto START;
+
+END:
+    OUT <- 42;

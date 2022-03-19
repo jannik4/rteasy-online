@@ -1,0 +1,8 @@
+declare input IN_A(7:0), IN_B(0:7), IN_C(2:2), IN_D(1), IN_E
+declare output OUT_A(7:0), OUT_B(0:7), OUT_C(2:2), OUT_D(1), OUT_E
+
+OUT_A(3:1) <- IN_A(4:4) + IN_A(4) + IN_B(1:3),
+OUT_B(1:3) <- IN_B(4:4) + IN_B(4) + IN_A(3:1),
+OUT_C(2:2) <- OUT_C(2) + OUT_C + IN_C(2:2) + IN_C(2) + IN_C,
+OUT_D(1) <- OUT_D + IN_D(1:1) + IN_D(1) + IN_D,
+OUT_E(0) <- OUT_E + IN_E(0) + IN_E;
