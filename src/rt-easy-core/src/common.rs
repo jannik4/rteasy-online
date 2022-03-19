@@ -119,7 +119,9 @@ pub struct Number {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum NumberKind {
     BitString,
-    Other,
+    Binary,
+    Decimal,
+    Hexadecimal,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]

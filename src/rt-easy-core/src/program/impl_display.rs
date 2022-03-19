@@ -158,7 +158,7 @@ impl Display for Atom {
             Register(atom) => write!(f, "{}", atom),
             Bus(atom) => write!(f, "{}", atom),
             RegisterArray(atom) => write!(f, "{}", atom),
-            Number(atom) => write!(f, "{}", atom.value.as_dec()),
+            Number(atom) => write!(f, "{}", atom),
         }
     }
 }
@@ -230,6 +230,17 @@ impl Display for RegisterArray {
     }
 }
 
+impl Display for Number {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        match self.kind {
+            NumberKind::BitString => write!(f, "\"{}\"", self.value.as_bin(true)),
+            NumberKind::Binary => write!(f, "0b{}", self.value.as_bin(false)),
+            NumberKind::Decimal => write!(f, "{}", self.value.as_dec()),
+            NumberKind::Hexadecimal => write!(f, "0x{}", self.value.as_hex()),
+        }
+    }
+}
+
 impl<P> Display for Concat<P>
 where
     P: Display,
@@ -273,7 +284,7 @@ impl Display for ConcatPartExpr {
             Register(reg) => write!(f, "{}", reg),
             Bus(bus) => write!(f, "{}", bus),
             RegisterArray(reg_array) => write!(f, "{}", reg_array),
-            Number(number) => write!(f, "{}", number.value.as_dec()),
+            Number(number) => write!(f, "{}", number),
         }
     }
 }
