@@ -455,7 +455,7 @@
             <span class="ident">Register</span>(<span class="ident">atom</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">atom</span>),
             <span class="ident">Bus</span>(<span class="ident">atom</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">atom</span>),
             <span class="ident">RegisterArray</span>(<span class="ident">atom</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">atom</span>),
-            <span class="ident">Number</span>(<span class="ident">atom</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">atom</span>.<span class="ident">node</span>.<span class="ident">value</span>.<span class="ident">as_dec</span>()),
+            <span class="ident">Number</span>(<span class="ident">atom</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">atom</span>.<span class="ident">node</span>),
         }
     }
 }
@@ -570,7 +570,7 @@
             <span class="ident">Register</span>(<span class="ident">reg</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">reg</span>),
             <span class="ident">Bus</span>(<span class="ident">bus</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">bus</span>),
             <span class="ident">RegisterArray</span>(<span class="ident">reg_array</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">reg_array</span>),
-            <span class="ident">Number</span>(<span class="ident">number</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">number</span>.<span class="ident">node</span>.<span class="ident">value</span>.<span class="ident">as_dec</span>()),
+            <span class="ident">Number</span>(<span class="ident">number</span>) =&gt; <span class="macro">write!</span>(<span class="ident">f</span>, <span class="string">&quot;{}&quot;</span>, <span class="ident">number</span>.<span class="ident">node</span>),
         }
     }
 }

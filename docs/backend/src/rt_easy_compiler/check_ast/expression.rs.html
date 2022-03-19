@@ -442,7 +442,7 @@
             <span class="ident">size</span>: <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">value</span>.<span class="ident">size</span>()),
             <span class="ident">fixed_size</span>: <span class="kw">match</span> <span class="self">self</span>.<span class="ident">kind</span> {
                 <span class="ident">NumberKind::BitString</span> =&gt; <span class="bool-val">true</span>,
-                <span class="ident">NumberKind::Other</span> =&gt; <span class="bool-val">false</span>,
+                <span class="ident">NumberKind::Binary</span> <span class="op">|</span> <span class="ident">NumberKind::Decimal</span> <span class="op">|</span> <span class="ident">NumberKind::Hexadecimal</span> =&gt; <span class="bool-val">false</span>,
             },
             <span class="ident">constant</span>: <span class="bool-val">true</span>,
         }
