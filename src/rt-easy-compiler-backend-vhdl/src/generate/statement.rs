@@ -1,10 +1,8 @@
 use super::{
     expression::generate_expression,
     operation::{generate_assignment, generate_read, generate_write},
-    transform,
     vhdl::VhdlBuilder,
 };
-use crate::error::SynthError;
 use crate::vhdl::*;
 use compiler::mir;
 use indexmap::IndexMap;
@@ -18,7 +16,7 @@ pub struct StatementBuilder {
     next_state_conditional: Vec<(Or<And<Criterion>>, Label)>,
     next_state_default: Label,
 
-    has_pipe: bool,
+    transform: bool,
     criteria_mapping: CriteriaMapping,
 }
 
@@ -27,8 +25,9 @@ impl StatementBuilder {
         label: Label,
         label_next: Label,
         steps: &[mir::Step<'_>],
+        transform: bool,
         vhdl_builder: &mut VhdlBuilder,
-    ) -> Result<(), SynthError> {
+    ) {
         // Create builder
         let mut builder = Self {
             label,
@@ -36,7 +35,7 @@ impl StatementBuilder {
             next_state_conditional: Vec::new(),
             next_state_default: label_next,
 
-            has_pipe: steps.iter().any(|step| step.annotation.is_post_pipe),
+            transform,
             criteria_mapping: CriteriaMapping::new(),
         };
 
@@ -147,15 +146,15 @@ impl StatementBuilder {
         }
     }
 
-    fn finish(self, vhdl_builder: &mut VhdlBuilder) -> Result<(), SynthError> {
+    fn finish(self, vhdl_builder: &mut VhdlBuilder) {
         // Push if no transform is needed
-        if !self.should_transform_next_state_logic(&*vhdl_builder)? {
+        if !self.transform {
             vhdl_builder.push_statement(Statement {
                 label: self.label,
                 operations: self.operations,
                 next_state_logic: build_logic(self.next_state_conditional, self.next_state_default),
             });
-            return Ok(());
+            return;
         }
 
         // Transform
@@ -196,34 +195,6 @@ impl StatementBuilder {
                 build_logic(transform_to_conditional, transform_to_default),
             );
         }
-
-        Ok(())
-    }
-
-    fn should_transform_next_state_logic(
-        &self,
-        vhdl_builder: &VhdlBuilder,
-    ) -> Result<bool, SynthError> {
-        if self.has_pipe || self.next_state_conditional.is_empty() {
-            return Ok(false);
-        }
-
-        let operations = self
-            .operations
-            .iter()
-            .map(|(id, _)| vhdl_builder.operation_by_id(*id).unwrap())
-            .collect::<Vec<_>>();
-        let criteria = self
-            .next_state_conditional
-            .iter()
-            .map(|(or, _)| or.0.iter())
-            .flatten()
-            .map(|and| and.0.iter())
-            .flatten()
-            .map(|criterion| vhdl_builder.criterion_by_id(criterion.id()).unwrap())
-            .collect::<Vec<_>>();
-
-        transform::should_transform_next_state_logic(&operations, &criteria)
     }
 }
 

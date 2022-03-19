@@ -1,9 +1,9 @@
 mod concat;
 mod declarations;
 mod expression;
+mod next_state_logic_deps;
 mod operation;
 mod statement;
-mod transform;
 mod vhdl;
 
 pub fn generate(

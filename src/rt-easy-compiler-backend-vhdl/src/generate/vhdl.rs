@@ -1,4 +1,7 @@
-use super::{declarations::generate_declarations, statement::StatementBuilder};
+use super::{
+    declarations::generate_declarations, next_state_logic_deps::next_state_logic_deps,
+    statement::StatementBuilder,
+};
 use crate::{error::SynthError, vhdl::*};
 use compiler::mir;
 use indexmap::{IndexMap, IndexSet};
@@ -30,16 +33,37 @@ impl VhdlBuilder {
 
         // Generate statements
         for (idx, statement) in mir.statements.iter().enumerate() {
+            // Labels
             let label = make_label(idx, Some(statement));
             let label_next = make_label(idx + 1, mir.statements.get(idx + 1));
 
-            StatementBuilder::build(label, label_next, &statement.steps.node, &mut builder)?;
+            // Next state logic
+            let deps = next_state_logic_deps(statement);
+            let transform = match (deps.clocked, deps.unclocked) {
+                (_, true) => return Err(SynthError::UnclockedGotoDependency),
+                (true, false) => {
+                    if idx == 0 {
+                        return Err(SynthError::ConditionalGotoInFirstState);
+                    }
+                    true
+                }
+                (false, false) => false,
+            };
+
+            // Build
+            StatementBuilder::build(
+                label,
+                label_next,
+                &statement.steps.node,
+                transform,
+                &mut builder,
+            );
         }
 
         // Transform labels
         for (from, to) in builder.transform {
             for statement in &mut builder.statements {
-                transform(&mut statement.next_state_logic, &from, to.clone());
+                transform(&mut statement.next_state_logic, &from, &to);
             }
         }
 
@@ -67,16 +91,8 @@ impl VhdlBuilder {
         CriterionId(self.criteria.insert_full(expr).0)
     }
 
-    pub fn criterion_by_id(&self, id: CriterionId) -> Option<&Expression> {
-        self.criteria.get_index(id.0)
-    }
-
     pub fn insert_operation(&mut self, op: Operation) -> OperationId {
         OperationId(self.operations.insert_full(op).0)
-    }
-
-    pub fn operation_by_id(&self, id: OperationId) -> Option<&Operation> {
-        self.operations.get_index(id.0)
     }
 
     pub fn insert_transform(&mut self, from: Label, to: NextStateLogic) {
@@ -121,16 +137,16 @@ fn make_label(idx: usize, statement: Option<&mir::Statement<'_>>) -> Label {
     }
 }
 
-fn transform(logic: &mut NextStateLogic, from: &Label, to: NextStateLogic) {
+fn transform(logic: &mut NextStateLogic, from: &Label, to: &NextStateLogic) {
     match logic {
         NextStateLogic::Label(label) => {
             if label == from {
-                *logic = to;
+                *logic = to.clone();
             }
         }
         NextStateLogic::Cond { conditional, default } => {
             for (_, logic) in conditional {
-                transform(logic, from, to.clone());
+                transform(logic, from, &to);
             }
             transform(&mut **default, from, to);
         }
