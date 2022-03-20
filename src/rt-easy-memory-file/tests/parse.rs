@@ -7,7 +7,7 @@ fn header() {
 
     for source in sources {
         let mem = MemoryFile::parse(&source).unwrap();
-        assert_eq!(mem, MemoryFile { ar_size: 12, dr_size: 4, data: HashMap::new() });
+        assert_eq!(mem, MemoryFile::new(12, 4));
     }
 }
 
@@ -28,15 +28,15 @@ fn data() {
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile {
-                ar_size: 4,
-                dr_size: 8,
-                data: HashMap::from([
+            MemoryFile::new_unchecked(
+                4,
+                8,
+                HashMap::from([
                     (Value::parse_bin("0").unwrap(), Value::parse_bin("010111").unwrap()),
                     (Value::parse_bin("1").unwrap(), Value::parse_bin("0").unwrap()),
                     (Value::parse_bin("10").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
-            }
+            )
         );
     }
 }
@@ -64,15 +64,15 @@ F:
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile {
-                ar_size: 4,
-                dr_size: 8,
-                data: HashMap::from([
+            MemoryFile::new_unchecked(
+                4,
+                8,
+                HashMap::from([
                     (Value::parse_bin("110").unwrap(), Value::parse_bin("010111").unwrap()),
                     (Value::parse_bin("111").unwrap(), Value::parse_bin("0").unwrap()),
                     (Value::parse_bin("1111").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
-            }
+            )
         );
     }
 }
@@ -102,16 +102,16 @@ fn comment() {
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile {
-                ar_size: 4,
-                dr_size: 8,
-                data: HashMap::from([
+            MemoryFile::new_unchecked(
+                4,
+                8,
+                HashMap::from([
                     (Value::parse_bin("0").unwrap(), Value::parse_bin("10").unwrap()),
                     (Value::parse_bin("1000").unwrap(), Value::parse_bin("0").unwrap()),
                     (Value::parse_bin("1001").unwrap(), Value::parse_bin("10").unwrap()),
                     (Value::parse_bin("1010").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
-            }
+            )
         );
     }
 }

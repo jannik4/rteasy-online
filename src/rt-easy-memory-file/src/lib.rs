@@ -7,9 +7,38 @@ pub use rtcore::value::Value;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct MemoryFile {
-    pub ar_size: usize,
-    pub dr_size: usize,
-    pub data: HashMap<Value, Value>,
+    ar_size: usize,
+    dr_size: usize,
+    data: HashMap<Value, Value>,
+}
+
+impl MemoryFile {
+    pub fn new(ar_size: usize, dr_size: usize) -> Self {
+        Self { ar_size, dr_size, data: HashMap::new() }
+    }
+
+    /// All keys in `data` should have `Value::size() <= ar_size`.
+    ///
+    /// All values in `data` should have `Value::size() <= dr_size`.
+    pub fn new_unchecked(ar_size: usize, dr_size: usize, data: HashMap<Value, Value>) -> Self {
+        Self { ar_size, dr_size, data }
+    }
+
+    pub fn ar_size(&self) -> usize {
+        self.ar_size
+    }
+
+    pub fn dr_size(&self) -> usize {
+        self.dr_size
+    }
+
+    pub fn data(&self) -> &HashMap<Value, Value> {
+        &self.data
+    }
+
+    pub fn into_data(self) -> HashMap<Value, Value> {
+        self.data
+    }
 }
 
 impl MemoryFile {
