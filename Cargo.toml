@@ -8,6 +8,7 @@ members = [
     "src/lib/toktok-generator-tests",
 
     "src/rt-easy-core",
+    "src/rt-easy-memory-file",
     "src/rt-easy-ast",
     "src/rt-easy-program",
     "src/rt-easy-vhdl",

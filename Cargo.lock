@@ -347,6 +347,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "rt-easy-memory-file"
+version = "0.1.0"
+dependencies = [
+ "rt-easy-core",
+]
+
+[[package]]
 name = "rt-easy-parser"
 version = "0.1.0"
 dependencies = [
