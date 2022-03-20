@@ -7,7 +7,7 @@ fn header() {
 
     for source in sources {
         let mem = MemoryFile::parse(&source).unwrap();
-        assert_eq!(mem, MemoryFile::new(12, 4));
+        assert_eq!(mem, MemoryFile::empty(12, 4));
     }
 }
 
@@ -28,7 +28,7 @@ fn data() {
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile::new_unchecked(
+            MemoryFile::new(
                 4,
                 8,
                 HashMap::from([
@@ -37,6 +37,7 @@ fn data() {
                     (Value::parse_bin("10").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
             )
+            .unwrap()
         );
     }
 }
@@ -64,7 +65,7 @@ F:
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile::new_unchecked(
+            MemoryFile::new(
                 4,
                 8,
                 HashMap::from([
@@ -73,6 +74,7 @@ F:
                     (Value::parse_bin("1111").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
             )
+            .unwrap()
         );
     }
 }
@@ -102,7 +104,7 @@ fn comment() {
         let mem = MemoryFile::parse(&source).unwrap();
         assert_eq!(
             mem,
-            MemoryFile::new_unchecked(
+            MemoryFile::new(
                 4,
                 8,
                 HashMap::from([
@@ -112,6 +114,7 @@ fn comment() {
                     (Value::parse_bin("1010").unwrap(), Value::parse_bin("11").unwrap()),
                 ])
             )
+            .unwrap()
         );
     }
 }

@@ -13,15 +13,33 @@ pub struct MemoryFile {
 }
 
 impl MemoryFile {
-    pub fn new(ar_size: usize, dr_size: usize) -> Self {
-        Self { ar_size, dr_size, data: HashMap::new() }
-    }
-
     /// All keys in `data` should have `Value::size() <= ar_size`.
     ///
     /// All values in `data` should have `Value::size() <= dr_size`.
-    pub fn new_unchecked(ar_size: usize, dr_size: usize, data: HashMap<Value, Value>) -> Self {
-        Self { ar_size, dr_size, data }
+    pub fn new(ar_size: usize, dr_size: usize, data: HashMap<Value, Value>) -> Result<Self, ()> {
+        // Check and extend zero
+        let data = data
+            .into_iter()
+            .map(|(mut addr, mut value)| {
+                if addr.size() > ar_size {
+                    return Err(());
+                }
+                addr.extend_zero(ar_size);
+
+                if value.size() > dr_size {
+                    return Err(());
+                }
+                value.extend_zero(dr_size);
+
+                Ok((addr, value))
+            })
+            .collect::<Result<_, _>>()?;
+
+        Ok(Self { ar_size, dr_size, data })
+    }
+
+    pub fn empty(ar_size: usize, dr_size: usize) -> Self {
+        Self { ar_size, dr_size, data: HashMap::new() }
     }
 
     pub fn ar_size(&self) -> usize {
@@ -32,10 +50,16 @@ impl MemoryFile {
         self.dr_size
     }
 
+    /// All keys are guaranteed to have `Value::size() == ar_size`.
+    ///
+    /// All values are guaranteed to have `Value::size() == dr_size`.
     pub fn data(&self) -> &HashMap<Value, Value> {
         &self.data
     }
 
+    /// All keys are guaranteed to have `Value::size() == ar_size`.
+    ///
+    /// All values are guaranteed to have `Value::size() == dr_size`.
     pub fn into_data(self) -> HashMap<Value, Value> {
         self.data
     }

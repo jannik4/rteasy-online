@@ -162,7 +162,8 @@ impl MemoryState {
     where
         W: io::Write,
     {
-        let mem = MemoryFile::new_unchecked(self.ar_size, self.dr_size, self.data.clone());
+        let mem = MemoryFile::new(self.ar_size, self.dr_size, self.data.clone())
+            .map_err(|()| anyhow!("invalid memory"))?;
         writer
             .write_all(mem.to_string().as_bytes())
             .map_err(|e| anyhow!("failed to save memory: {}", e))
@@ -191,16 +192,7 @@ impl MemoryState {
         }
 
         // Load data
-        self.data = mem
-            .into_data()
-            .into_iter()
-            .map(|(addr, value)| {
-                if addr.size() > self.ar_size || value.size() > self.dr_size {
-                    return Err(anyhow!("memory save contains faulty data"));
-                }
-                Ok((addr, value))
-            })
-            .collect::<Result<_, _>>()?;
+        self.data = mem.into_data();
         *self.data_next.get_mut() = None;
 
         Ok(())
@@ -237,12 +229,12 @@ fn parse_deprecated(source: &str) -> Result<MemoryFile, ()> {
 
     let save = serde_json::from_str::<MemorySave>(source).map_err(|_| ())?;
 
-    Ok(MemoryFile::new_unchecked(
+    MemoryFile::new(
         save.ar_size,
         save.dr_size,
         save.data
             .into_iter()
             .map(|(addr, value)| Ok((Value::parse_hex(&addr)?, Value::parse_hex(&value)?)))
             .collect::<Result<_, _>>()?,
-    ))
+    )
 }
