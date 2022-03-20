@@ -173,6 +173,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "rt-easy-memory-file"
+version = "0.1.0"
+dependencies = [
+ "rt-easy-core",
+]
+
+[[package]]
 name = "rt-easy-parser"
 version = "0.1.0"
 dependencies = [
@@ -189,6 +196,7 @@ version = "0.1.0"
 dependencies = [
  "indexmap",
  "rt-easy-core",
+ "rt-easy-memory-file",
  "temply",
  "thiserror",
  "vec1",
@@ -324,7 +332,9 @@ dependencies = [
  "anyhow",
  "rt-easy-compiler",
  "rt-easy-compiler-backend-vhdl",
+ "rt-easy-memory-file",
  "rt-easy-parser",
+ "rt-easy-vhdl",
 ]
 
 [[package]]

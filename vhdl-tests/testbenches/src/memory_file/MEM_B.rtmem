@@ -1,0 +1,8 @@
+B 1 8
+
+1:
+11001100 # this value will be overwritten
+
+0:
+1111
+11110011 # overwrites value above

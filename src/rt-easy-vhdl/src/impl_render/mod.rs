@@ -1,18 +1,30 @@
+mod memory_data;
 mod sensitivity_list;
 
+use self::memory_data::MemoryData;
 use crate::{error::RenderError, render_as_rt::RenderAsRt, render_as_vhdl::RenderAsVhdl};
 use crate::{
     BitRange, BusKind, Declarations, Expression, Ident, Lvalue, NextStateLogic, Operation,
     RegisterKind, Statement, Vhdl,
 };
 use indexmap::IndexSet;
+use memory_file::MemoryFile;
+use std::collections::HashMap;
 use std::fmt::Write;
 use temply::Template;
 
-pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, RenderError> {
+pub fn render(
+    vhdl: &Vhdl,
+    module_name: &str,
+    memories: HashMap<Ident, MemoryFile>,
+) -> Result<String, RenderError> {
     // Trim module name
     let module_name = module_name.trim();
 
+    // Memories
+    let memories = &self::memory_data::memories(memories, &vhdl.declarations)?;
+
+    // Render
     let mut buffer = String::new();
     VhdlTemplate {
         module_name,
@@ -20,6 +32,7 @@ pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, RenderError> {
         criteria: &vhdl.criteria,
         operations: &vhdl.operations,
         declarations: &vhdl.declarations,
+        memories,
     }
     .render(&mut buffer)
     .unwrap();
@@ -36,6 +49,7 @@ struct VhdlTemplate<'a> {
     operations: &'a IndexSet<Operation>, // Index = OperationId
 
     declarations: &'a Declarations,
+    memories: &'a HashMap<Ident, MemoryData>,
 }
 
 impl<'a> VhdlTemplate<'a> {

@@ -36,8 +36,12 @@ impl Vhdl {
         Signals::new(self)
     }
 
-    pub fn render(&self, module_name: &str) -> Result<String, RenderError> {
-        crate::impl_render::render(self, module_name)
+    pub fn render(
+        &self,
+        module_name: &str,
+        memories: std::collections::HashMap<Ident, memory_file::MemoryFile>,
+    ) -> Result<String, RenderError> {
+        crate::impl_render::render(self, module_name, memories)
     }
 }
 

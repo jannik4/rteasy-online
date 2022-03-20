@@ -8,6 +8,7 @@ publish = false
 
 [dependencies]
 rtcore = { path = "../rt-easy-core", package = "rt-easy-core" }
+memory-file = { path = "../rt-easy-memory-file", package = "rt-easy-memory-file" }
 
 thiserror = "1.0.30"
 temply = "0.2.0"

@@ -10,7 +10,7 @@ fn register_name() {
         MY_REGISTER_X <- 1;
     "#;
 
-    let vhdl = util::compile(SOURCE).render("module").unwrap();
+    let vhdl = util::compile(SOURCE).render("module", Default::default()).unwrap();
     assert!(vhdl.contains("MY_REGISTER_X"));
 }
 
@@ -20,7 +20,7 @@ fn label_name() {
         MY_LABEL: nop;
     "#;
 
-    let vhdl = util::compile(SOURCE).render("module").unwrap();
+    let vhdl = util::compile(SOURCE).render("module", Default::default()).unwrap();
     assert!(vhdl.contains("MY_LABEL"));
 }
 
@@ -28,6 +28,6 @@ fn label_name() {
 fn module_name() {
     const SOURCE: &'static str = "";
 
-    let vhdl = util::compile(SOURCE).render("my_vhdl_module").unwrap();
+    let vhdl = util::compile(SOURCE).render("my_vhdl_module", Default::default()).unwrap();
     assert!(vhdl.contains("my_vhdl_module"));
 }

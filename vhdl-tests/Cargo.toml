@@ -6,6 +6,8 @@ edition = "2021"
 [workspace]
 
 [dependencies]
+memory-file = { path = "../src/rt-easy-memory-file", package = "rt-easy-memory-file" }
+rtvhdl = { path = "../src/rt-easy-vhdl", package = "rt-easy-vhdl" }
 parser = { path = "../src/rt-easy-parser", package = "rt-easy-parser" }
 compiler = { path = "../src/rt-easy-compiler", package = "rt-easy-compiler" }
 compiler-backend-vhdl = { path = "../src/rt-easy-compiler-backend-vhdl", package = "rt-easy-compiler-backend-vhdl" }

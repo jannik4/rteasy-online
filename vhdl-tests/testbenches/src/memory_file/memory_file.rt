@@ -1,0 +1,28 @@
+declare output OUT(7:0)
+
+declare register MEM_A_AR(3:0), MEM_A_DR(7:0)
+declare memory MEM_A(MEM_A_AR, MEM_A_DR)
+
+declare register MEM_B_AR(2:2), MEM_B_DR(1:8)
+declare memory MEM_B(MEM_B_AR, MEM_B_DR)
+
+declare register MEM_C_AR(15:0), MEM_C_DR
+declare memory MEM_C(MEM_C_AR, MEM_C_DR)
+
+# MEM_A
+MEM_A_AR <- 0; read MEM_A; OUT <- MEM_A_DR;
+MEM_A_AR <- 1; read MEM_A; OUT <- MEM_A_DR;
+MEM_A_AR <- 2; read MEM_A; OUT <- MEM_A_DR;
+MEM_A_AR <- 8; read MEM_A; OUT <- MEM_A_DR;
+MEM_A_AR <- 9; read MEM_A; OUT <- MEM_A_DR;
+
+# MEM_B
+MEM_B_AR <- 0; read MEM_B; OUT <- MEM_B_DR;
+MEM_B_AR <- 1; read MEM_B; OUT <- MEM_B_DR;
+
+# MEM_C
+MEM_C_AR <- 0; read MEM_C; OUT <- MEM_C_DR;
+MEM_C_AR <- 1; read MEM_C; OUT <- MEM_C_DR;
+MEM_C_AR <- 2; read MEM_C; OUT <- MEM_C_DR;
+MEM_C_AR <- 0b10101010101111; read MEM_C; OUT <- MEM_C_DR;
+MEM_C_AR <- 0b11111111111111; read MEM_C; OUT <- MEM_C_DR;

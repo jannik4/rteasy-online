@@ -294,8 +294,11 @@ ARCHITECTURE Behavioral OF EU_{{ module_name }} IS
         TYPE type_of_memory_{{ name }} IS ARRAY(0 TO {{ 2usize.pow(ar.1.size() as u32) - 1 }}) OF unsigned{{ RenderAsVhdl(dr.1) }};
         SIGNAL memory_{{ name }} : type_of_memory_{{ name }} := (
             -- Initialize memory here
-            -- 0 => "01010101",
-            -- 1 => "01010101",
+            {% if let Some(memory_data) = memories.get(name) %}
+                {% for (addr, val) in &memory_data.data %}
+                    {{ addr.as_dec() }} => "{{ val.as_bin(true) }}",
+                {% endfor %}
+            {% endif %}
             OTHERS => (OTHERS => '0')
         );
         ATTRIBUTE KEEP OF memory_{{ name }} : SIGNAL IS "TRUE";

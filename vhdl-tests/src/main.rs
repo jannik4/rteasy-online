@@ -1,6 +1,8 @@
 use anyhow::{anyhow, bail, ensure, Context, Error, Result};
 use compiler_backend_vhdl::BackendVhdl;
+use memory_file::MemoryFile;
 use std::{
+    collections::HashMap,
     env, fs,
     path::PathBuf,
     process::{self, Command},
@@ -93,7 +95,7 @@ fn testbenches() -> Result<Vec<Tb>> {
                 .file_name()
                 .context("expected file name")?
                 .to_str()
-                .context("directory name utf8 error")?
+                .context("name utf8 error")?
                 .to_owned();
             let target_dir = testbenches_dir.join(format!("../target/{}", name));
 
@@ -166,19 +168,40 @@ impl Tb {
     }
 
     fn compile_and_save(&self) -> Result<()> {
+        // Load and compile rt code to vhdl
         let rt_code = fs::read_to_string(self.src_dir.join(self.rt_file_name()))?;
-
         let ast = match parser::parse(&rt_code) {
             Ok(ast) => ast,
             Err(e) => bail!("{}", parser::pretty_print_error(&e, &rt_code, None, false)),
         };
-
         let vhdl = match compiler::compile(&BackendVhdl, (), ast, &Default::default()) {
             Ok(vhdl) => vhdl,
             Err(e) => bail!("{}", e.pretty_print(&rt_code, None, false)),
         };
 
-        fs::write(self.target_dir.join(self.vhdl_file_name()), vhdl.render(&self.name)?)?;
+        // Load and parse memories
+        let mut memories = HashMap::new();
+        for entry in fs::read_dir(&self.src_dir)? {
+            let entry = entry?;
+            let path = entry.path();
+            let metadata = fs::metadata(&path)?;
+
+            if metadata.is_file() && path.extension() == Some("rtmem".as_ref()) {
+                let name = path
+                    .file_stem()
+                    .context("expected file name")?
+                    .to_str()
+                    .context("name utf8 error")?
+                    .to_owned();
+                let source = fs::read_to_string(path)?;
+                let memory_file = MemoryFile::parse(&source)
+                    .map_err(|()| anyhow!("failed to parse memory `{}`", name))?;
+                memories.insert(rtvhdl::Ident(name), memory_file);
+            }
+        }
+
+        // Render and save vhdl
+        fs::write(self.target_dir.join(self.vhdl_file_name()), vhdl.render(&self.name, memories)?)?;
 
         Ok(())
     }
