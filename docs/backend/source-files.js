@@ -7,6 +7,7 @@ sourcesIndex["rt_easy_compiler"] = {"name":"","dirs":[{"name":"build_mir","files
 sourcesIndex["rt_easy_compiler_backend_simulator"] = {"name":"","files":["concat.rs","declaration.rs","expression.rs","helper.rs","lib.rs","operation.rs","program.rs"]};
 sourcesIndex["rt_easy_compiler_backend_vhdl"] = {"name":"","files":["concat.rs","declarations.rs","error.rs","expression.rs","lib.rs","next_state_logic_deps.rs","operation.rs","statement.rs","vhdl.rs"]};
 sourcesIndex["rt_easy_core"] = {"name":"","files":["common.rs","lib.rs","util.rs"]};
+sourcesIndex["rt_easy_memory_file"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["rt_easy_parser"] = {"name":"","files":["lexer.rs","lib.rs","parser.rs"]};
 sourcesIndex["rt_easy_program"] = {"name":"","files":["concat.rs","declaration.rs","expression.rs","impl_display.rs","lib.rs","operation.rs","signals.rs"]};
 sourcesIndex["rt_easy_simulator"] = {"name":"","dirs":[{"name":"simulator","files":["impl_state_view.rs","impl_step.rs","mod.rs"]},{"name":"state","files":["bus.rs","memory.rs","mod.rs","register.rs","register_array.rs","util.rs"]}],"files":["changed.rs","error.rs","evaluate.rs","execute.rs","lib.rs"]};
