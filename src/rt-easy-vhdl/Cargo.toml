@@ -14,3 +14,8 @@ thiserror = "1.0.30"
 temply = "0.2.0"
 indexmap = "1.8.0"
 vec1 = "1.8.0"
+
+[dev-dependencies]
+parser = { path = "../rt-easy-parser", package = "rt-easy-parser" }
+compiler = { path = "../rt-easy-compiler", package = "rt-easy-compiler" }
+compiler-backend-vhdl = { path = "../rt-easy-compiler-backend-vhdl", package = "rt-easy-compiler-backend-vhdl" }

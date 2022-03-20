@@ -412,8 +412,11 @@ name = "rt-easy-vhdl"
 version = "0.1.0"
 dependencies = [
  "indexmap",
+ "rt-easy-compiler",
+ "rt-easy-compiler-backend-vhdl",
  "rt-easy-core",
  "rt-easy-memory-file",
+ "rt-easy-parser",
  "temply",
  "thiserror",
  "vec1",

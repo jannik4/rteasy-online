@@ -13,7 +13,7 @@ fn register_name() {
     let vhdl = util::compile(SOURCE).render("module", Default::default()).unwrap();
     assert!(vhdl.contains("MY_REGISTER_X"));
 }
-
+ 
 #[test]
 fn label_name() {
     const SOURCE: &'static str = r#"
