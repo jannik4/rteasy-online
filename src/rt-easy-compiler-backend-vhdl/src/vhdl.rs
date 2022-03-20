@@ -42,14 +42,12 @@ impl VhdlBuilder {
             let deps = next_state_logic_deps(statement);
             let transform = match (deps.clocked, deps.unclocked) {
                 (_, true) => return Err(SynthError::UnclockedGotoDependency),
-                (true, false) => {
-                    if idx == 0 {
-                        return Err(SynthError::ConditionalGotoInFirstState);
-                    }
-                    true
-                }
+                (true, false) => true,
                 (false, false) => false,
             };
+            if transform && idx == 0 {
+                return Err(SynthError::ConditionalGotoInFirstState);
+            }
 
             // Build
             StatementBuilder::build(
