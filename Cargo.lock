@@ -383,6 +383,7 @@ dependencies = [
  "rt-easy-compiler",
  "rt-easy-compiler-backend-simulator",
  "rt-easy-core",
+ "rt-easy-memory-file",
  "rt-easy-parser",
  "rt-easy-program",
  "serde",

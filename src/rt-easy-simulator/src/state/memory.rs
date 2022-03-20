@@ -1,6 +1,7 @@
 use super::State;
 use crate::Error;
 use anyhow::anyhow;
+use memory_file::MemoryFile;
 use rtcore::value::Value;
 use rtprogram::MemoryRange;
 use std::cell::RefCell;
@@ -157,37 +158,44 @@ impl MemoryState {
         result
     }
 
-    pub fn save<W>(&self, writer: W) -> Result<(), Error>
+    pub fn save<W>(&self, mut writer: W) -> Result<(), Error>
     where
         W: io::Write,
     {
-        let save = MemorySave {
-            version: "v1".to_string(),
-            data: self.data.iter().map(|(addr, value)| (addr.as_hex(), value.as_hex())).collect(),
-            ar_size: self.ar_size,
-            dr_size: self.dr_size,
-        };
-        serde_json::to_writer(writer, &save).map_err(|e| anyhow!("failed to save memory: {}", e))
+        let mem =
+            MemoryFile { ar_size: self.ar_size, dr_size: self.dr_size, data: self.data.clone() };
+        writer
+            .write_all(mem.to_string().as_bytes())
+            .map_err(|e| anyhow!("failed to save memory: {}", e))
     }
 
-    pub fn load_from_save<R>(&mut self, reader: R) -> Result<(), Error>
+    pub fn load_from_save<R>(&mut self, mut reader: R) -> Result<(), Error>
     where
         R: io::Read,
     {
-        let save = serde_json::from_reader::<_, MemorySave>(reader)
-            .map_err(|_| anyhow!("invalid memory file"))?;
-        if save.version != "v1" || save.ar_size != self.ar_size || save.dr_size != self.dr_size {
+        // Read
+        let mut source = String::new();
+        reader.read_to_string(&mut source).map_err(|_| anyhow!("failed to read memory file"))?;
+
+        // Parse file
+        let mem = match MemoryFile::parse(&source) {
+            Ok(mem) => mem,
+            Err(()) => {
+                // Try to parse as deprecated
+                parse_deprecated(&source).map_err(|()| anyhow!("invalid memory file"))?
+            }
+        };
+
+        // Check
+        if mem.ar_size != self.ar_size || mem.dr_size != self.dr_size {
             return Err(anyhow!("invalid memory size"));
         }
 
-        self.data = save
+        // Load data
+        self.data = mem
             .data
             .into_iter()
             .map(|(addr, value)| {
-                let addr = Value::parse_hex(&addr)
-                    .map_err(|()| anyhow!("memory save contains faulty data"))?;
-                let value = Value::parse_hex(&value)
-                    .map_err(|()| anyhow!("memory save contains faulty data"))?;
                 if addr.size() > self.ar_size || value.size() > self.dr_size {
                     return Err(anyhow!("memory save contains faulty data"));
                 }
@@ -219,10 +227,24 @@ impl MemoryState {
 //     }
 // }
 
-#[derive(Debug, serde::Serialize, serde::Deserialize)]
-struct MemorySave {
-    version: String,
-    data: Vec<(String, String)>,
-    ar_size: usize,
-    dr_size: usize,
+// Keep this for compatibility with older versions of memory saves
+fn parse_deprecated(source: &str) -> Result<MemoryFile, ()> {
+    #[derive(Debug, serde::Serialize, serde::Deserialize)]
+    struct MemorySave {
+        ar_size: usize,
+        dr_size: usize,
+        data: Vec<(String, String)>,
+    }
+
+    let save = serde_json::from_str::<MemorySave>(source).map_err(|_| ())?;
+
+    Ok(MemoryFile {
+        ar_size: save.ar_size,
+        dr_size: save.dr_size,
+        data: save
+            .data
+            .into_iter()
+            .map(|(addr, value)| Ok((Value::parse_hex(&addr)?, Value::parse_hex(&value)?)))
+            .collect::<Result<_, _>>()?,
+    })
 }
