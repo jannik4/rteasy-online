@@ -10,6 +10,9 @@ use std::fmt::Write;
 use temply::Template;
 
 pub fn render(vhdl: &Vhdl, module_name: &str) -> Result<String, RenderError> {
+    // Trim module name
+    let module_name = module_name.trim();
+
     let mut buffer = String::new();
     VhdlTemplate {
         module_name,
