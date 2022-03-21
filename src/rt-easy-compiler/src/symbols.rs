@@ -3,6 +3,7 @@ use std::collections::{HashMap, HashSet};
 use std::fmt;
 
 const MAX_BIT_RANGE_SIZE: usize = u16::MAX as usize;
+const MAX_BIT_RANGE_SIZE_ADDRESS_REGISTER: usize = 64;
 
 #[derive(Debug, Default)]
 pub struct Symbols<'s> {
@@ -90,11 +91,23 @@ impl<'s> Symbols<'s> {
                             ));
                         }
 
-                        for mem_reg in
-                            &[&memory.range.address_register, &memory.range.data_register]
-                        {
+                        for (mem_reg, is_ar) in [
+                            (&memory.range.address_register, true),
+                            (&memory.range.data_register, false),
+                        ] {
                             match symbols.symbol(mem_reg.node) {
-                                Some(Symbol::Register(..)) => (),
+                                Some(Symbol::Register(range, _)) => {
+                                    let size = range.map(|r| r.size()).unwrap_or(1);
+                                    if is_ar && size > MAX_BIT_RANGE_SIZE_ADDRESS_REGISTER {
+                                        error_sink(CompilerError::new(
+                                            CompilerErrorKind::BitRangeTooWide {
+                                                max_size: MAX_BIT_RANGE_SIZE_ADDRESS_REGISTER,
+                                                size,
+                                            },
+                                            memory.range.address_register.span,
+                                        ));
+                                    }
+                                }
                                 Some(symbol) => error_sink(CompilerError::new(
                                     CompilerErrorKind::WrongSymbolType {
                                         expected: &[SymbolType::Register],
