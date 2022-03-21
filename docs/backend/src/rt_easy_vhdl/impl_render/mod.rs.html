@@ -140,18 +140,50 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
-</pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">sensitivity_list</span>;
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+</pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">memory_data</span>;
+<span class="kw">mod</span> <span class="ident">sensitivity_list</span>;
 
+<span class="kw">use</span> <span class="ident"><span class="self">self</span>::memory_data::MemoryData</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">error::RenderError</span>, <span class="ident">render_as_rt::RenderAsRt</span>, <span class="ident">render_as_vhdl::RenderAsVhdl</span>};
 <span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">BitRange</span>, <span class="ident">BusKind</span>, <span class="ident">Declarations</span>, <span class="ident">Expression</span>, <span class="ident">Ident</span>, <span class="ident">Lvalue</span>, <span class="ident">NextStateLogic</span>, <span class="ident">Operation</span>,
     <span class="ident">RegisterKind</span>, <span class="ident">Statement</span>, <span class="ident">Vhdl</span>,
 };
 <span class="kw">use</span> <span class="ident">indexmap::IndexSet</span>;
+<span class="kw">use</span> <span class="ident">memory_file::MemoryFile</span>;
+<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 <span class="kw">use</span> <span class="ident">std::fmt::Write</span>;
 <span class="kw">use</span> <span class="ident">temply::Template</span>;
 
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">render</span>(<span class="ident">vhdl</span>: <span class="kw-2">&amp;</span><span class="ident">Vhdl</span>, <span class="ident">module_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">RenderError</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">render</span>(
+    <span class="ident">vhdl</span>: <span class="kw-2">&amp;</span><span class="ident">Vhdl</span>,
+    <span class="ident">module_name</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
+    <span class="ident">memories</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">MemoryFile</span><span class="op">&gt;</span>,
+) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">String</span>, <span class="ident">RenderError</span><span class="op">&gt;</span> {
+    <span class="comment">// Trim module name</span>
+    <span class="kw">let</span> <span class="ident">module_name</span> <span class="op">=</span> <span class="ident">module_name</span>.<span class="ident">trim</span>();
+
+    <span class="comment">// Memories</span>
+    <span class="kw">let</span> <span class="ident">memories</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="ident"><span class="self">self</span>::memory_data::memories</span>(<span class="ident">memories</span>, <span class="kw-2">&amp;</span><span class="ident">vhdl</span>.<span class="ident">declarations</span>)<span class="question-mark">?</span>;
+
+    <span class="comment">// Render</span>
     <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">buffer</span> <span class="op">=</span> <span class="ident">String::new</span>();
     <span class="ident">VhdlTemplate</span> {
         <span class="ident">module_name</span>,
@@ -159,6 +191,7 @@
         <span class="ident">criteria</span>: <span class="kw-2">&amp;</span><span class="ident">vhdl</span>.<span class="ident">criteria</span>,
         <span class="ident">operations</span>: <span class="kw-2">&amp;</span><span class="ident">vhdl</span>.<span class="ident">operations</span>,
         <span class="ident">declarations</span>: <span class="kw-2">&amp;</span><span class="ident">vhdl</span>.<span class="ident">declarations</span>,
+        <span class="ident">memories</span>,
     }
     .<span class="ident">render</span>(<span class="kw-2">&amp;mut</span> <span class="ident">buffer</span>)
     .<span class="ident">unwrap</span>();
@@ -175,6 +208,7 @@
     <span class="ident">operations</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">IndexSet</span><span class="op">&lt;</span><span class="ident">Operation</span><span class="op">&gt;</span>, <span class="comment">// Index = OperationId</span>
 
     <span class="ident">declarations</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">Declarations</span>,
+    <span class="ident">memories</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">Ident</span>, <span class="ident">MemoryData</span><span class="op">&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">VhdlTemplate</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {

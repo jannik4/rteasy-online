@@ -153,8 +153,6 @@
 <span id="151">151</span>
 <span id="152">152</span>
 <span id="153">153</span>
-<span id="154">154</span>
-<span id="155">155</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">super</span>::{
     <span class="ident">declarations::generate_declarations</span>, <span class="ident">next_state_logic_deps::next_state_logic_deps</span>,
     <span class="ident">statement::StatementBuilder</span>,
@@ -199,14 +197,12 @@
             <span class="kw">let</span> <span class="ident">deps</span> <span class="op">=</span> <span class="ident">next_state_logic_deps</span>(<span class="ident">statement</span>);
             <span class="kw">let</span> <span class="ident">transform</span> <span class="op">=</span> <span class="kw">match</span> (<span class="ident">deps</span>.<span class="ident">clocked</span>, <span class="ident">deps</span>.<span class="ident">unclocked</span>) {
                 (<span class="kw">_</span>, <span class="bool-val">true</span>) =&gt; <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SynthError::UnclockedGotoDependency</span>),
-                (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; {
-                    <span class="kw">if</span> <span class="ident">idx</span> <span class="op">==</span> <span class="number">0</span> {
-                        <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SynthError::ConditionalGotoInFirstState</span>);
-                    }
-                    <span class="bool-val">true</span>
-                }
+                (<span class="bool-val">true</span>, <span class="bool-val">false</span>) =&gt; <span class="bool-val">true</span>,
                 (<span class="bool-val">false</span>, <span class="bool-val">false</span>) =&gt; <span class="bool-val">false</span>,
             };
+            <span class="kw">if</span> <span class="ident">transform</span> <span class="op">&amp;&amp;</span> <span class="ident">idx</span> <span class="op">==</span> <span class="number">0</span> {
+                <span class="kw">return</span> <span class="prelude-val">Err</span>(<span class="ident">SynthError::ConditionalGotoInFirstState</span>);
+            }
 
             <span class="comment">// Build</span>
             <span class="ident">StatementBuilder::build</span>(
