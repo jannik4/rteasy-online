@@ -129,10 +129,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f497285884f3fcff424ffc933e56d7cbca511def0c9831a7f9b5f6153e3cc89b"
 
 [[package]]
+name = "rt-easy-ast"
+version = "0.1.0"
+dependencies = [
+ "either",
+ "rt-easy-core",
+]
+
+[[package]]
 name = "rt-easy-compiler"
 version = "0.1.0"
 dependencies = [
  "pretty-error",
+ "rt-easy-ast",
  "rt-easy-core",
 ]
 
@@ -142,15 +151,21 @@ version = "0.1.0"
 dependencies = [
  "rt-easy-compiler",
  "rt-easy-core",
+ "rt-easy-program",
 ]
 
 [[package]]
 name = "rt-easy-core"
 version = "0.1.0"
 dependencies = [
- "either",
- "split-vec",
  "value",
+]
+
+[[package]]
+name = "rt-easy-memory-file"
+version = "0.1.0"
+dependencies = [
+ "rt-easy-core",
 ]
 
 [[package]]
@@ -158,9 +173,18 @@ name = "rt-easy-parser"
 version = "0.1.0"
 dependencies = [
  "logos",
+ "rt-easy-ast",
  "rt-easy-core",
  "toktok",
  "toktok-generator",
+]
+
+[[package]]
+name = "rt-easy-program"
+version = "0.1.0"
+dependencies = [
+ "rt-easy-core",
+ "split-vec",
 ]
 
 [[package]]
@@ -169,6 +193,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "rt-easy-core",
+ "rt-easy-memory-file",
+ "rt-easy-program",
  "serde",
  "serde_json",
 ]
