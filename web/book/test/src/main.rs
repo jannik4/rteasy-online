@@ -110,8 +110,10 @@ fn source_files() -> Result<Vec<(PathBuf, String)>> {
             if file_type.is_dir() {
                 dirs.push(path);
             } else if file_type.is_file() {
-                let content = fs::read_to_string(&path)?;
-                files.push((path, content));
+                if path.extension() == Some("md".as_ref()) {
+                    let content = fs::read_to_string(&path)?;
+                    files.push((path, content));
+                }
             } else {
                 bail!("symlinks are not supported");
             }
