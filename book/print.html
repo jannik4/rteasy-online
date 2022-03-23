@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.1.</strong> Editing Mode</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.</strong> Simulation Mode</div></li><li><ol class="section"><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.1.</strong> Simulation State</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.2.</strong> Signals</div></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.2.3.</strong> Breakpoints</div></li></ol></li><li class="chapter-item expanded "><div><strong aria-hidden="true">2.3.</strong> VHDL Export</div></li></ol></li><li class="chapter-item expanded "><a href="tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded "><a href="tutorial/advanced/index.html"><strong aria-hidden="true">4.</strong> Advanced</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/advanced/eval-expressions.html"><strong aria-hidden="true">4.1.</strong> Evaluation of Expressions</a></li><li class="chapter-item expanded "><a href="tutorial/advanced/memory-file-format.html"><strong aria-hidden="true">4.2.</strong> Memory File Format</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="compiler-error-index/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/ide/editing-mode.html"><strong aria-hidden="true">2.1.</strong> Editing Mode</a></li><li class="chapter-item expanded "><a href="tutorial/ide/simulation-mode.html"><strong aria-hidden="true">2.2.</strong> Simulation Mode</a></li><li class="chapter-item expanded "><a href="tutorial/ide/vhdl-export.html"><strong aria-hidden="true">2.3.</strong> VHDL Export</a></li></ol></li><li class="chapter-item expanded "><a href="tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded "><a href="tutorial/advanced/index.html"><strong aria-hidden="true">4.</strong> Advanced</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="tutorial/advanced/eval-expressions.html"><strong aria-hidden="true">4.1.</strong> Evaluation of Expressions</a></li><li class="chapter-item expanded "><a href="tutorial/advanced/memory-file-format.html"><strong aria-hidden="true">4.2.</strong> Memory File Format</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="compiler-error-index/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -399,15 +399,94 @@ X &lt;- not BUS.&quot;1&quot; + 42;
 <tr><td>0</td><td>Bitwise XOR</td><td>left-to-right</td><td><code>... xor ...</code></td></tr>
 </tbody></table>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="ide-user-guide"><a class="header" href="#ide-user-guide">IDE User Guide</a></h1>
+<p>The RTeasy-Online IDE has two different modes. On the one hand there is the editing mode, in which the program is developed. On the other hand there is the simulation mode, where you can execute the program and display the register, bus, register array and memory contents. In this mode, you cannot modify the program. In both modes all views can be moved around freely.</p>
+<p>At the start you are always in the editing mode.</p>
+<p>TODO: Options Dialog</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="editing-mode"><a class="header" href="#editing-mode">Editing Mode</a></h1>
+<p>At the top you can see the toolbar. With File and Edit classic IDE functions like loading/saving the file or undo/redo can be done. Under Run you can find the same functionality that is available in the second row in the center of the screen. The first button switches between the two modes. The remaining four are used to control the simulation and are disabled in edit mode.</p>
+<p>Besides syntax highlighting, the code editor supports autocompletion and code snippets for frequently used constructs like switch-case operations. At the same time, all errors, if any, are displayed live on the right side.</p>
+<p>Each error is associated with an error code that can be clicked and leads to the <a href="tutorial/ide/../../compiler-error-index/errors.html">compiler error index</a> that explains the errors in more detail.</p>
+<hr />
+<p><img src="tutorial/ide/../../images/ide-editing-mode.png" alt="The RTeasy-Online IDE in the editing mode." /></p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="simulation-mode"><a class="header" href="#simulation-mode">Simulation Mode</a></h1>
+<p>This mode is for the simulating and testing the program. In addition to the code, the signals and the current state can be viewed here.
+The state view displays the register, bus, register array and memory contents. During simulation, both the code and the state view provide visual hints.</p>
+<p>The buttons at the top center are now all operable. From left to right they let you switches between the two modes, start/stop the simulation, reset the simulation, make a step (execute the next state) and make a micro step (execute the next micro step).</p>
+<hr />
+<p><img src="tutorial/ide/../../images/ide-simulation-mode.png" alt="The RTeasy-Online IDE in the simulation mode." /></p>
+<h2 id="code-view"><a class="header" href="#code-view">Code View</a></h2>
+<p>During simulation, the code view provide visual hints.
+When executing a micro step, the current micro step is highlighted in yellow. Conditions are highlighted either green or red, respectively, whether they evaluate to true or false. For conditions, this highlighting becomes transparent as soon as the next micro operation is executed.
+When executing a step, the complete current step is highlighted in yellow.</p>
+<h2 id="state-view"><a class="header" href="#state-view">State View</a></h2>
+<p>The state view displays the register, bus, register array and memory contents. In addition, the cycle count is displayed in the upper right corner.</p>
+<p>Via several dropdowns it is possible to select the base in which the values are presented. The dropdown in the upper left corner serves as the global default setting. This setting can then be inherited elsewhere (Inherit) or overwritten locally (BIN/DEC/HEX).</p>
+<p>During simulation, the state view provide visual hints.
+When executing with micro steps, writes to registers are represented by an arrow, with the value that is assigned after the clock cycle on the right-hand side.
+After executing a complete step, values that have changed are highlighted in yellow.</p>
+<p>TODO: Memory/Register Array View</p>
+<h2 id="signals-view"><a class="header" href="#signals-view">Signals View</a></h2>
+<p>The signals view shows the condition signals and control signals of a resulting execution unit and control unit respectively.</p>
+<h2 id="breakpoints"><a class="header" href="#breakpoints">Breakpoints</a></h2>
+<p>By clicking on the line numbers it is possible to set or remove breakpoints. If the simulation is now started via the play button, it will pause as soon as a breakpoint is reached.</p>
+<p>TODO: Image</p>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="vhdl-export"><a class="header" href="#vhdl-export">VHDL Export</a></h1>
 <p>TODO: ...</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="examples"><a class="header" href="#examples">Examples</a></h1>
 <p>TODO: ...</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="advanced"><a class="header" href="#advanced">Advanced</a></h1>
-<p>TODO: ...</p>
+<p>The following sections contain advanced/in-depth material.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="evaluation-of-expressions"><a class="header" href="#evaluation-of-expressions">Evaluation of Expressions</a></h1>
 <p>TODO: ...</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="memory-file-format"><a class="header" href="#memory-file-format">Memory File Format</a></h1>
-<p>TODO: ...</p>
+<p>The memory file format is a simple line-based file format.</p>
+<h2 id="header"><a class="header" href="#header">Header</a></h2>
+<p>The first line is the header, which indicates in which base the numbers are stored and how large the memory is. The header must always be in the following shape:</p>
+<pre><code class="language-rteasy ignore">[B|b|H|h] &lt;ADDRESS_SIZE&gt; &lt;DATA_SIZE&gt;
+</code></pre>
+<p><code>B</code> or <code>b</code> means binary, <code>H</code> or <code>h</code> means hexadecimal. <code>ADDRESS_SIZE</code> specifies the bit width of the address space and <code>DATA_SIZE</code> specifies the bit width of the data. For example, a memory that is stored in a binary base, with 65536 (= 2^16) entries and a width of 1 byte, has the following header:</p>
+<pre><code class="language-rteasy ignore">B 16 8
+</code></pre>
+<h2 id="data"><a class="header" href="#data">Data</a></h2>
+<p>After the header, the data is stored line by line. The first line, unless otherwise specified, is at address 0. Subsequent lines are always located at the next address. For example, the following describes a memory with the numbers <code>0x1</code>, <code>0x7</code> and <code>0xF1</code> at address <code>0x0</code>, <code>0x1</code> and <code>0x2</code>:</p>
+<pre><code class="language-rteasy ignore">H 4 16
+
+1
+7
+F1
+</code></pre>
+<p>Additionally, it is possible to store data at a specific address. With <code>&lt;ADDRESS&gt;:</code> the address for the next line can be specified. For example, in the following, the values <code>0xFF</code> and <code>0xC</code> are stored at the addresses <code>0x9</code> and <code>0xA</code>:</p>
+<pre><code class="language-rteasy ignore">H 4 16
+
+9:
+FF
+C
+</code></pre>
+<p>Of course, this can be combined in any way:</p>
+<pre><code class="language-rteasy ignore">H 4 16
+
+3
+4
+
+C:
+2
+1
+
+3:
+25
+</code></pre>
+<h2 id="comments"><a class="header" href="#comments">Comments</a></h2>
+<p>The memory format allows simple line comments starting with the hash (#) character. Comments are allowed in all lines including the header. Example:</p>
+<pre><code class="language-rteasy ignore">H 8 32 # Memory in hexadecimal base
+
+# Hello World
+
+4: # Store some data, starting at address 4
+FF # (addr = 4)
+0  # (addr = 5)
+1  # (addr = 6)
+2  # (addr = 7)
+</code></pre>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="errors"><a class="header" href="#errors">Errors</a></h1>
 <p>An overview of all possible errors that can occur during compilation.</p>
 <h2 id="e001"><a class="header" href="#e001">E001</a></h2>

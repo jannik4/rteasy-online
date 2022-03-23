@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Micro Operations - RTeasy-Online</title>
+        <title>Editing Mode - RTeasy-Online</title>
 
 
         <!-- Custom HTML head -->
@@ -81,7 +81,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html" class="active"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/ide/editing-mode.html"><strong aria-hidden="true">2.1.</strong> Editing Mode</a></li><li class="chapter-item expanded "><a href="../../tutorial/ide/simulation-mode.html"><strong aria-hidden="true">2.2.</strong> Simulation Mode</a></li><li class="chapter-item expanded "><a href="../../tutorial/ide/vhdl-export.html"><strong aria-hidden="true">2.3.</strong> VHDL Export</a></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded "><a href="../../tutorial/advanced/index.html"><strong aria-hidden="true">4.</strong> Advanced</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/advanced/eval-expressions.html"><strong aria-hidden="true">4.1.</strong> Evaluation of Expressions</a></li><li class="chapter-item expanded "><a href="../../tutorial/advanced/memory-file-format.html"><strong aria-hidden="true">4.2.</strong> Memory File Format</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../../index.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Tutorial</li><li class="chapter-item expanded "><a href="../../tutorial/lang/index.html"><strong aria-hidden="true">1.</strong> The Register Transfer Language RTeasy</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/declarations.html"><strong aria-hidden="true">1.1.</strong> Declarations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/algorithm.html"><strong aria-hidden="true">1.2.</strong> Algorithm</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/lang/micro-operations.html"><strong aria-hidden="true">1.2.1.</strong> Micro Operations</a></li><li class="chapter-item expanded "><a href="../../tutorial/lang/expressions.html"><strong aria-hidden="true">1.2.2.</strong> Expressions</a></li></ol></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/ide/index.html"><strong aria-hidden="true">2.</strong> IDE User Guide</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/ide/editing-mode.html" class="active"><strong aria-hidden="true">2.1.</strong> Editing Mode</a></li><li class="chapter-item expanded "><a href="../../tutorial/ide/simulation-mode.html"><strong aria-hidden="true">2.2.</strong> Simulation Mode</a></li><li class="chapter-item expanded "><a href="../../tutorial/ide/vhdl-export.html"><strong aria-hidden="true">2.3.</strong> VHDL Export</a></li></ol></li><li class="chapter-item expanded "><a href="../../tutorial/examples/index.html"><strong aria-hidden="true">3.</strong> Examples</a></li><li class="chapter-item expanded "><a href="../../tutorial/advanced/index.html"><strong aria-hidden="true">4.</strong> Advanced</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../tutorial/advanced/eval-expressions.html"><strong aria-hidden="true">4.1.</strong> Evaluation of Expressions</a></li><li class="chapter-item expanded "><a href="../../tutorial/advanced/memory-file-format.html"><strong aria-hidden="true">4.2.</strong> Memory File Format</a></li></ol></li><li class="chapter-item expanded "><li class="part-title">Compiler Error Index</li><li class="chapter-item expanded "><a href="../../compiler-error-index/errors.html"><strong aria-hidden="true">5.</strong> Errors</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
@@ -142,89 +142,22 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="micro-operations"><a class="header" href="#micro-operations">Micro Operations</a></h1>
-<p>The micro operations are the building blocks of the algorithm. Besides the unconditional operations (assignment, no operation and read/write) there are jumps (goto) and conditional operations (if and switch).</p>
-<h2 id="assignment"><a class="header" href="#assignment">Assignment</a></h2>
-<p>...</p>
-<h2 id="no-operation"><a class="header" href="#no-operation">No Operation</a></h2>
-<p>The <code>nop</code> operation will not trigger any operation and can be used to have an empty state.</p>
-<pre><code class="language-rteasy">nop;
-</code></pre>
-<h2 id="readwrite"><a class="header" href="#readwrite">Read/Write</a></h2>
-<p>The read and write operations are available for operating on memories. Both operations take the name of the memory as an argument, e.g. <code>read MEM</code>. When reading, the value currently stored in the memory at the position of the address register is written to the data register. In the case of writing, the process is exactly the opposite: The value from the data register is written into the memory.</p>
-<pre><code class="language-rteasy"><span class="boring">declare register AR(3:0), DR(3:0)
-</span><span class="boring">declare memory MEM(AR, DR)
-</span><span class="boring">
-</span># Read value at position 4
-AR &lt;- 4;
-read MEM;
-
-# Write (value + 1) back to the memory
-DR &lt;- DR + 1;
-write MEM;
-</code></pre>
-<h2 id="assert"><a class="header" href="#assert">Assert</a></h2>
-<p>The assert operation checks if an expression (with a size of one bit) is one or zero. If the expression evaluates to zero, the assert fails and the simulator will stop immediately and highlight the failed assert.</p>
-<p>The assert operation is intended as a tool for development and is therefore only executed in the simulator. It will not execute if the program gets compiled to VHDL.</p>
-<pre><code class="language-rteasy"><span class="boring">declare bus BUS(3:0)
-</span><span class="boring">
-</span>assert 5 &gt; 2; # passes
-assert BUS = 2, BUS &lt;- 2; # passes
-</code></pre>
-<pre><code class="language-rteasy should_fail">assert 2 = 3; # fails
-</code></pre>
-<h2 id="goto"><a class="header" href="#goto">Goto</a></h2>
-<p>The goto operation takes a label and can be used to resume the execution at a different state than the following one.</p>
-<pre><code class="language-rteasy"><span class="boring">declare register A, B
-</span><span class="boring">
-</span>START: A &lt;- 0, B &lt;- 1, goto SKIP;
-
-A &lt;- B; # &lt;-- This is never executed
-
-SKIP: nop; # do something
-END: goto START;
-</code></pre>
-<h2 id="if"><a class="header" href="#if">If</a></h2>
-<p>The if operation checks a single condition, which can be either one or zero, and executes the if or else branch accordingly. Syntactically, the else branch is optional. If it is missing a simple <code>nop</code> is used instead. Both branches can contain any number of micro operations, just like a state. Thus, it is also possible to nest if operations.</p>
-<pre><code class="language-rteasy"><span class="boring">declare register A(3:0), B(3:0), C(3:0), D(3:0), COUNT(3:0)
-</span><span class="boring">
-</span># If/else
-if COUNT = 0 then
-    A &lt;- 0, B &lt;- 0
-else
-    A &lt;- 1
-fi;
-
-# Nested if
-if A = 0 and B = 0 then
-    C &lt;- 0, if D &gt; 1 then D &lt;- 0 fi
-fi;
-</code></pre>
-<h2 id="switch"><a class="header" href="#switch">Switch</a></h2>
-<p>The switch operation checks an expression against various values. The expression must have a fixed size. This requirement is necessary to have a well defined size in which to evaluate. Fixed size expression are: comparisons, concatenations, registers, buses, register arrays and bit strings.</p>
-<p>The values used in the case clauses can be literals or constant expressions. Constant expression are: literals, concatenations only containing constants and terms only containing constants.</p>
-<p>In addition to the case clauses, there must always be exactly one default clause.</p>
-<pre><code class="language-rteasy"><span class="boring">declare register A(3:0), B(3:0), C(3:0), D(3:0)
-</span><span class="boring">
-</span>switch A.D(2) {            # match against a fixed size expression
-    case 0: B &lt;- 2, C &lt;- 2 # case clause 0
-    case 1: nop            # case clause 1
-    case 1 + 1: C &lt;- 3     # case clause 2 (1 + 1)
-    default: goto END      # default clause
-};
-<span class="boring">
-</span><span class="boring">END:
-</span></code></pre>
+                        <h1 id="editing-mode"><a class="header" href="#editing-mode">Editing Mode</a></h1>
+<p>At the top you can see the toolbar. With File and Edit classic IDE functions like loading/saving the file or undo/redo can be done. Under Run you can find the same functionality that is available in the second row in the center of the screen. The first button switches between the two modes. The remaining four are used to control the simulation and are disabled in edit mode.</p>
+<p>Besides syntax highlighting, the code editor supports autocompletion and code snippets for frequently used constructs like switch-case operations. At the same time, all errors, if any, are displayed live on the right side.</p>
+<p>Each error is associated with an error code that can be clicked and leads to the <a href="../../compiler-error-index/errors.html">compiler error index</a> that explains the errors in more detail.</p>
+<hr />
+<p><img src="../../images/ide-editing-mode.png" alt="The RTeasy-Online IDE in the editing mode." /></p>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../../tutorial/lang/algorithm.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../../tutorial/ide/index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
 
-                            <a rel="next" href="../../tutorial/lang/expressions.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next" href="../../tutorial/ide/simulation-mode.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <i class="fa fa-angle-right"></i>
                             </a>
 
@@ -234,11 +167,11 @@ fi;
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../../tutorial/lang/algorithm.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../../tutorial/ide/index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
 
-                    <a rel="next" href="../../tutorial/lang/expressions.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next" href="../../tutorial/ide/simulation-mode.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <i class="fa fa-angle-right"></i>
                     </a>
             </nav>
